@@ -1,1 +1,23 @@
-instructions...
+1) Running Tests 
+
+   ???
+
+2) Analyzing results
+
+   The directory "data" contains data files holding test results.  One
+   file for each subject.  See the (artificial) example data file
+   below:
+
+     $BASEDIR/data/unreal.noids.arff
+   
+   The data file is in the WEKA ".arff" format, as described in
+   $BASEDIR/libs/README_weka.  More about the Machine Learning WEKA
+   Software for Java can be found at:
+   http://sourceforge.net/projects/weka/.
+
+   Run the script below to obtain a classifier that generalizes the
+   instance data on this file.
+
+     $BASEDIR/analyze
+
+   

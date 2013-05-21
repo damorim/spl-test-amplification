@@ -1,0 +1,41 @@
+@relation testing
+
+@attribute 'id' REAL
+@attribute 'feature1' {TRUE, FALSE}	  
+@attribute 'feature2' {TRUE, FALSE}
+@attribute 'feature3' {TRUE, FALSE}
+@attribute 'feature4' {TRUE, FALSE}
+@attribute 'output' { 'pass' , 'fail' , 'error' }
+
+@data
+1.0,TRUE,?,?,FALSE,pass
+2.0,FALSE,?,TRUE,FALSE,fail
+3.0,TRUE,FALSE,?,FALSE,pass
+4.0,FALSE,FALSE,TRUE,FALSE,pass
+5.0,TRUE,TRUE,TRUE,FALSE,error
+6.0,TRUE,?,?,?,pass
+8.0,FALSE,?,?,FALSE,fail
+9.0,TRUE,?,?,FALSE,pass
+10.0,FALSE,?,TRUE,FALSE,pass
+11.0,TRUE,FALSE,?,FALSE,pass
+12.0,FALSE,FALSE,TRUE,FALSE,fail
+13.0,TRUE,?,TRUE,TRUE,fail
+14.0,TRUE,?,?,?,pass
+15.0,FALSE,?,?,FALSE,fail
+16.0,TRUE,?,?,FALSE,pass
+17.0,FALSE,?,?,FALSE,pass
+18.0,TRUE,FALSE,?,FALSE,pass
+19.0,FALSE,FALSE,TRUE,FALSE,fail
+20.0,TRUE,FALSE,TRUE,FALSE,error
+21.0,TRUE,?,?,?,pass
+22.0,FALSE,?,?,FALSE,fail
+23.0,TRUE,?,?,FALSE,pass
+24.0,FALSE,?,TRUE,FALSE,fail
+25.0,TRUE,FALSE,?,FALSE,pass
+26.0,FALSE,FALSE,TRUE,FALSE,pass
+27.0,TRUE,?,?,FALSE,error
+28.0,TRUE,?,?,?,pass
+29.0,?,?,?,TRUE,fail
+%
+%
+%
