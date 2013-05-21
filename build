@@ -1,0 +1,43 @@
+#!/bin/bash
+
+## checking if we loaded common script
+if [[ ! -d "$BASEDIR" ]];
+then
+    echo "could not find base directory."
+fi
+
+## checking if we passed parameters
+FEATURES=$1
+if [[ -z $FEATURES ]];
+then
+    echo "could not locate feature set. please, define variable FEATURES."
+    exit;
+fi
+CURDIR=$2
+if [[ -z $CURDIR ]];
+then
+    echo "could not locate feature set. please, define variable CURDIR."
+    exit;
+fi
+
+echo "+++++++++++++++++++++++++++++"
+echo "FEATURES: ${FEATURES}"
+echo "CURDIR: ${CURDIR}"
+echo "+++++++++++++++++++++++++++++"
+
+## running pre-processor for source
+INPUT="$CURDIR/src"
+OUTPUT="$CURDIR/bin"
+mkdir -p $OUTPUT
+$BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
+## running pre-processor for tests
+INPUT="$CURDIR/src-tests"
+$BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
+## setting classpath
+JUNIT="$LIBSDIR/junit-4.11.jar"
+CP=".:$JUNIT"
+## compiling
+(cd $OUTPUT;
+    pwd
+    find . -name "*.java" | xargs javac -nowarn -cp $CP
+ )

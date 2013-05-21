@@ -1,0 +1,8 @@
+#!/bin/bash
+
+source ../../common
+
+FEATURES="LOCKING STATISTICS"
+CURDIR=`pwd`
+
+../../build "$FEATURES" $CURDIR
