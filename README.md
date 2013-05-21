@@ -1,2 +1,0 @@
-spl-test-amplification
-======================

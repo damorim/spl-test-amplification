@@ -1,0 +1,7 @@
+#!/bin/bash
+
+DATASET="./sample-weka-dataset.arff"
+METHOD="weka.classifiers.trees.J48"
+##METHOD=weka.associations.Apriori
+
+java -cp .:weka.jar "$METHOD" -t $DATASET
