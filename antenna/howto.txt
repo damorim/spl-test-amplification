@@ -9,7 +9,7 @@ Parameters:
 
 Example with Stack SPL
 
-Stack has 3 feature: LOCKING, LOGING and STATISTICS
+Stack has 3 features: LOCKING, LOGING and STATISTICS
 
 command line to preprocess Stack with the product: LOCKING STATISTICS
 	java -jar antenna.jar ../spl-test-amplification/antenna/StackIFDEF ../spl-test-amplification/antenna/out LOCKING STATISTICS
