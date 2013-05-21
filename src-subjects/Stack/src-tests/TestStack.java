@@ -4,7 +4,7 @@ import org.junit.Test;
 public class TestStack {
 	
 	@Test (expected=java.lang.ArrayIndexOutOfBoundsException.class)
-	//#ifdef STATISTICS AND LOGGING
+	//#if STATISTICS || LOGGING
 	public void testBoundHit() {		
 		int maxSize = 0;
 		StatisticObject s = new StatisticObject();
@@ -14,7 +14,7 @@ public class TestStack {
 	//#endif
 	
 	@Test ()
-	//#ifdef STATISTICS && LOGGING
+	//#if STATISTICS && LOGGING
 	public void testPushPop() {		
 		int maxSize = 1;
 		StatisticObject s = new StatisticObject();
@@ -25,7 +25,7 @@ public class TestStack {
 	//#endif
 	
 	@Test (expected=java.lang.ArrayIndexOutOfBoundsException.class)
-	//#ifdef STATISTICS && LOGGING
+	//#if STATISTICS && LOGGING
 	public void testPushPopPop() {		
 		int maxSize = 1;
 		StatisticObject s = new StatisticObject();
