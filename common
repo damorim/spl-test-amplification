@@ -1,0 +1,7 @@
+#!/bin/bash
+
+BASEDIR="$HOME/git/spl-test-amplification"
+LIBSDIR="$BASEDIR/libs"
+
+export BASEDIR
+export LIBSDIR

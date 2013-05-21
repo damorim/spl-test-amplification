@@ -1,0 +1,21 @@
+#!/bin/bash
+
+EXPECTED_ARGS=3
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: `basename $0` {INPUTDIR} {OUTPUTDIR} {FEATURE LIST}"
+  exit 0
+fi
+
+INPUTDIR=$1
+OUTPUTDIR=$2
+FEATURES=$3
+
+touch NEW
+java -jar $LIBSDIR/antenna.jar \
+     $INPUTDIR \
+     $OUTPUTDIR \
+     $FEATURES
+NUM=`find $OUTPUTDIR -newer NEW | wc -l`
+echo "$NUM files generated"
+rm NEW

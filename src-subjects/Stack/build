@@ -1,0 +1,19 @@
+#!/bin/bash
+
+## loading basic configurations
+source ../../common
+
+## checking if we loaded variables 
+if [[ ! -d "$BASEDIR" ]];
+then
+    echo "could not find base directory."
+fi
+
+CURDIR=`pwd`
+
+INPUT="$CURDIR/src"
+OUTPUT="$BASEDIR/bin"
+FEATURES="LOCKING STATISTICS"
+mkdir -p $OUTPUT
+## running pre-processor
+$BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
