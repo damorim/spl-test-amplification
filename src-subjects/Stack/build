@@ -17,3 +17,5 @@ FEATURES="LOCKING STATISTICS"
 mkdir -p $OUTPUT
 ## running pre-processor
 $BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
+INPUT="$CURDIR/src-tests"
+$BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
