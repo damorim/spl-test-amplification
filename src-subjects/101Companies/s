@@ -1,8 +1,8 @@
 #!/bin/bash
 
 source ../../common
-
-FEATURES="TreeStructure TotalReducer Cut Total CutWhatever Logging Precedence GUI"
 CURDIR=`pwd`
 
+FEATURES="TreeStructure TotalReducer Cut Total CutWhatever Logging Precedence GUI"
 ../../build "$FEATURES" $CURDIR
+../../evosuite "$CURDIR/bin"

@@ -2,6 +2,8 @@
 
 BASEDIR="$HOME/git/spl-test-amplification"
 LIBSDIR="$BASEDIR/libs"
+EVOSUITE="$LIBSDIR/evosuite-20130504.jar"
 
 export BASEDIR
 export LIBSDIR
+export EVOSUITE

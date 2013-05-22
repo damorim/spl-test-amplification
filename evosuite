@@ -1,0 +1,15 @@
+#!/bin/bash
+
+INPUTDIR=$1
+
+TIMEOUT=120
+
+## calling evosuite
+java \
+    -jar $EVOSUITE \
+    -generateSuite \
+    -target $INPUTDIR \
+    -Dsearch_budget=$TIMEOUT \
+    -Doutput_granularity=TESTCASE \
+    -Dcriterion=weakMutation \
+    -Dstopping_condition=MaxTime 
