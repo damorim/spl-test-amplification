@@ -154,11 +154,11 @@ public class MainView extends JFrame {
 		this.setVisible(true);
 	}
 	
-	//#if Cut && Total
 	public void refresh() {
+		//#if Cut && Total
 		((AbstractView)currentView).refresh();
+		//#endif
 	}
-    //#endif
 	
 
 	public void refreshTree() {
