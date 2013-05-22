@@ -15,7 +15,7 @@ touch NEW
 java -jar $LIBSDIR/antenna.jar \
      $INPUTDIR \
      $OUTPUTDIR \
-     $FEATURES
+     "$FEATURES"
 NUM=`find $OUTPUTDIR -newer NEW | wc -l`
 echo "$NUM files generated"
 rm NEW

@@ -28,7 +28,6 @@ echo "+++++++++++++++++++++++++++++"
 ## running pre-processor for source
 INPUT="$CURDIR/src"
 OUTPUT="$CURDIR/bin"
-mkdir -p $OUTPUT
 $BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
 ## running pre-processor for tests
 INPUT="$CURDIR/src-tests"
@@ -41,3 +40,4 @@ CP=".:$JUNIT"
     pwd
     find . -name "*.java" | xargs javac -nowarn -cp $CP
  )
+exit $?

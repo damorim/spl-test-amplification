@@ -2,17 +2,20 @@
 
 source ../../common
 CURDIR=`pwd`
+TIMESTAMP=`date +"%Y-%m-%d-%Hh%Mm"`
 
 ## remove old stuff (will be re-generated)
 rm -rf $CURDIR/bin
+mkdir -p $CURDIR/bin
 
 a=0
-NUM_VALID_CONFIGURATIONS_FOR_TG=2
+NUM_VALID_CONFIGURATIONS_FOR_TG=1
 #########################
 ## generate tests for
 ## NUM_VALID_CONFIGURATIONS_FOR_TG
 ## distinct products.
 #########################
+(
 while read line 
 do
     if [ $a -eq $NUM_VALID_CONFIGURATIONS_FOR_TG ]
@@ -20,15 +23,30 @@ do
 	break
     fi
     a=$(($a+1));
-    FEATURES=`echo $line | cut -d\: -f2`
+    ##FEATURES=`echo $line | cut -d\: -f2`
+    FEATURES=`echo $line`
     ../../build "$FEATURES" $CURDIR
-    ../../evosuite "$CURDIR/bin"    
+    echo "error code $?"
+    if [ "$?" -ne 0 ]
+    then
+	echo "compile error"
+    else
+	echo "here"
+	############################
+	#../../evosuite "$CURDIR/bin"
+	############################
+    fi
 done < "all-configurations.txt"
 
-exit
-
+#########################
+## generate tests
+#########################
 while read line 
 do
-    ../../build "$FEATURES" $CURDIR
-done < "configurations.txt"
+    FEATURES=`echo $line`
+    ################################
+    ##../../build "$FEATURES" $CURDIR
+    ################################
+done < "random-configurations.txt"
 
+) 2>&1 | tee log-${TIMESTAMP}.txt

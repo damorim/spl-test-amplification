@@ -1,0 +1,23 @@
+#!/bin/bash
+
+source common
+
+CURDIR=$1
+if [[ -z $CURDIR ]];
+then
+    echo "could not locate feature set. please, define variable CURDIR."
+    exit;
+fi
+
+FILENAME="$CURDIR/all-configurations.txt"
+if [[ ! -f "$FILENAME" ]];
+then
+    echo "could not find $FILENAME file"
+    exit;
+fi
+
+FEATURES=`cat $FILENAME | tr " " "\n" | sort | uniq | xargs`
+java -cp $LIBSDIR/jwise.jar jWise.core.Main "$FEATURES" > "$CURDIR/twise-configurations.txt"
+
+NUM_RANDOM_CONFIGURATIONS=50
+perl -MList::Util -e 'print List::Util::shuffle <>' $FILENAME | head -n $NUM_RANDOM_CONFIGURATIONS > "$CURDIR/random-configurations.txt"
