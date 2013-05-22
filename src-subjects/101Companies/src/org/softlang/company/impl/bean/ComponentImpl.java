@@ -1,9 +1,7 @@
 package org.softlang.company.impl.bean;
 
 import org.softlang.company.*;
-//#if Cut || Total
 import org.softlang.visitor.*;
-//#endif
 import java.util.Observable;
 
 /**
