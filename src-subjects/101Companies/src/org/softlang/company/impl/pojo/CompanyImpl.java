@@ -14,7 +14,7 @@ import org.softlang.visitor.VoidVisitor;
 
 public class CompanyImpl extends ContainerImpl implements Company{ 
 
-	//#ifdef GUI
+	//#if GUI
 	private List<Department> depts;
 	public CompanyImpl() {
 		depts = new LinkedList<Department>();
@@ -53,7 +53,7 @@ public class CompanyImpl extends ContainerImpl implements Company{
 		if (!(u instanceof Department)){
 			throw new IllegalArgumentException();
 		}
-		//#ifdef GUI
+		//#if GUI
 		depts.add((Department) u);
 		//#endif
 		return super.add(u);

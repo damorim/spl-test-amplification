@@ -16,7 +16,7 @@ import org.softlang.visitor.VoidVisitor;
 
 public class DepartmentImpl extends ContainerImpl implements Department {
 	
-	//#ifdef GUI
+	//#if GUI
 	private List<Department> subdepts;
 	private List<Employee> employees;
 	private DefaultMutableTreeNode treeNode;

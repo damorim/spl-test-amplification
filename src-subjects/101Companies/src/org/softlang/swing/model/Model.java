@@ -1,6 +1,6 @@
 package org.softlang.swing.model;
 
-//#ifdef CutNoDepartment
+//#if CutNoDepartment
 import org.softlang.command.CutCompany;
 import org.softlang.command.CutEmployee;
 //#endif
@@ -11,27 +11,27 @@ import org.softlang.company.factory.BeanFactory;
 import org.softlang.company.factory.Factory;
 import org.softlang.company.factory.PojoFactory;
 
-//#ifdef Logging
+//#if Logging
 import org.softlang.features.Logging;
 //#endif
 
-//#ifdef CutNoManager
+//#if CutNoManager
 import org.softlang.features.OrderedCut;
 //#endif
 
-//#ifdef Precedence
+//#if Precedence
 import org.softlang.features.Precedence;
 //#endif
 
-//#ifdef CutWhatever
+//#if CutWhatever
 import org.softlang.features.SimpleCut;
 //#endif
 
-//#ifdef TotalReducer
+//#if TotalReducer
 import org.softlang.features.TotalReducer;
 //#endif
 
-//#ifdef TotalWalker
+//#if TotalWalker
 import org.softlang.features.TotalWalker;
 //#endif
 /**
@@ -64,7 +64,7 @@ public class Model {
 		}
 	}
 
-	//#ifdef Total
+	//#if Total
 	/**
 	 * This method returns the total value for the current company, department
 	 * or employee.
@@ -87,7 +87,7 @@ public class Model {
 	}
 	//#endif
 	
-	//#ifdef Cut
+	//#if Cut
 	/**
 	 * This method cuts the current company, department or employee.
 	 */

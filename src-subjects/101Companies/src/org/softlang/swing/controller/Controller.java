@@ -67,7 +67,7 @@ public class Controller {
 				if (model.getCurrentValue() != null) {
 					if (model.getCurrentValue() instanceof Company) {
 						CompanyView comp = new CompanyView(model);
-						//#ifdef Cut
+						//#if Cut
 						comp.addCutListener(new CutListener());
 						//#endif
 						comp.addNameListener(new ChangeListener(
@@ -75,7 +75,7 @@ public class Controller {
 						gui = comp;
 					} else if (model.getCurrentValue() instanceof Department) {
 						DepartmentView dep = new DepartmentView(model);
-						//#ifdef Cut
+						//#if Cut
 						dep.addCutListener(new CutListener());
 						//#endif
 						dep.addNameListener(new ChangeListener(Controller.this,
@@ -83,14 +83,14 @@ public class Controller {
 						gui = dep;
 					} else if (model.getCurrentValue() instanceof Employee) {
 						EmployeeView emp = new EmployeeView(model);
-						//#ifdef Cut
+						//#if Cut
 						emp.addCutListener(new CutListener());
 						//#endif
 						emp.addNameListener(new ChangeListener(Controller.this,
 								"name"));
 						emp.addAddressListener(new ChangeListener(
 								Controller.this, "address"));
-						//#ifdef Total
+						//#if Total
 						emp.addSalaryListener(new ChangeListener(Controller.this, "salary"));
 						//#endif
 						gui = emp;
@@ -106,7 +106,7 @@ public class Controller {
 		}
 	};
 
-	//#ifdef Cut
+	//#if Cut
 	/*
 	 * Listener for the cut buttons
 	 */
@@ -114,7 +114,7 @@ public class Controller {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			model.cut();
-			//#ifdef Total
+			//#if Total
 			view.refresh();
 			//#endif
 		}

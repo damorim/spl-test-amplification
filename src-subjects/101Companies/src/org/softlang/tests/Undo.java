@@ -3,11 +3,11 @@ package org.softlang.tests;
 import org.softlang.company.Company;
 import org.softlang.company.factory.*;
 
-//#ifdef TotalReducer
+//#if TotalReducer
 import org.softlang.features.TotalReducer;
 //#endif
 
-//#ifdef CommandCut
+//#if CommandCut
 import org.softlang.command.CutCompany;
 //#endif
 

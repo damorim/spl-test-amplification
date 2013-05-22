@@ -60,7 +60,7 @@ import org.softlang.visitor.*;
 	
 	
 	
-	//#ifdef GUI
+	//#if GUI
 	/**
 	 * This method returns the name for the tree-view.
 	 */

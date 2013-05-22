@@ -13,7 +13,7 @@ import org.softlang.visitor.*;
 
 public class DepartmentImpl extends ContainerImpl implements Department {
 	
-	//#ifdef GUI
+	//#if GUI
 	private List<Department> subdepts;
 	private List<Employee> employees;
 	private DefaultMutableTreeNode treeNode;
@@ -74,7 +74,7 @@ public class DepartmentImpl extends ContainerImpl implements Department {
 			if (u instanceof Employee) {
 				Employee e = (Employee)u;
 				if (e.getManager())
-					//#ifdef GUI
+					//#if GUI
 					employees.remove(e);
 					//#endif
 					return e;

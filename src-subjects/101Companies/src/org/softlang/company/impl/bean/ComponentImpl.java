@@ -26,8 +26,6 @@ public abstract class ComponentImpl extends Observable implements Component {
 	public ComponentImpl getParent() { return parent; }
 	/* package */ void setParent(ComponentImpl parent) { this.parent = parent; }
 	
-	//#if Cut || Total
 	public abstract void accept(VoidVisitor v);
 	public abstract <R> R accept(ReturningVisitor<R> v);
-	//#endif
 }

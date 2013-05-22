@@ -7,7 +7,7 @@ import org.softlang.company.factory.PojoFactory;
 //#if AccessControl && TotalReducer || AccessControl && CutWhatever
 import org.softlang.features.*;
 //#endif
-//#ifdef AccessControl
+//#if AccessControl
 import org.softlang.proxy.*;
 //#endif
 

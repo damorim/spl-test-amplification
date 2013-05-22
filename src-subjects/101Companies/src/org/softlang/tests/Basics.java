@@ -8,7 +8,7 @@ import org.softlang.features.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-//#ifdef TotalWalker
+//#if TotalWalker
 import org.softlang.features.TotalWalker;
 //#endif
 
