@@ -3,6 +3,32 @@
 source ../../common
 CURDIR=`pwd`
 
-FEATURES="TreeStructure TotalReducer Cut Total CutWhatever Logging Precedence GUI"
-../../build "$FEATURES" $CURDIR
-../../evosuite "$CURDIR/bin"
+## remove old stuff (will be re-generated)
+rm -rf $CURDIR/bin
+
+a=0
+NUM_VALID_CONFIGURATIONS_FOR_TG=2
+#########################
+## generate tests for
+## NUM_VALID_CONFIGURATIONS_FOR_TG
+## distinct products.
+#########################
+while read line 
+do
+    if [ $a -eq $NUM_VALID_CONFIGURATIONS_FOR_TG ]
+    then
+	break
+    fi
+    a=$(($a+1));
+    FEATURES=`echo $line | cut -d\: -f2`
+    ../../build "$FEATURES" $CURDIR
+    ../../evosuite "$CURDIR/bin"    
+done < "all-configurations.txt"
+
+exit
+
+while read line 
+do
+    ../../build "$FEATURES" $CURDIR
+done < "configurations.txt"
+
