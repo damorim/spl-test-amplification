@@ -2,7 +2,7 @@
 
 source ../../common
 
-FEATURES="LOCKING STATISTICS"
+FEATURES="LOCKING LOGGING"
 CURDIR=`pwd`
 
 ../../build "$FEATURES" $CURDIR

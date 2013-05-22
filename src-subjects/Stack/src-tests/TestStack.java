@@ -4,36 +4,36 @@ import org.junit.Test;
 public class TestStack {
 	
 	@Test (expected=java.lang.ArrayIndexOutOfBoundsException.class)
-	//#if STATISTICS || LOGGING
-	public void testBoundHit() {		
+	public void testBoundHit() {
+//#if STATISTICS && LOGGING
 		int maxSize = 0;
 		StatisticObject s = new StatisticObject();
 		Stack stack = new Stack(maxSize, s, System.out);
 		stack.push("");
+//#endif
 	}
-	//#endif
 	
 	@Test ()
-	//#if STATISTICS && LOGGING
-	public void testPushPop() {		
+	public void testPushPop() {
+//#if STATISTICS && LOGGING
 		int maxSize = 1;
 		StatisticObject s = new StatisticObject();
 		Stack stack = new Stack(maxSize, s, System.out);
 		stack.push("");
 		stack.pop();
+//#endif
 	}
-	//#endif
 	
 	@Test (expected=java.lang.ArrayIndexOutOfBoundsException.class)
-	//#if STATISTICS && LOGGING
-	public void testPushPopPop() {		
+	public void testPushPopPop() {
+//#if STATISTICS && LOGGING
 		int maxSize = 1;
 		StatisticObject s = new StatisticObject();
 		Stack stack = new Stack(maxSize, s, System.out);
 		stack.push("");
 		stack.pop();
 		stack.pop();
+//#endif
 	}
-	//#endif
 
 }

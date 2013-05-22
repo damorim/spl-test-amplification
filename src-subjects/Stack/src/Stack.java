@@ -1,12 +1,11 @@
 import java.io.PrintStream;
 public class Stack {
-  public Stack(  int maxSize,
+  public Stack(  int maxSize
 //#ifdef STATISTICS
-  StatisticObject s
+  , StatisticObject s
 //#endif
-,
 //#ifdef LOGGING
-  PrintStream loggingTarget
+  , PrintStream loggingTarget
 //#endif
 ){
     elementData=new Object[maxSize];
