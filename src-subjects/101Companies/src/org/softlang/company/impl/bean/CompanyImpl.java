@@ -18,7 +18,7 @@ public class CompanyImpl extends ContainerImpl implements Company {
 	}
 	//#endif
 	
-	//#ifdef GUI
+	//#if GUI
 	public CompanyImpl(){
 		super();
 	}

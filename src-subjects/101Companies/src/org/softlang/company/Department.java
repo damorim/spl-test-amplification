@@ -12,7 +12,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public interface Department extends Subunit, Container {
 	Employee getManager();
 	
-//#ifdef GUI
+//#if GUI
 	public String getName();
 	public List<Department> getSubdepts();
 	public List<Employee> getEmployees();

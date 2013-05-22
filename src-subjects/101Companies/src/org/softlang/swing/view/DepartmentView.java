@@ -52,7 +52,7 @@ public class DepartmentView extends AbstractView {
 		name.setText(department.getName());
 		this.add(name, c);
 		
-		//#ifdef Total
+		//#if Total
 		// total
 		c.gridy = 1;
 		c.gridx = 0;
@@ -65,13 +65,13 @@ public class DepartmentView extends AbstractView {
 		c.gridx = 1;
 		c.weightx = 1;
 		c.fill = GridBagConstraints.HORIZONTAL;		
-		//#ifdef Total
+		//#if Total
 		total.setText(model.getTotal());
 		total.setEditable(false);		
 		this.add(total, c);
 		//#endif
 		
-		//#ifdef Cut
+		//#if Cut
 		// cut
 		c.gridy = 2;
 		c.gridx = 0;

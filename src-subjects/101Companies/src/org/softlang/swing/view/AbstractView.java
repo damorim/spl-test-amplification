@@ -23,7 +23,7 @@ public abstract class AbstractView extends JPanel {
 	protected Model model;
 	protected JTextField name;
 	protected JTextField total;
-	//#ifdef Cut
+	//#if Cut
 	protected JButton cut;
 	//#endif
 	
@@ -35,15 +35,15 @@ public abstract class AbstractView extends JPanel {
 	public AbstractView(Model model) {
 		this.model = model;
 		name = new JTextField();
-		//#ifdef Total
+		//#if Total
 		total = new JTextField();
 		//#endif
-		//#ifdef Cut
+		//#if Cut
 		cut = new JButton("cut");
 		//#endif
 	}
 	
-	//#ifdef Cut
+	//#if Cut
 	/**
 	 * This method adds the listener for the cut button of the current view.
 	 * 

@@ -19,7 +19,7 @@ class ProxyCompany implements Company {
 	private AccessControl context;
 	private Company subject;
 	
-	//#ifdef GUI
+	//#if GUI
 	private List<Department> depts;	
 	public ProxyCompany() {
 		setDepts(new LinkedList<Department>());
@@ -63,18 +63,18 @@ class ProxyCompany implements Company {
 	}
 	//#endif
 
-	//#ifdef GUI
+	//#if GUI
 	public List<Department> getDepts() {
 		return depts;
 	}
 	//#endif
-	//#ifdef GUI
+	//#if GUI
 	public void setDepts(List<Department> depts) {
 		this.depts = depts;
 	}	
 	//#endif
 	
-	//#ifdef GUI
+	//#if GUI
 	/**
 	 * This method returns the name for the tree-view.
 	 */

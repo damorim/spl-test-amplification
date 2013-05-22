@@ -10,7 +10,7 @@ import java.util.List;
 
 
 public interface Company extends Container {	
-//#ifdef GUI
+//#if GUI
 	public List<Department> getDepts();
 //#endif
 }

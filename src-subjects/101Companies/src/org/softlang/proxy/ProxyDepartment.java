@@ -17,7 +17,7 @@ class ProxyDepartment implements Department {
 	private AccessControl context;
 	private Department subject;
 	
-	//#ifdef GUI
+	//#if GUI
 	private List<Department> subdepts;
 	private List<Employee> employees;
 	private DefaultMutableTreeNode treeNode;

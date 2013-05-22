@@ -14,7 +14,7 @@ import java.util.Observer;
 import org.softlang.util.ObservableSimpleList;
 import org.softlang.util.SimpleLinkedList;
 
-//#ifdef GUI
+//#if GUI
 import java.util.LinkedList;
 import java.util.List;
 //#endif
@@ -32,7 +32,7 @@ public abstract class ContainerImpl extends ComponentImpl implements Container {
 		if (i.getParent()!=null)
 			throw new IllegalArgumentException("Attemped re-parenting.");
 		i.setParent(this);
-		//#ifdef GUI
+		//#if GUI
 		if(u instanceof Department){
 			this.depts.add((Department) u);
 		}
@@ -67,7 +67,7 @@ public abstract class ContainerImpl extends ComponentImpl implements Container {
 	}	
 	//#endif
 	
-	//#ifdef GUI
+	//#if GUI
 	private List<Department> depts;	
 	public ContainerImpl(){
 		this.depts = new LinkedList<Department>();

@@ -42,7 +42,7 @@ public class EmployeeImpl extends ComponentImpl implements Employee {
 	
 	
 	
-	//#ifdef GUI
+	//#if GUI
 	/**
 	 * This method returns the name for the tree-view.
 	 */

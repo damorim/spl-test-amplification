@@ -13,7 +13,7 @@ public class EmployeeImpl extends ComponentImpl implements Employee {
 	private double salary;
 	private boolean manager;
 	
-	//#ifdef Precedence
+	//#if Precedence
 	private double oldSalary;
 	public double getOldSalary() {
 		return oldSalary;
@@ -53,7 +53,7 @@ public class EmployeeImpl extends ComponentImpl implements Employee {
 
 	public void setSalary(double salary) {
 		if(salary!=this.getSalary()){
-			//#ifdef Precedence
+			//#if Precedence
 			this.oldSalary = this.salary;
 			//#endif
 			this.salary = salary;
@@ -64,7 +64,7 @@ public class EmployeeImpl extends ComponentImpl implements Employee {
 		}	
 	}	
 	
-	//#ifdef Precedence
+	//#if Precedence
 	public void setSalaryWithOldSalary(){
 		this.salary = this.oldSalary;
 	}
@@ -92,7 +92,7 @@ public class EmployeeImpl extends ComponentImpl implements Employee {
 	//#endif
 	
 	
-	//#ifdef GUI
+	//#if GUI
 	/**
 	 * This method returns the name for the tree-view.
 	 */
