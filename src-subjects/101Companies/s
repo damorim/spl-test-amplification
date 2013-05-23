@@ -3,10 +3,10 @@
 source ../../common
 CURDIR=`pwd`
 TIMESTAMP=`date +"%Y-%m-%d-%Hh%Mm"`
-
+BINDIR=$CURDIR/bin
 ## remove old stuff (will be re-generated)
-rm -rf $CURDIR/bin
-mkdir -p $CURDIR/bin
+rm -rf $BINDIR
+mkdir -p $BINDIR
 
 a=0
 NUM_VALID_CONFIGURATIONS_FOR_TG=1
@@ -23,20 +23,28 @@ do
 	break
     fi
     a=$(($a+1));
-    ##FEATURES=`echo $line | cut -d\: -f2`
     FEATURES=`echo $line`
     ../../build "$FEATURES" $CURDIR
-    echo "error code $?"
     if [ "$?" -ne 0 ]
     then
 	echo "compile error"
     else
-	echo "here"
+	NUM=`find $BINDIR -name "*.class" | wc -l`
+	echo "$NUM classes generated"
 	############################
-	#../../evosuite "$CURDIR/bin"
+	EVOSUITE_TESTS_DIRS=$CURDIR/evosuite-tests
+	EVOSUITE_REPORTS_DIRS=$CURDIR/evosuite-report
+	rm -rf ${EVOSUITE_TESTS_DIRS}
+	rm -rf ${EVOSUITE_REPORTS_DIRS}
+	../../evosuite "$BINDIR"
+	EVO_OUTPUT="$CURDIR/evo-run-$a"
+	rm -rf ${EVO_OUTPUT}  ## cleans if it exists
+	mkdir -p ${EVO_OUTPUT}
+	mv evosuite-tests ${EVO_OUTPUT}
+	mv evosuite-report ${EVO_OUTPUT}
 	############################
     fi
-done < "all-configurations.txt"
+done < "all-configurations-shuffled.txt"
 
 #########################
 ## generate tests

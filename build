@@ -28,10 +28,13 @@ echo "+++++++++++++++++++++++++++++"
 ## running pre-processor for source
 INPUT="$CURDIR/src"
 OUTPUT="$CURDIR/bin"
+
 $BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
-## running pre-processor for tests
-INPUT="$CURDIR/src-tests"
-$BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
+
+# ## running pre-processor for tests
+# INPUT="$CURDIR/src-tests"
+# $BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
+
 ## setting classpath
 JUNIT="$LIBSDIR/junit-4.11.jar"
 CP=".:$JUNIT"
