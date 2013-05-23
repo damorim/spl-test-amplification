@@ -2,7 +2,9 @@
 
 INPUTDIR=$1
 
-TIMEOUT=120
+## time budget for generating tests 
+## for each class under $INPUTDIR
+TIMEOUT=10
 
 ## calling evosuite
 java \
