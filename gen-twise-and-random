@@ -16,10 +16,17 @@ then
     exit;
 fi
 
+########### generation of twise configurations
 FEATURES=`cat $FILENAME | tr " " "\n" | sort | uniq | xargs`
 java -cp $LIBSDIR/jwise.jar jWise.core.Main "$FEATURES" > "$CURDIR/twise-configurations.txt"
 
 ########### random shuffle of FAMA-generated files with all configurations
-##NUM_RANDOM_CONFIGURATIONS=50
-NUM_RANDOM_CONFIGURATIONS=`cat $FILENAME | wc -l`
-perl -MList::Util -e 'print List::Util::shuffle <>' $FILENAME | head -n $NUM_RANDOM_CONFIGURATIONS > "$CURDIR/all-configurations-shuffled.txt"
+SIZE=`cat $FILENAME | wc -l`
+perl -MList::Util -e 'print List::Util::shuffle <>' $FILENAME | head -n $SIZE > "$CURDIR/all-configurations-shuffled.txt"
+
+########### generation of random configurations (possible invalid ones)
+(cd $BASEDIR/java-scripts 
+    javac -d /tmp GenRandomConfiguration.java
+)
+NUM_RANDOM_CONFIGURATIONS=500
+java -DNUMCONFS=${NUM_RANDOM_CONFIGURATIONS} -cp /tmp GenRandomConfiguration "${FEATURES}" > "$CURDIR/random-configurations.txt"

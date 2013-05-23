@@ -36,7 +36,6 @@ $BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
 # $BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
 
 ## setting classpath
-JUNIT="$LIBSDIR/junit-4.11.jar"
 CP=".:$JUNIT"
 ## compiling
 (cd $OUTPUT;

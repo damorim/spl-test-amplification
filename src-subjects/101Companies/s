@@ -1,60 +1,105 @@
 #!/bin/bash
 
+####### bound for test generation
+NUM_VALID_CONFIGURATIONS_FOR_TG=0
+####### bound for test execution
+NUM_RANDOM_CONFIGURATIONS_FOR_TE=1
+
 source ../../common
 CURDIR=`pwd`
 TIMESTAMP=`date +"%Y-%m-%d-%Hh%Mm"`
 BINDIR=$CURDIR/bin
-## remove old stuff (will be re-generated)
-rm -rf $BINDIR
-mkdir -p $BINDIR
 
 a=0
-NUM_VALID_CONFIGURATIONS_FOR_TG=1
 #########################
 ## generate tests for
-## NUM_VALID_CONFIGURATIONS_FOR_TG
+##   NUM_VALID_CONFIGURATIONS_FOR_TG
 ## distinct products.
 #########################
 (
-while read line 
-do
-    if [ $a -eq $NUM_VALID_CONFIGURATIONS_FOR_TG ]
-    then
-	break
-    fi
-    a=$(($a+1));
-    FEATURES=`echo $line`
-    ../../build "$FEATURES" $CURDIR
-    if [ "$?" -ne 0 ]
-    then
-	echo "compile error"
-    else
-	NUM=`find $BINDIR -name "*.class" | wc -l`
-	echo "$NUM classes generated"
-	############################
-	EVOSUITE_TESTS_DIRS=$CURDIR/evosuite-tests
-	EVOSUITE_REPORTS_DIRS=$CURDIR/evosuite-report
-	rm -rf ${EVOSUITE_TESTS_DIRS}
-	rm -rf ${EVOSUITE_REPORTS_DIRS}
-	../../evosuite "$BINDIR"
-	EVO_OUTPUT="$CURDIR/evo-run-$a"
-	rm -rf ${EVO_OUTPUT}  ## cleans if it exists
-	mkdir -p ${EVO_OUTPUT}
-	mv evosuite-tests ${EVO_OUTPUT}
-	mv evosuite-report ${EVO_OUTPUT}
-	############################
-    fi
-done < "all-configurations-shuffled.txt"
-
-#########################
-## generate tests
-#########################
-while read line 
-do
-    FEATURES=`echo $line`
-    ################################
-    ##../../build "$FEATURES" $CURDIR
-    ################################
-done < "random-configurations.txt"
-
+    while read line 
+    do
+	if [ $a -eq $NUM_VALID_CONFIGURATIONS_FOR_TG ]
+	then
+	    break
+	fi
+	a=$(($a+1));
+	CONFIGURATION=`echo $line`
+        ## remove old stuff
+	rm -rf $BINDIR
+	mkdir -p $BINDIR
+        ## preprocess and compile
+	../../build "$CONFIGURATION" $CURDIR
+	if [ "$?" -ne 0 ]
+	then
+	    echo "compile error"
+	else
+	    NUM=`find $BINDIR -name "*.class" | wc -l`
+	    echo "$NUM classes generated"
+     	    ############################
+	    EVOSUITE_TESTS_DIRS=$CURDIR/evosuite-tests
+	    EVOSUITE_REPORTS_DIRS=$CURDIR/evosuite-report
+	    rm -rf ${EVOSUITE_TESTS_DIRS}
+	    rm -rf ${EVOSUITE_REPORTS_DIRS}
+	    ../../evosuite "$BINDIR"
+	    EVO_OUTPUT="$CURDIR/evo-run-$a"
+	    rm -rf ${EVO_OUTPUT}  ## cleans if it exists
+	    mkdir -p ${EVO_OUTPUT}
+	    mv evosuite-tests ${EVO_OUTPUT}
+	    mv evosuite-report ${EVO_OUTPUT}
+	    ############################
+	fi
+    done < "all-configurations-shuffled.txt"
+    
+    a=0
+    #########################
+    ## execute tests suite against
+    ##  NUM_RANDOM_CONFIGURATIONS_FOR_TE
+    #########################
+    echo "##################################################################"
+    echo "####################  test execution #############################"
+    echo "##################################################################"
+    while read line 
+    do
+	if [ $a -eq $NUM_RANDOM_CONFIGURATIONS_FOR_TE ]
+	then
+	    break
+	fi
+	a=$(($a+1));
+	CONFIGURATION=`echo $line`
+        ## remove old stuff
+	rm -rf $BINDIR
+	mkdir -p $BINDIR
+        ## preprocess and compile
+	../../build "$CONFIGURATION" $CURDIR
+        ## compile tests
+	if [ "$?" -ne 0 ]
+	then
+	    echo "compile error"
+	else
+	    echo "hello"
+ 	    TMP_TEST_BIN=$CURDIR/tmptest
+	    COUNTER=0
+	    NUM_VALID_CONFIGURATIONS_FOR_TG=1 ## REMOVE THIS
+            while [ $COUNTER -lt $NUM_VALID_CONFIGURATIONS_FOR_TG ] 
+	    do
+		COUNTER=$(($COUNTER+1)); ## COUNTER = 1..$NUM_VALID_CONFIGURATIONS_FOR_TG
+		EVO_TESTS_SRC="evo-run-${COUNTER}"
+		echo "compiling tests from evo-run-${COUNTER} with configuration: ${CONFIGURATION}"
+		# clean the house
+ 		rm -rf ${TMP_TEST_BIN}
+ 		mkdir -p ${TMP_TEST_BIN}
+		# compile tests generated in evo-run-$COUNTER
+ 		find ${EVO_TESTS_SRC} -name *.java | \
+		    xargs javac -d ${TMP_TEST_BIN} -cp $BINDIR:${TMP_TEST_BIN}:${JUNIT}:${EVOSUITE}
+		NUMFILES=`find ${TMP_TEST_BIN} -name "*.class" | wc -l`
+		echo "compiled $NUMFILES test files"
+		echo "===="
+		# TODO: Sabrina, please work on this
+		# use MyTestRunner to generate
+		# javac -cp ... MyTestRunner list-of-test-classfiles >> output-${TIMESTAMP}.txt
+            done
+	fi
+    done < "random-configurations.txt"
+    
 ) 2>&1 | tee log-${TIMESTAMP}.txt
