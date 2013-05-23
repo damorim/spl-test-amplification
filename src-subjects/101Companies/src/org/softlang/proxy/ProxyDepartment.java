@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-//#if Cut || Total
 import org.softlang.company.*;
+//#if Cut || Total
 import org.softlang.visitor.*;
 //#endif
 
