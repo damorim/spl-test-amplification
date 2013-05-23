@@ -1,8 +1,0 @@
-#!/bin/bash
-
-source ../../common
-
-FEATURES="LOCKING LOGGING"
-CURDIR=`pwd`
-
-../../build "$FEATURES" $CURDIR
