@@ -14,4 +14,5 @@ java \
     -Dsearch_budget=$TIMEOUT \
     -Doutput_granularity=TESTCASE \
     -Dcriterion=weakMutation \
-    -Dstopping_condition=MaxTime 
+    -Dstopping_condition=MaxTime \
+    -Dsandbox=false
