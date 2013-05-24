@@ -78,7 +78,7 @@ a=0
 	    break
 	fi
 	a=$(($a+1));
-	CONFIGURATION=`echo $line`
+ 	CONFIGURATION=`echo $line`
         ## remove old stuff
 	rm -rf $BINDIR
 	mkdir -p $BINDIR
@@ -91,8 +91,7 @@ a=0
 	else
  	    TMP_TEST_BIN=$CURDIR/tmptest
 	    COUNTER=0
-	    NUM_VALID_CONFIGURATIONS_FOR_TG=1 ## REMOVE THIS
-            while [ $COUNTER -lt $NUM_VALID_CONFIGURATIONS_FOR_TG ] 
+            while [ $COUNTER -lt ${NUM_VALID_CONFIGURATIONS_FOR_TG} ] 
 	    do
 		COUNTER=$(($COUNTER+1)); ## COUNTER = 1..$NUM_VALID_CONFIGURATIONS_FOR_TG
 		EVO_TESTS_SRC="evo-run-${COUNTER}"
@@ -119,5 +118,7 @@ a=0
             done
 	fi
     done < "random-configurations.txt"
+
+    date
     
 ) 2>&1 | tee log-${TIMESTAMP}.txt
