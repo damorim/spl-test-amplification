@@ -7,6 +7,13 @@ then
     exit;
 fi
 
+if [[ -z $LIBSDIR ]];
+then
+    echo "could not locate library directory.  please, load common first."
+    exit;
+fi
+
+
 FILENAME="$CURDIR/all-configurations.txt"
 if [[ ! -f "$FILENAME" ]];
 then
