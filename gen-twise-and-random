@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source common
-
 CURDIR=$1
 if [[ -z $CURDIR ]];
 then

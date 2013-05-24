@@ -1,6 +1,14 @@
 1) Running Tests 
 
-   ???
+   Each subject directory under src-subjects contains a script "s" for
+   generating and execution tests.  The test generation process
+   generates tests on a per-product basis.  It selects a set of VALID
+   configurations from the file all-configurations.txt.  The test
+   execution process executes each of those tests for a selection of
+   randomly generated configurations (possibly INvalid).
+
+   See the script src-subject/101Companies for an example of the
+   script s.  TODO: move this script to $BASEDIR
 
 2) Analyzing results
 
@@ -10,14 +18,17 @@
 
      $BASEDIR/data/unreal.noids.arff
    
-   The data file is in the WEKA ".arff" format, as described in
-   $BASEDIR/libs/README_weka.  More about the Machine Learning WEKA
-   Software for Java can be found at:
-   http://sourceforge.net/projects/weka/.
+   The data file is in the WEKA (*) ".arff" format, as described in
+   $BASEDIR/libs/README_weka.
 
    Run the script below to obtain a classifier that generalizes the
    instance data on this file.
 
      $BASEDIR/analyze
 
+
+   (*) More about the Machine Learning WEKA Software for Java can be
+   found at the link below: 
+     
+     http://sourceforge.net/projects/weka/.
    

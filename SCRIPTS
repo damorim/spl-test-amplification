@@ -1,0 +1,8 @@
+List of scripts.  In parenthesis, scripts they depend on.
+
+analyze (source): invoke weka classifier to mine relationships from test outcomes
+build (prepro): preprocess and compile subject for an informed configuration
+evosuite: runs evosuite to produce tests
+gen-twise-and-random: generates different configuration sets (e.g., random and twise)
+prepro: preprocess source files from a given subject
+source: common variables used in other scripts

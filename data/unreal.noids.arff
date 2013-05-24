@@ -4,14 +4,15 @@
 @attribute 'feature2' {TRUE, FALSE}
 @attribute 'feature3' {TRUE, FALSE}
 @attribute 'feature4' {TRUE, FALSE}
-@attribute 'output' { 'pass' , 'fail' , 'error' }
+@attribute 'output' { 'pass' , 'fail' , 'comperr' }
+
 
 @data
 TRUE,?,?,FALSE,pass
 FALSE,?,TRUE,FALSE,fail
 TRUE,FALSE,?,FALSE,pass
 FALSE,FALSE,TRUE,FALSE,pass
-TRUE,TRUE,TRUE,FALSE,error
+TRUE,TRUE,TRUE,FALSE,comperr
 TRUE,?,?,?,pass
 FALSE,?,?,FALSE,fail
 TRUE,?,?,FALSE,pass
@@ -25,14 +26,14 @@ TRUE,?,?,FALSE,pass
 FALSE,?,?,FALSE,pass
 TRUE,FALSE,?,FALSE,pass
 FALSE,FALSE,TRUE,FALSE,fail
-TRUE,FALSE,TRUE,FALSE,error
-TRUE,?,?,?,pass
+TRUE,FALSE,TRUE,FALSE,comperr
+TRUE,?,?,?,comperr
 FALSE,?,?,FALSE,fail
 TRUE,?,?,FALSE,pass
 FALSE,?,TRUE,FALSE,fail
 TRUE,FALSE,?,FALSE,pass
 FALSE,FALSE,TRUE,FALSE,pass
-TRUE,?,?,FALSE,error
+TRUE,?,?,FALSE,comperr
 TRUE,?,?,?,pass
 ?,?,?,TRUE,fail
 %

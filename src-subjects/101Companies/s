@@ -1,24 +1,35 @@
 #!/bin/bash
 
 ####### bound for test generation
-NUM_VALID_CONFIGURATIONS_FOR_TG=0
+NUM_VALID_CONFIGURATIONS_FOR_TG=10
 ####### bound for test execution
-NUM_RANDOM_CONFIGURATIONS_FOR_TE=50
+NUM_RANDOM_CONFIGURATIONS_FOR_TE=100
 
 source ../../common
+
 CURDIR=`pwd`
 TIMESTAMP=`date +"%Y-%m-%d-%Hh%Mm"`
 BINDIR=$CURDIR/bin
 
+############################################
+## generate different sets of configurations
+## from all-configurations.txt:
+##   twise, random, and all-shuffled
+############################################
+../../gen-twise-and-random $CURDIR
+
+exit
+
 javac -cp ${JUNIT} ${JAVASCRIPTSDIR}/MyTestRunner.java
 
 a=0
-#########################
+############################################
 ## generate tests for
 ##   NUM_VALID_CONFIGURATIONS_FOR_TG
 ## distinct products.
-#########################
+############################################
 (
+    date
     while read line 
     do
 	if [ $a -eq $NUM_VALID_CONFIGURATIONS_FOR_TG ]
@@ -45,7 +56,7 @@ a=0
 	    rm -rf ${EVOSUITE_REPORTS_DIRS}
 	    ../../evosuite "$BINDIR"
 	    EVO_OUTPUT="$CURDIR/evo-run-$a"
-	    rm -rf ${EVO_OUTPUT}  ## trash if exists
+	    rm -rf ${EVO_OUTPUT} ## trash if exists
 	    mkdir -p ${EVO_OUTPUT}
 	    mv evosuite-tests ${EVO_OUTPUT}
 	    mv evosuite-report ${EVO_OUTPUT}
@@ -61,6 +72,7 @@ a=0
     echo "##################################################################"
     echo "####################  test execution #############################"
     echo "##################################################################"
+    date
     while read line 
     do
 	if [ $a -eq $NUM_RANDOM_CONFIGURATIONS_FOR_TE ]

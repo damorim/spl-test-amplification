@@ -3,3 +3,4 @@ evosuite*
 log*.txt
 tmptest
 evo-run-*
+output*.txt

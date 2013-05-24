@@ -3,8 +3,6 @@
 source common
 
 
-
-
 ### attribute types not supported: integer, string 
 ## must provide a minimum number of observation for this one to work
 # METHOD="weka.classifiers.trees.J48"
