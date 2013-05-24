@@ -2,3 +2,4 @@ bin
 evosuite*
 log*.txt
 tmptest
+evo-run-*

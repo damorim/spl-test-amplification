@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="bin"/>
+	<classpathentry kind="src" path="java-scripts"/>
+	<classpathentry kind="src" path="evo-run-1/evosuite-tests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="lib" path="/Users/damorim/git/spl-test-amplification/libs/evosuite-20130504.jar"/>
+	<classpathentry kind="output" path="bin2"/>
 </classpath>

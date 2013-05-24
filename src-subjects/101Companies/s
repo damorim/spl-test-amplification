@@ -3,12 +3,14 @@
 ####### bound for test generation
 NUM_VALID_CONFIGURATIONS_FOR_TG=0
 ####### bound for test execution
-NUM_RANDOM_CONFIGURATIONS_FOR_TE=1
+NUM_RANDOM_CONFIGURATIONS_FOR_TE=50
 
 source ../../common
 CURDIR=`pwd`
 TIMESTAMP=`date +"%Y-%m-%d-%Hh%Mm"`
 BINDIR=$CURDIR/bin
+
+javac -cp ${JUNIT} ${JAVASCRIPTSDIR}/MyTestRunner.java
 
 a=0
 #########################
@@ -43,7 +45,7 @@ a=0
 	    rm -rf ${EVOSUITE_REPORTS_DIRS}
 	    ../../evosuite "$BINDIR"
 	    EVO_OUTPUT="$CURDIR/evo-run-$a"
-	    rm -rf ${EVO_OUTPUT}  ## cleans if it exists
+	    rm -rf ${EVO_OUTPUT}  ## trash if exists
 	    mkdir -p ${EVO_OUTPUT}
 	    mv evosuite-tests ${EVO_OUTPUT}
 	    mv evosuite-report ${EVO_OUTPUT}
@@ -77,7 +79,6 @@ a=0
 	then
 	    echo "compile error"
 	else
-	    echo "hello"
  	    TMP_TEST_BIN=$CURDIR/tmptest
 	    COUNTER=0
 	    NUM_VALID_CONFIGURATIONS_FOR_TG=1 ## REMOVE THIS
@@ -90,14 +91,21 @@ a=0
  		rm -rf ${TMP_TEST_BIN}
  		mkdir -p ${TMP_TEST_BIN}
 		# compile tests generated in evo-run-$COUNTER
+		CP="$BINDIR:${TMP_TEST_BIN}:${JUNIT}:${EVOSUITE}"
  		find ${EVO_TESTS_SRC} -name *.java | \
-		    xargs javac -d ${TMP_TEST_BIN} -cp $BINDIR:${TMP_TEST_BIN}:${JUNIT}:${EVOSUITE}
+		    xargs javac -d ${TMP_TEST_BIN} -cp ${CP}
 		NUMFILES=`find ${TMP_TEST_BIN} -name "*.class" | wc -l`
 		echo "compiled $NUMFILES test files"
-		echo "===="
-		# TODO: Sabrina, please work on this
-		# use MyTestRunner to generate
-		# javac -cp ... MyTestRunner list-of-test-classfiles >> output-${TIMESTAMP}.txt
+		(cd ${TMP_TEST_BIN};
+		    find . -name "*.class" > /tmp/testfiles.txt
+		)
+		echo "running test files"
+		java \
+		    -Dtests.file=/tmp/testfiles.txt \
+		    -Dconfiguration="${CONFIGURATION}" \
+		    -Devosuite.number="${EVO_TESTS_SRC}" \
+		    -cp "${CP}:${JAVASCRIPTSDIR}"  \
+		    MyTestRunner >> output-${TIMESTAMP}.txt
             done
 	fi
     done < "random-configurations.txt"

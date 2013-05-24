@@ -40,4 +40,11 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>de.ovgu.featureide.core.featureProjectNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>java-scripts</name>
+			<type>2</type>
+			<location>/Users/damorim/git/spl-test-amplification/java-scripts</location>
+		</link>
+	</linkedResources>
 </projectDescription>
