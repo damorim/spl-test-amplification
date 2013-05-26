@@ -98,23 +98,7 @@ public class SequenceConfig {
  */
   
 //#if TRANSACTIONS
-public
-//#endif
- 
-//#if TRANSACTIONS
-void
-//#endif
- 
-//#if TRANSACTIONS
-setAutoCommitNoSync
-//#endif
-(
-//#if TRANSACTIONS
-  boolean autoCommitNoSync
-//#endif
-)
-//#if TRANSACTIONS
-{
+public void setAutoCommitNoSync(boolean autoCommitNoSync){
     this.autoCommitNoSync=autoCommitNoSync;
   }
 //#endif
@@ -124,19 +108,7 @@ setAutoCommitNoSync
  */
   
 //#if TRANSACTIONS
-public
-//#endif
- 
-//#if TRANSACTIONS
-boolean
-//#endif
- 
-//#if TRANSACTIONS
-getAutoCommitNoSync
-//#endif
-()
-//#if TRANSACTIONS
-{
+public boolean getAutoCommitNoSync(){
     return autoCommitNoSync;
   }
 //#endif

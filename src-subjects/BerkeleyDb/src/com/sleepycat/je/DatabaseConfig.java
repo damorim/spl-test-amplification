@@ -74,52 +74,19 @@ public class DatabaseConfig implements Cloneable {
  * Javadoc for this public method is generated via the doc templates in the
  * doc_src directory.
  */
-  
-//#if TRANSACTIONS
-public
-//#endif
- 
-//#if TRANSACTIONS
-void
-//#endif
- 
-//#if TRANSACTIONS
-setTransactional
-//#endif
-(
-//#if TRANSACTIONS
-  boolean transactional
-//#endif
-)
-//#if TRANSACTIONS
-{
+public void setTransactional(boolean transactional){
     this.transactional=transactional;
   }
 //#endif
-//#endif
+
 //#if TRANSACTIONS
   /** 
  * Javadoc for this public method is generated via the doc templates in the
  * doc_src directory.
  */
-  
-//#if TRANSACTIONS
-public
-//#endif
- 
-//#if TRANSACTIONS
-boolean
-//#endif
- 
-//#if TRANSACTIONS
-getTransactional
-//#endif
-()
-//#if TRANSACTIONS
-{
+public boolean getTransactional(){
     return transactional;
   }
-//#endif
 //#endif
   /** 
  * Javadoc for this public method is generated via the doc templates in the
@@ -256,33 +223,30 @@ getTransactional
     boolean dtCmpMatch=(config.getOverrideDuplicateComparator() ? duplicateComparator.getClass() == config.getDuplicateComparator().getClass() : true);
     if (
 //#if TRANSACTIONS
-txnMatch
+txnMatch &&
 //#endif
- && roMatch && sdMatch&& btCmpMatch&& dtCmpMatch) {
+  roMatch && sdMatch&& btCmpMatch&& dtCmpMatch) {
       return;
     }
  else {
-      String message=genDatabaseConfigMismatchMessage(config,
+      String message=genDatabaseConfigMismatchMessage(config 
 //#if TRANSACTIONS
-txnMatch
+, txnMatch
 //#endif
 ,roMatch,sdMatch,btCmpMatch,dtCmpMatch);
       throw new DatabaseException(message);
     }
   }
-  String genDatabaseConfigMismatchMessage(  DatabaseConfig config,
+  String genDatabaseConfigMismatchMessage(  DatabaseConfig config
 //#if TRANSACTIONS
-  boolean txnMatch
+  , boolean txnMatch
 //#endif
 ,  boolean roMatch,  boolean sdMatch,  boolean btCmpMatch,  boolean dtCmpMatch){
     StringBuffer ret=new StringBuffer("The following DatabaseConfig parameters for the\n" + "cached Database do not match the parameters for the\n" + "requested Database:\n");
 //#if TRANSACTIONS
-    if (!txnMatch) 
-//#if TRANSACTIONS
-{
+    if (!txnMatch) {
       ret.append(" Transactional\n");
     }
-//#endif
 //#endif
     if (!roMatch) {
       ret.append(" Read-Only\n");

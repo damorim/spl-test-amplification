@@ -71,24 +71,22 @@ public class UtilizationTracker {
       TrackedFileSummary tfs=a[i];
 //#if MEMORYBUDGET
       int mem=tfs.getMemorySize();
-//#endif
-//#if MEMORYBUDGET
       totalBytes+=mem;
 //#endif
       if (
 //#if MEMORYBUDGET
-mem > largestBytes
+mem > largestBytes &&
 //#endif
- && tfs.getAllowFlush()) {
+ tfs.getAllowFlush()) {
 //#if MEMORYBUDGET
         largestBytes=mem;
 //#endif
         bestFile=tfs;
       }
     }
-    if (bestFile != null && 
+    if (bestFile != null 
 //#if MEMORYBUDGET
-totalBytes > mb.getTrackerBudget()
+&& totalBytes > mb.getTrackerBudget()
 //#endif
 ) {
       env.getUtilizationProfile().flushFileSummary(bestFile);

@@ -18,14 +18,14 @@ public class SecondaryCursor extends Cursor {
  */
   SecondaryCursor(  SecondaryDatabase dbHandle,
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  CursorConfig cursorConfig) throws DatabaseException {
+  CursorConfig cursorConfig) throws DatabaseException {
     super(dbHandle,
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,cursorConfig);
+cursorConfig);
     secondaryDb=dbHandle;
     primaryDb=dbHandle.getPrimaryDatabase();
   }

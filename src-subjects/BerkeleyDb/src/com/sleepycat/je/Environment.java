@@ -229,18 +229,18 @@ catch (      DatabaseException DBE) {
  */
   public synchronized Database openDatabase(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  String databaseName,  DatabaseConfig dbConfig) throws DatabaseException {
+  String databaseName,  DatabaseConfig dbConfig) throws DatabaseException {
     if (dbConfig == null) {
       dbConfig=DatabaseConfig.DEFAULT;
     }
     Database db=new Database(this);
     openDb(
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,db,databaseName,dbConfig,false);
+db,databaseName,dbConfig,false);
     return db;
   }
   /** 
@@ -249,25 +249,25 @@ txn
  */
   public synchronized SecondaryDatabase openSecondaryDatabase(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  String databaseName,  Database primaryDatabase,  SecondaryConfig dbConfig) throws DatabaseException {
+  String databaseName,  Database primaryDatabase,  SecondaryConfig dbConfig) throws DatabaseException {
     if (dbConfig == null) {
       dbConfig=SecondaryConfig.DEFAULT;
     }
     SecondaryDatabase db=new SecondaryDatabase(this,dbConfig,primaryDatabase);
     openDb(
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,db,databaseName,dbConfig,dbConfig.getAllowPopulate());
+db,databaseName,dbConfig,dbConfig.getAllowPopulate());
     return db;
   }
   private void openDb(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  Database newDb,  String databaseName,  DatabaseConfig dbConfig,  boolean needWritableLockerForInit) throws DatabaseException {
+  Database newDb,  String databaseName,  DatabaseConfig dbConfig,  boolean needWritableLockerForInit) throws DatabaseException {
     checkEnv();
     DatabaseUtil.checkForNullParam(databaseName,"databaseName");
 //#if LOGGINGFINEST
@@ -282,53 +282,36 @@ txn
       if (needWritableLockerForInit) {
         locker=LockerFactory.getWritableLocker(this,
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,
 //#if TRANSACTIONS
 dbConfig.getTransactional()
 //#endif
 ,true,null);
 //#if TRANSACTIONS
-        isWritableLocker=
-//#if TRANSACTIONS
-true
-//#endif
-;
+        isWritableLocker=true;
 //#endif
       }
  else {
         locker=LockerFactory.getReadableLocker(this,
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,
 //#if TRANSACTIONS
-dbConfig.getTransactional()
+dbConfig.getTransactional(),
 //#endif
-,true,false);
+true,false);
 //#if TRANSACTIONS
-        isWritableLocker=
-//#if TRANSACTIONS
-!dbConfig.getTransactional() || locker.isTransactional()
-//#endif
-;
+        isWritableLocker=!dbConfig.getTransactional() || locker.isTransactional();
 //#endif
       }
       DatabaseImpl database=environmentImpl.getDb(locker,databaseName,newDb);
-      boolean databaseExists=(database == null) ? false : (
-//#if DELETEOP
-(
-//#if DELETEOP
-database.isDeleted()
-//#endif
-) ? 
-//#if DELETEOP
-false
-//#endif
- : true
-//#endif
-);
+      boolean databaseExists = false;
+      if(database != null){
+    	//#if DELETEOP
+    	  databaseExists = database.isDeleted() ? false : true;
+    	  //#endif
+      }
       if (databaseExists) {
         if (dbConfig.getAllowCreate() && dbConfig.getExclusiveCreate()) {
           dbIsClosing=true;
@@ -342,13 +325,12 @@ false
             locker.operationEnd(OperationStatus.SUCCESS);
             locker=LockerFactory.getWritableLocker(this,
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,
 //#if TRANSACTIONS
-dbConfig.getTransactional()
+dbConfig.getTransactional(),
 //#endif
-,true,null);
+true,null);
             isWritableLocker=true;
           }
           newDb.initNew(this,locker,databaseName,dbConfig);
@@ -387,9 +369,9 @@ dbConfig.getTransactional()
  */
   public void removeDatabase(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  String databaseName) throws DatabaseException {
+  String databaseName) throws DatabaseException {
     checkHandleIsValid();
     checkEnv();
     DatabaseUtil.checkForNullParam(databaseName,"databaseName");
@@ -398,13 +380,12 @@ dbConfig.getTransactional()
     try {
       locker=LockerFactory.getWritableLocker(this,
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,
 //#if TRANSACTIONS
-environmentImpl.isTransactional()
+environmentImpl.isTransactional(),
 //#endif
-,true,null);
+true,null);
       environmentImpl.dbRemove(locker,databaseName);
       operationOk=true;
     }
@@ -422,9 +403,9 @@ environmentImpl.isTransactional()
  */
   public void renameDatabase(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  String databaseName,  String newName) throws DatabaseException {
+  String databaseName,  String newName) throws DatabaseException {
     DatabaseUtil.checkForNullParam(databaseName,"databaseName");
     DatabaseUtil.checkForNullParam(newName,"newName");
     checkHandleIsValid();
@@ -434,13 +415,12 @@ environmentImpl.isTransactional()
     try {
       locker=LockerFactory.getWritableLocker(this,
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,
 //#if TRANSACTIONS
-environmentImpl.isTransactional()
+environmentImpl.isTransactional(),
 //#endif
-,true,null);
+true,null);
       environmentImpl.dbRename(locker,databaseName,newName);
       operationOk=true;
     }
@@ -458,9 +438,9 @@ environmentImpl.isTransactional()
  */
   public long truncateDatabase(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn, 
 //#endif
-,  String databaseName,  boolean returnCount) throws DatabaseException {
+  String databaseName,  boolean returnCount) throws DatabaseException {
     checkHandleIsValid();
     checkEnv();
     DatabaseUtil.checkForNullParam(databaseName,"databaseName");
@@ -470,13 +450,12 @@ environmentImpl.isTransactional()
     try {
       locker=LockerFactory.getWritableLocker(this,
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,
 //#if TRANSACTIONS
-environmentImpl.isTransactional()
+environmentImpl.isTransactional(),
 //#endif
-,true,null);
+true,null);
       count=environmentImpl.truncate(locker,databaseName,returnCount);
       operationOk=true;
     }
@@ -525,33 +504,19 @@ environmentImpl.isTransactional()
     this.handleConfig=newHandleConfig;
 //#if TRANSACTIONS
     TransactionConfig newTxnConfig=TransactionConfig.DEFAULT.cloneConfig();
-//#endif
-//#if TRANSACTIONS
     newTxnConfig.setNoSync(handleConfig.getTxnNoSync());
-//#endif
-//#if TRANSACTIONS
     newTxnConfig.setWriteNoSync(handleConfig.getTxnWriteNoSync());
-//#endif
-//#if TRANSACTIONS
-    if (initStaticConfig != null) 
-//#if TRANSACTIONS
-{
+    if (initStaticConfig != null){
       newTxnConfig.setSerializableIsolation(initStaticConfig.getTxnSerializableIsolation());
       newTxnConfig.setReadCommitted(initStaticConfig.getTxnReadCommitted());
-    }
-//#endif
- else 
-//#if TRANSACTIONS
-{
+    } else {
       newTxnConfig.setSerializableIsolation(defaultTxnConfig.getSerializableIsolation());
       newTxnConfig.setReadCommitted(defaultTxnConfig.getReadCommitted());
     }
-//#endif
-//#endif
-//#if TRANSACTIONS
     this.defaultTxnConfig=newTxnConfig;
 //#endif
   }
+  
 //#if TRANSACTIONS
   /** 
  * Javadoc for this public method is generated via the doc templates in the
@@ -637,38 +602,19 @@ environmentImpl.isTransactional()
     return environmentImpl.invokeCleaner();
   }
 //#endif
+  
 //#if EVICTOR
   /** 
  * Javadoc for this public method is generated via the doc templates in the
  * doc_src directory.
  */
-  
-//#if EVICTOR
-public
-//#endif
- 
-//#if EVICTOR
-void
-//#endif
- 
-//#if EVICTOR
-evictMemory
-//#endif
-() throws 
-//#if EVICTOR
-DatabaseException
-//#endif
- 
-//#if EVICTOR
-{
+  public void evictMemory () throws DatabaseException {
     checkHandleIsValid();
     checkEnv();
-//#if EVICTOR
     environmentImpl.invokeEvictor();
-//#endif
   }
 //#endif
-//#endif
+  
 //#if INCOMPRESSOR
   /** 
  * Javadoc for this public method is generated via the doc templates in the
@@ -680,6 +626,7 @@ DatabaseException
     environmentImpl.invokeCompressor();
   }
 //#endif
+  
   /** 
  * Javadoc for this public method is generated via the doc templates in the
  * doc_src directory.
@@ -721,29 +668,7 @@ DatabaseException
  * Javadoc for this public method is generated via the doc templates in the
  * doc_src directory.
  */
-  
-//#if STATISTICS
-public
-//#endif
- 
-//#if STATISTICS
-EnvironmentStats
-//#endif
- 
-//#if STATISTICS
-getStats
-//#endif
-(
-//#if STATISTICS
-  StatsConfig config
-//#endif
-) throws 
-//#if STATISTICS
-DatabaseException
-//#endif
- 
-//#if STATISTICS
-{
+public EnvironmentStats getStats(StatsConfig config) throws DatabaseException {
     StatsConfig useConfig=(config == null) ? StatsConfig.DEFAULT : config;
     if (environmentImpl != null) {
       return environmentImpl.loadStats(useConfig);
@@ -753,7 +678,7 @@ DatabaseException
     }
   }
 //#endif
-//#endif
+
 //#if STATISTICS
   /** 
  * Javadoc for this public method is generated via the doc templates in the
@@ -766,6 +691,7 @@ DatabaseException
     return environmentImpl.lockStat(useConfig);
   }
 //#endif
+  
 //#if TRANSACTIONS
 //#if STATISTICS
   /** 

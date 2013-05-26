@@ -770,9 +770,9 @@ synchronized (this) {
 //#if TRANSACTIONS
       autoTxn=new AutoTxn(env,new TransactionConfig());
 //#endif
-      DatabaseImpl db=dbTree.getDb(autoTxn,DbTree.UTILIZATION_DB_NAME,null,
+      DatabaseImpl db=dbTree.getDb(autoTxn,DbTree.UTILIZATION_DB_NAME,null
 //#if EVICTOR
-true
+,true
 //#endif
 );
       if (db == null) {
@@ -787,12 +787,9 @@ true
     }
   finally {
 //#if TRANSACTIONS
-      if (autoTxn != null) 
-//#if TRANSACTIONS
-{
+      if (autoTxn != null) {
         autoTxn.operationEnd(operationOk);
       }
-//#endif
 //#endif
     }
 //#endif
@@ -905,9 +902,9 @@ true
     }
     DatabaseId dbId=entry.getDbId();
     DatabaseImpl db=env.getDbMapTree().getDb(dbId);
-    if (db == null || 
+    if (db == null 
 //#if DELETEOP
-db.isDeleted()
+|| db.isDeleted()
 //#endif
 ) {
       return true;

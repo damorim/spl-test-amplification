@@ -510,9 +510,9 @@ catch (          IOException e) {
       for (int i=0; i < pendingDBs.length; i+=1) {
         DatabaseId dbId=pendingDBs[i];
         DatabaseImpl db=dbMapTree.getDb(dbId,lockTimeout);
-        if (db == null || 
+        if (db == null 
 //#if DELETEOP
-db.isDeleteFinished()
+|| db.isDeleteFinished()
 //#endif
 ) {
           fileSelector.removePendingDB(dbId);
@@ -539,9 +539,9 @@ db.isDeleteFinished()
 //#if STATISTICS
       nPendingLNsProcessed++;
 //#endif
-      if (db == null || 
+      if (db == null 
 //#if DELETEOP
-db.isDeleted()
+    || db.isDeleted()
 //#endif
 ) {
 //#if DELETEOP

@@ -173,26 +173,26 @@ public class SecondaryDatabase extends Database {
  */
   public SecondaryCursor openSecondaryCursor(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  CursorConfig cursorConfig) throws DatabaseException {
+  CursorConfig cursorConfig) throws DatabaseException {
     return (SecondaryCursor)openCursor(
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,cursorConfig);
+cursorConfig);
   }
   /** 
  * Overrides Database method.
  */
   Cursor newDbcInstance(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  CursorConfig cursorConfig) throws DatabaseException {
-    return new SecondaryCursor(this,
+  CursorConfig cursorConfig) throws DatabaseException {
+    return new SecondaryCursor(this
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,cursorConfig);
   }
@@ -202,16 +202,16 @@ txn
  */
   public OperationStatus delete(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  DatabaseEntry key) throws DatabaseException {
+  DatabaseEntry key) throws DatabaseException {
     checkEnv();
     DatabaseUtil.checkForNullDbt(key,"key",true);
     checkRequiredDbState(OPEN,"Can't call SecondaryDatabase.delete:");
 //#if LOGGINGFINEST
-    trace(Level.FINEST,"SecondaryDatabase.delete",
+    trace(Level.FINEST,"SecondaryDatabase.delete"
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,key,null,null);
 //#endif
@@ -219,13 +219,12 @@ txn
     Cursor cursor=null;
     OperationStatus commitStatus=OperationStatus.NOTFOUND;
     try {
-      locker=LockerFactory.getWritableLocker(envHandle,
+      locker=LockerFactory.getWritableLocker(envHandle
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
-,
 //#if TRANSACTIONS
-isTransactional()
+, isTransactional()
 //#endif
 );
       cursor=new Cursor(this,locker,null);
@@ -251,14 +250,14 @@ isTransactional()
  */
   public OperationStatus get(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  DatabaseEntry key,  DatabaseEntry data,  LockMode lockMode) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry data,  LockMode lockMode) throws DatabaseException {
     return get(
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,key,new DatabaseEntry(),data,lockMode);
+key,new DatabaseEntry(),data,lockMode);
   }
   /** 
  * Javadoc for this public method is generated via
@@ -266,18 +265,18 @@ txn
  */
   public OperationStatus get(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn, 
 //#endif
-,  DatabaseEntry key,  DatabaseEntry pKey,  DatabaseEntry data,  LockMode lockMode) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry pKey,  DatabaseEntry data,  LockMode lockMode) throws DatabaseException {
     checkEnv();
     DatabaseUtil.checkForNullDbt(key,"key",true);
     DatabaseUtil.checkForNullDbt(pKey,"pKey",false);
     DatabaseUtil.checkForNullDbt(data,"data",false);
     checkRequiredDbState(OPEN,"Can't call SecondaryDatabase.get:");
 //#if LOGGINGFINEST
-    trace(Level.FINEST,"SecondaryDatabase.get",
+    trace(Level.FINEST,"SecondaryDatabase.get"
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,key,null,lockMode);
 //#endif
@@ -288,9 +287,9 @@ txn
     }
     SecondaryCursor cursor=null;
     try {
-      cursor=new SecondaryCursor(this,
+      cursor=new SecondaryCursor(this
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,cursorConfig);
       return cursor.search(key,pKey,data,lockMode,SearchMode.SET);
@@ -307,9 +306,9 @@ txn
  */
   public OperationStatus getSearchBoth(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  DatabaseEntry key,  DatabaseEntry data,  LockMode lockMode) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry data,  LockMode lockMode) throws DatabaseException {
     throw notAllowedException();
   }
   /** 
@@ -318,18 +317,18 @@ txn
  */
   public OperationStatus getSearchBoth(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  DatabaseEntry key,  DatabaseEntry pKey,  DatabaseEntry data,  LockMode lockMode) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry pKey,  DatabaseEntry data,  LockMode lockMode) throws DatabaseException {
     checkEnv();
     DatabaseUtil.checkForNullDbt(key,"key",true);
     DatabaseUtil.checkForNullDbt(pKey,"pKey",true);
     DatabaseUtil.checkForNullDbt(data,"data",false);
     checkRequiredDbState(OPEN,"Can't call SecondaryDatabase.getSearchBoth:");
 //#if LOGGINGFINEST
-    trace(Level.FINEST,"SecondaryDatabase.getSearchBoth",
+    trace(Level.FINEST,"SecondaryDatabase.getSearchBoth"
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,key,data,lockMode);
 //#endif
@@ -342,9 +341,9 @@ txn
     try {
       cursor=new SecondaryCursor(this,
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,cursorConfig);
+cursorConfig);
       return cursor.search(key,pKey,data,lockMode,SearchMode.BOTH);
     }
   finally {
@@ -359,9 +358,9 @@ txn
  */
   public OperationStatus put(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
     throw notAllowedException();
   }
   /** 
@@ -370,9 +369,9 @@ txn
  */
   public OperationStatus putNoOverwrite(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
     throw notAllowedException();
   }
   /** 
@@ -381,9 +380,9 @@ txn
  */
   public OperationStatus putNoDupData(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
     throw notAllowedException();
   }
   /** 
@@ -400,9 +399,9 @@ txn
  */
   public int truncate(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn, 
 //#endif
-,  boolean countRecords) throws DatabaseException {
+ boolean countRecords) throws DatabaseException {
     throw notAllowedException();
   }
   /** 
@@ -642,18 +641,13 @@ txn
   void trace(  Level level,  String methodName) throws DatabaseException {
 //#if LOGGINGBASE
     Logger logger=envHandle.getEnvironmentImpl().getLogger();
-//#endif
-//#if LOGGINGBASE
-    if (logger.isLoggable(level)) 
-//#if LOGGINGBASE
-{
+    if (logger.isLoggable(level)) {
       StringBuffer sb=new StringBuffer();
       sb.append(methodName);
       sb.append(" name=").append(getDebugName());
       sb.append(" primary=").append(primaryDb.getDebugName());
       logger.log(level,sb.toString());
     }
-//#endif
 //#endif
   }
 //#endif

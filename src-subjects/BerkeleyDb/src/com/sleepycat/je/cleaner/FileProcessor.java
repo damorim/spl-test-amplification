@@ -172,13 +172,12 @@ class FileProcessor extends DaemonThread {
       long fileNumValue=fileNum.longValue();
       int runId=++cleaner.nCleanerRuns;
       try {
-        String traceMsg="CleanerRun " + runId + " on file 0x"+ Long.toHexString(fileNumValue)+ 
+        String traceMsg="CleanerRun " + runId + " on file 0x"+ Long.toHexString(fileNumValue)
 //#if STATISTICS
-" begins backlog="
-//#endif
-+ 
++" begins backlog="
+//#endif 
 //#if STATISTICS
-cleaner.nBacklogFiles
++cleaner.nBacklogFiles
 //#endif
 ;
 //#if LOGGINGINFO
@@ -206,101 +205,11 @@ cleaner.nBacklogFiles
         if (!finished) {
           fileSelector.putBackFileForCleaning(fileNum);
         }
-        String traceMsg="CleanerRun " + runId + " on file 0x"+ Long.toHexString(fileNumValue)+ " invokedFromDaemon="+ invokedFromDaemon+ " finished="+ finished+ 
+        String traceMsg="CleanerRun " + runId + " on file 0x"+ Long.toHexString(fileNumValue)+ " invokedFromDaemon="+ invokedFromDaemon+ " finished="+ finished 
 //#if STATISTICS
-" nEntriesRead="
-//#endif
-+ 
-//#if STATISTICS
-nEntriesReadThisRun
-//#endif
-+ 
-//#if STATISTICS
-" nINsObsolete="
-//#endif
-+ 
-//#if STATISTICS
-nINsObsoleteThisRun
-//#endif
-+ 
-//#if STATISTICS
-" nINsCleaned="
-//#endif
-+ 
-//#if STATISTICS
-nINsCleanedThisRun
-//#endif
-+ 
-//#if STATISTICS
-" nINsDead="
-//#endif
-+ 
-//#if STATISTICS
-nINsDeadThisRun
-//#endif
-+ 
-//#if STATISTICS
-" nINsMigrated="
-//#endif
-+ 
-//#if STATISTICS
-nINsMigratedThisRun
-//#endif
-+ 
-//#if STATISTICS
-" nLNsObsolete="
-//#endif
-+ 
-//#if STATISTICS
-nLNsObsoleteThisRun
-//#endif
-+ 
-//#if STATISTICS
-" nLNsCleaned="
-//#endif
-+ 
-//#if STATISTICS
-nLNsCleanedThisRun
-//#endif
-+ 
-//#if STATISTICS
-" nLNsDead="
-//#endif
-+ 
-//#if STATISTICS
-nLNsDeadThisRun
-//#endif
-+ 
-//#if STATISTICS
-" nLNsMigrated="
-//#endif
-+ 
-//#if STATISTICS
-nLNsMigratedThisRun
-//#endif
-+ 
-//#if STATISTICS
-" nLNsMarked="
-//#endif
-+ 
-//#if STATISTICS
-nLNsMarkedThisRun
-//#endif
-+ 
-//#if STATISTICS
-" nLNQueueHits="
-//#endif
-+ 
-//#if STATISTICS
-nLNQueueHitsThisRun
-//#endif
-+ 
-//#if STATISTICS
-" nLNsLocked="
-//#endif
-+ 
-//#if STATISTICS
-nLNsLockedThisRun
++" nEntriesRead=" + nEntriesReadThisRun + " nINsObsolete=" + nINsObsoleteThisRun + " nINsCleaned=" + nINsCleanedThisRun + " nINsDead=" + nINsDeadThisRun
++ " nINsMigrated="+nINsMigratedThisRun+" nLNsObsolete="+nLNsObsoleteThisRun+" nLNsCleaned="+nLNsCleanedThisRun+" nLNsDead="+nLNsDeadThisRun+" nLNsMigrated="
++ nLNsMigratedThisRun+" nLNsMarked="+nLNsMarkedThisRun+" nLNQueueHits="+nLNQueueHitsThisRun+" nLNsLocked="+nLNsLockedThisRun
 //#endif
 ;
 //#if LOGGINGSEVERE
@@ -345,9 +254,9 @@ nLNsLockedThisRun
     int lookAheadCacheSize=cleaner.lookAheadCacheSize;
 //#endif
 //#if MEMORYBUDGET
-    int adjustMem=(2 * readBufferSize) + obsoleteOffsets.getLogSize() + 
+    int adjustMem=(2 * readBufferSize) + obsoleteOffsets.getLogSize() 
 //#if LOOKAHEADCACHE
-lookAheadCacheSize
++ lookAheadCacheSize
 //#endif
 ;
 //#endif
@@ -469,9 +378,9 @@ lookAheadCacheSize
           if (lookAheadCache.isFull()) {
             processLN(fileNum,location,aLsn,aLninfo,
 //#if LOOKAHEADCACHE
-lookAheadCache
+lookAheadCache,
 //#endif
-,dbCache);
+dbCache);
           }
 //#endif
           nProcessedLNs+=1;
@@ -572,9 +481,9 @@ lookAheadCache
     BIN bin=null;
     DIN parentDIN=null;
     try {
-      if (db == null || 
+      if (db == null  
 //#if DELETEOP
-db.isDeleted()
+|| db.isDeleted()
 //#endif
 ) {
 //#if DELETEOP

@@ -29,11 +29,7 @@ public class Sequence {
   private long cacheLast;
 //#if STATISTICS
   private int nGets;
-//#endif
-//#if STATISTICS
   private int nCachedGets;
-//#endif
-//#if TRANSACTIONS
   private TransactionConfig autoCommitConfig;
 //#endif
 //#if LOGGINGBASE
@@ -44,9 +40,9 @@ public class Sequence {
  */
   Sequence(  Database db,
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  DatabaseEntry key,  SequenceConfig config) throws DatabaseException {
+  DatabaseEntry key,  SequenceConfig config) throws DatabaseException {
     if (db.getDatabaseImpl().getSortedDuplicates()) {
       throw new IllegalArgumentException("Sequences not supported in databases configured for " + "duplicates");
     }
@@ -61,19 +57,13 @@ public class Sequence {
       throw new IllegalArgumentException("The cache size is larger than the sequence range");
     }
 //#if TRANSACTIONS
-    if (config.getAutoCommitNoSync()) 
-//#if TRANSACTIONS
-{
+    if (config.getAutoCommitNoSync()){
       autoCommitConfig=new TransactionConfig();
       autoCommitConfig.setNoSync(true);
     }
-//#endif
- else 
-//#if TRANSACTIONS
-{
+ else{
       autoCommitConfig=null;
     }
-//#endif
 //#endif
     this.db=db;
     this.key=copyEntry(key);
@@ -86,15 +76,11 @@ public class Sequence {
     try {
       locker=LockerFactory.getWritableLocker(db.getEnvironment(),
 //#if TRANSACTIONS
-txn
+txn, db.isTransactional(),
 //#endif
-,
+false
 //#if TRANSACTIONS
-db.isTransactional()
-//#endif
-,false,
-//#if TRANSACTIONS
-autoCommitConfig
+, autoCommitConfig
 //#endif
 );
       cursor=new Cursor(db,locker,null);
@@ -149,9 +135,9 @@ autoCommitConfig
  */
   public synchronized long get(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  int delta) throws DatabaseException {
+  int delta) throws DatabaseException {
     if (delta <= 0) {
       throw new IllegalArgumentException("Sequence delta must be greater than zero");
     }
@@ -167,17 +153,13 @@ autoCommitConfig
       Cursor cursor=null;
       OperationStatus status=OperationStatus.NOTFOUND;
       try {
-        locker=LockerFactory.getWritableLocker(db.getEnvironment(),
+        locker=LockerFactory.getWritableLocker(db.getEnvironment()
 //#if TRANSACTIONS
-txn
+,txn, db.isTransactional()
 //#endif
-,
+, false
 //#if TRANSACTIONS
-db.isTransactional()
-//#endif
-,false,
-//#if TRANSACTIONS
-autoCommitConfig
+, autoCommitConfig
 //#endif
 );
         cursor=new Cursor(db,locker,null);
@@ -237,23 +219,15 @@ autoCommitConfig
     nGets+=1;
 //#endif
 //#if STATISTICS
-    if (cached) 
-//#if STATISTICS
-{
+    if (cached) {
       nCachedGets+=1;
     }
 //#endif
-//#endif
 //#if LOGGINGFINEST
 //#if LOGGINGBASE
-    if (logger.isLoggable(Level.FINEST)) 
-//#if LOGGINGFINEST
-//#if LOGGINGBASE
-{
+    if (logger.isLoggable(Level.FINEST)){
       logger.log(Level.FINEST,"Sequence.get" + " value=" + retVal + " cached="+ cached+ " wrapped="+ wrapped);
     }
-//#endif
-//#endif
 //#endif
 //#endif
     return retVal;

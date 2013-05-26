@@ -64,19 +64,15 @@ public class Cursor {
  */
   Cursor(  Database dbHandle,
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn, 
 //#endif
-,  CursorConfig cursorConfig) throws DatabaseException {
+  CursorConfig cursorConfig) throws DatabaseException {
     if (cursorConfig == null) {
       cursorConfig=CursorConfig.DEFAULT;
     }
-    Locker locker=LockerFactory.getReadableLocker(dbHandle.getEnvironment(),
+    Locker locker=LockerFactory.getReadableLocker(dbHandle.getEnvironment()
 //#if TRANSACTIONS
-txn
-//#endif
-,
-//#if TRANSACTIONS
-dbHandle.isTransactional()
+,txn, dbHandle.isTransactional()
 //#endif
 ,false,cursorConfig.getReadCommitted());
     init(dbHandle,dbHandle.getDatabaseImpl(),locker,dbHandle.isWritable(),cursorConfig);
@@ -114,9 +110,9 @@ dbHandle.isTransactional()
     serializableIsolationDefault=cursorImpl.getLocker().isSerializableIsolation();
     updateOperationsProhibited=
 //#if TRANSACTIONS
-(dbImpl.isTransactional() && !locker.isTransactional())
+(dbImpl.isTransactional() && !locker.isTransactional()) ||
 //#endif
- || !isWritable;
+ !isWritable;
     this.dbImpl=dbImpl;
     this.dbHandle=dbHandle;
     if (dbHandle != null) {
@@ -511,20 +507,14 @@ dbHandle.isTransactional()
     }
   finally {
 //#if LATCHES
-      if (original != null) 
-//#if LATCHES
-{
+      if (original != null){
         original.releaseBINs();
       }
 //#endif
-//#endif
 //#if LATCHES
-      if (dup != null) 
-//#if LATCHES
-{
+      if (dup != null) {
         dup.releaseBINs();
       }
-//#endif
 //#endif
       boolean success=(status == OperationStatus.SUCCESS);
       if (cursorImpl == dup) {
@@ -576,14 +566,11 @@ dbHandle.isTransactional()
     try {
       Locker cursorLocker=cursorImpl.getLocker();
 //#if TRANSACTIONS
-      if (putMode != PutMode.CURRENT && dbImpl.getDbEnvironment().getTxnManager().areOtherSerializableTransactionsActive(cursorLocker)) 
-//#if TRANSACTIONS
-{
+      if (putMode != PutMode.CURRENT && dbImpl.getDbEnvironment().getTxnManager().areOtherSerializableTransactionsActive(cursorLocker)){
         nextKeyLocker=new BuddyLocker(dbImpl.getDbEnvironment(),cursorLocker);
         nextKeyCursor=new CursorImpl(dbImpl,nextKeyLocker);
         nextKeyCursor.lockNextKeyForInsert(key,data);
       }
-//#endif
 //#endif
       return putAllowPhantoms(key,data,putMode,returnOldData,nextKeyCursor);
     }
@@ -642,12 +629,9 @@ dbHandle.isTransactional()
     }
   finally {
 //#if LATCHES
-      if (original != null) 
-//#if LATCHES
-{
+      if (original != null) {
         original.releaseBINs();
       }
-//#endif
 //#endif
       boolean success=(status == OperationStatus.SUCCESS);
       if (cursorImpl == dup) {
@@ -1307,31 +1291,8 @@ dbHandle.isTransactional()
  */
   
 //#if LOGGINGFINEST
-void
-//#endif
- 
-//#if LOGGINGFINEST
-trace
-//#endif
-(
-//#if LOGGINGFINEST
-  Level level
-//#endif
-,
-//#if LOGGINGFINEST
-  String methodName
-//#endif
-,
-//#if LOGGINGFINEST
-  LockMode lockMode
-//#endif
-)
-//#if LOGGINGFINEST
-{
-//#if LOGGINGBASE
-    if (logger.isLoggable(level)) 
-//#if LOGGINGBASE
-{
+void trace(Level level,String methodName,LockMode lockMode){
+    if (logger.isLoggable(level)){
       StringBuffer sb=new StringBuffer();
       sb.append(methodName);
       traceCursorImpl(sb);
@@ -1340,11 +1301,10 @@ trace
       }
       logger.log(level,sb.toString());
     }
-//#endif
-//#endif
   }
 //#endif
 //#endif
+
   private void traceCursorImpl(  StringBuffer sb){
     sb.append(" locker=").append(cursorImpl.getLocker().getId());
     if (cursorImpl.getBIN() != null) {

@@ -92,23 +92,7 @@ public class EnvironmentConfig extends EnvironmentMutableConfig {
  */
   
 //#if TRANSACTIONS
-public
-//#endif
- 
-//#if TRANSACTIONS
-void
-//#endif
- 
-//#if TRANSACTIONS
-setTransactional
-//#endif
-(
-//#if TRANSACTIONS
-  boolean transactional
-//#endif
-)
-//#if TRANSACTIONS
-{
+public void setTransactional(boolean transactional){
     setVal(EnvironmentParams.ENV_INIT_TXN,Boolean.toString(transactional));
   }
 //#endif

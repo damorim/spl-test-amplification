@@ -97,21 +97,15 @@ static class DbState {
     if (databaseImpl.hasOpenHandles()) {
       if (!config.getUseExistingConfig()) {
 //#if TRANSACTIONS
-        if (config.getTransactional() != databaseImpl.isTransactional()) 
-//#if TRANSACTIONS
-{
+        if (config.getTransactional() != databaseImpl.isTransactional()){
           throw new DatabaseException("You can't open a Database with a transactional " + "configuration of " + config.getTransactional() + " if the underlying database was created with a "+ "transactional configuration of "+ databaseImpl.isTransactional()+ ".");
         }
 //#endif
-//#endif
       }
     }
- else 
 //#if TRANSACTIONS
-{
-//#if TRANSACTIONS
+ else {
       databaseImpl.setTransactional(config.getTransactional());
-//#endif
     }
 //#endif
     if (config.getOverrideBtreeComparator()) {
@@ -162,23 +156,23 @@ static class DbState {
  */
   public Sequence openSequence(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  DatabaseEntry key,  SequenceConfig config) throws DatabaseException {
+ DatabaseEntry key,  SequenceConfig config) throws DatabaseException {
     checkEnv();
     DatabaseUtil.checkForNullDbt(key,"key",true);
     checkRequiredDbState(OPEN,"Can't call Database.openSequence:");
     checkWritable("openSequence");
 //#if LOGGINGFINEST
-    trace(Level.FINEST,"Database.openSequence",
+    trace(Level.FINEST,"Database.openSequence"
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,key,null,null);
 //#endif
-    return new Sequence(this,
+    return new Sequence(this
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,key,config);
   }
@@ -209,9 +203,9 @@ txn
       throw new IllegalArgumentException("Only one may be specified: ReadCommitted or ReadUncommitted");
     }
 //#if LOGGINGFINEST
-    trace(Level.FINEST,"Database.openCursor",
+    trace(Level.FINEST,"Database.openCursor"
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,cursorConfig);
 //#endif
@@ -230,38 +224,37 @@ txn
   Transaction txn
 //#endif
 ,  CursorConfig cursorConfig) throws DatabaseException {
-    return new Cursor(this,
+    return new Cursor(this
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,cursorConfig);
   }
   public OperationStatus delete(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn, 
 //#endif
-,  DatabaseEntry key) throws DatabaseException {
+ DatabaseEntry key) throws DatabaseException {
     checkEnv();
     DatabaseUtil.checkForNullDbt(key,"key",true);
     checkRequiredDbState(OPEN,"Can't call Database.delete:");
     checkWritable("delete");
 //#if LOGGINGFINEST
-    trace(Level.FINEST,"Database.delete",
+    trace(Level.FINEST,"Database.delete"
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,key,null,null);
 //#endif
     OperationStatus commitStatus=OperationStatus.NOTFOUND;
     Locker locker=null;
     try {
-      locker=LockerFactory.getWritableLocker(envHandle,
+      locker=LockerFactory.getWritableLocker(envHandle
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
-,
 //#if TRANSACTIONS
-isTransactional()
+, isTransactional()
 //#endif
 );
       commitStatus=deleteInternal(locker,key);
@@ -314,17 +307,17 @@ isTransactional()
   }
   public OperationStatus get(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn, 
 //#endif
-,  DatabaseEntry key,  DatabaseEntry data,  LockMode lockMode) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry data,  LockMode lockMode) throws DatabaseException {
     checkEnv();
     DatabaseUtil.checkForNullDbt(key,"key",true);
     DatabaseUtil.checkForNullDbt(data,"data",false);
     checkRequiredDbState(OPEN,"Can't call Database.get:");
 //#if LOGGINGFINEST
-    trace(Level.FINEST,"Database.get",
+    trace(Level.FINEST,"Database.get"
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,key,null,lockMode);
 //#endif
@@ -335,9 +328,9 @@ txn
     }
     Cursor cursor=null;
     try {
-      cursor=new Cursor(this,
+      cursor=new Cursor(this
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,cursorConfig);
       cursor.setNonCloning(true);
@@ -351,17 +344,17 @@ txn
   }
   public OperationStatus getSearchBoth(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn, 
 //#endif
-,  DatabaseEntry key,  DatabaseEntry data,  LockMode lockMode) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry data,  LockMode lockMode) throws DatabaseException {
     checkEnv();
     DatabaseUtil.checkForNullDbt(key,"key",true);
     DatabaseUtil.checkForNullDbt(data,"data",true);
     checkRequiredDbState(OPEN,"Can't call Database.getSearchBoth:");
 //#if LOGGINGFINEST
-    trace(Level.FINEST,"Database.getSearchBoth",
+    trace(Level.FINEST,"Database.getSearchBoth"
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,key,data,lockMode);
 //#endif
@@ -372,9 +365,9 @@ txn
     }
     Cursor cursor=null;
     try {
-      cursor=new Cursor(this,
+      cursor=new Cursor(this
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,cursorConfig);
       cursor.setNonCloning(true);
@@ -388,9 +381,9 @@ txn
   }
   public OperationStatus put(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn, 
 //#endif
-,  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
     checkEnv();
     DatabaseUtil.checkForNullDbt(key,"key",true);
     DatabaseUtil.checkForNullDbt(data,"data",true);
@@ -398,23 +391,23 @@ txn
     checkRequiredDbState(OPEN,"Can't call Database.put");
     checkWritable("put");
 //#if LOGGINGFINEST
-    trace(Level.FINEST,"Database.put",
+    trace(Level.FINEST,"Database.put"
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,key,data,null);
 //#endif
     return putInternal(
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,key,data,PutMode.OVERWRITE);
+key,data,PutMode.OVERWRITE);
   }
   public OperationStatus putNoOverwrite(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn, 
 //#endif
-,  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
     checkEnv();
     DatabaseUtil.checkForNullDbt(key,"key",true);
     DatabaseUtil.checkForNullDbt(data,"data",true);
@@ -422,23 +415,23 @@ txn
     checkRequiredDbState(OPEN,"Can't call Database.putNoOverWrite");
     checkWritable("putNoOverwrite");
 //#if LOGGINGFINEST
-    trace(Level.FINEST,"Database.putNoOverwrite",
+    trace(Level.FINEST,"Database.putNoOverwrite"
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,key,data,null);
 //#endif
     return putInternal(
 //#if TRANSACTIONS
-txn
+txn, 
 //#endif
-,key,data,PutMode.NOOVERWRITE);
+key,data,PutMode.NOOVERWRITE);
   }
   public OperationStatus putNoDupData(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn, 
 //#endif
-,  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
     checkEnv();
     DatabaseUtil.checkForNullDbt(key,"key",true);
     DatabaseUtil.checkForNullDbt(data,"data",true);
@@ -446,37 +439,33 @@ txn
     checkRequiredDbState(OPEN,"Can't call Database.putNoDupData");
     checkWritable("putNoDupData");
 //#if LOGGINGFINEST
-    trace(Level.FINEST,"Database.putNoDupData",
+    trace(Level.FINEST,"Database.putNoDupData"
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 ,key,data,null);
 //#endif
     return putInternal(
 //#if TRANSACTIONS
-txn
+txn, 
 //#endif
-,key,data,PutMode.NODUP);
+key,data,PutMode.NODUP);
   }
   /** 
  * Internal version of put() that does no parameter checking.
  */
   OperationStatus putInternal(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn, 
 //#endif
-,  DatabaseEntry key,  DatabaseEntry data,  PutMode putMode) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry data,  PutMode putMode) throws DatabaseException {
     Locker locker=null;
     Cursor cursor=null;
     OperationStatus commitStatus=OperationStatus.KEYEXIST;
     try {
-      locker=LockerFactory.getWritableLocker(envHandle,
+      locker=LockerFactory.getWritableLocker(envHandle
 //#if TRANSACTIONS
-txn
-//#endif
-,
-//#if TRANSACTIONS
-isTransactional()
+, txn, isTransactional()
 //#endif
 );
       cursor=new Cursor(this,locker,null);
@@ -508,14 +497,9 @@ isTransactional()
       EnvironmentImpl env=envHandle.getEnvironmentImpl();
       for (int i=1; i < cursors.length; i+=1) {
         Locker locker2=cursors[i].getCursorImpl().getLocker();
-//#if TRANSACTIONS
-        if (locker2.isTransactional()) 
-//#if TRANSACTIONS
-{
+        if (locker2.isTransactional()){
           throw new IllegalArgumentException("All cursors must use the same transaction.");
         }
-//#endif
-//#endif
         EnvironmentImpl env2=cursors[i].getDatabaseImpl().getDbEnvironment();
         if (env != env2) {
           throw new IllegalArgumentException("All cursors must use the same environment.");
@@ -523,9 +507,7 @@ isTransactional()
       }
       locker=null;
     }
- else 
-//#if TRANSACTIONS
-{
+ else{
       for (int i=1; i < cursors.length; i+=1) {
         Locker locker2=cursors[i].getCursorImpl().getLocker();
         if (locker.getTxnLocker() != locker2.getTxnLocker()) {
@@ -533,7 +515,6 @@ isTransactional()
         }
       }
     }
-//#endif
 //#endif
     return new JoinCursor(locker,this,cursors,config);
   }
@@ -547,29 +528,18 @@ isTransactional()
  */
   public int truncate(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  boolean countRecords) throws DatabaseException {
+  boolean countRecords) throws DatabaseException {
     checkEnv();
     checkRequiredDbState(OPEN,"Can't call Database.truncate");
     checkWritable("truncate");
 //#if LOGGINGFINEST
-    Tracer.trace(Level.FINEST,envHandle.getEnvironmentImpl(),"Database.truncate" + 
+    Tracer.trace(Level.FINEST,envHandle.getEnvironmentImpl(),"Database.truncate"
 //#if TRANSACTIONS
-": txnId="
+    		+ ": txnId=" + ((txn == null) ? "null" : Long.toString(txn.getId()))
 //#endif
- + (
-//#if TRANSACTIONS
-(txn == null) ? 
-//#if TRANSACTIONS
-"null"
-//#endif
- : 
-//#if TRANSACTIONS
-Long.toString(txn.getId())
-//#endif
-//#endif
-));
+    		);
 //#endif
     Locker locker=null;
 //#if LATCHES
@@ -577,13 +547,12 @@ Long.toString(txn.getId())
 //#endif
     boolean operationOk=false;
     try {
-      locker=LockerFactory.getWritableLocker(envHandle,
+      locker=LockerFactory.getWritableLocker(envHandle
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
-,
 //#if TRANSACTIONS
-isTransactional()
+, isTransactional()
 //#endif
 ,true,null);
       acquireTriggerListReadLock();
@@ -606,16 +575,14 @@ isTransactional()
         locker.operationEnd(operationOk);
       }
 //#if LATCHES
-      if (triggerLock) 
-//#if LATCHES
-{
+      if (triggerLock) {
         releaseTriggerListReadLock();
       }
-//#endif
 //#endif
     }
   }
 //#endif
+  
 //#if TRUNCATEOP
   /** 
  * Internal unchecked truncate that optionally counts records.
@@ -664,11 +631,8 @@ isTransactional()
     config.setMaxMillisecs(maxMillisecs);
     databaseImpl.preload(config);
   }
-  public 
 //#if STATISTICS
-PreloadStats
-//#endif
- preload(  PreloadConfig config) throws DatabaseException {
+  public PreloadStats preload(  PreloadConfig config) throws DatabaseException {
     checkEnv();
     checkRequiredDbState(OPEN,"Can't call Database.preload");
 //#if DELETEOP
@@ -676,6 +640,8 @@ PreloadStats
 //#endif
     return databaseImpl.preload(config);
   }
+//#endif
+  
 //#if STATISTICS
   public DatabaseStats getStats(  StatsConfig config) throws DatabaseException {
     checkEnv();
@@ -690,35 +656,23 @@ PreloadStats
     return null;
   }
 //#endif
+  
 //#if STATISTICS
 //#if VERIFIER
-  public 
-//#if STATISTICS
-DatabaseStats
-//#endif
- verify(  VerifyConfig config) throws DatabaseException {
+  public DatabaseStats verify(  VerifyConfig config) throws DatabaseException {
     checkEnv();
     checkRequiredDbState(OPEN,"Can't call Database.verify");
 //#if DELETEOP
     databaseImpl.checkIsDeleted("verify");
 //#endif
     VerifyConfig useConfig=(config == null) ? VerifyConfig.DEFAULT : config;
-    
-//#if STATISTICS
-DatabaseStats
-//#endif
- 
-//#if STATISTICS
-stats
-//#endif
-=databaseImpl.getEmptyStats();
+    DatabaseStats stats=databaseImpl.getEmptyStats();
     databaseImpl.verify(useConfig,stats);
-//#if STATISTICS
     return stats;
-//#endif
   }
 //#endif
 //#endif
+  
   public String getDatabaseName() throws DatabaseException {
     checkEnv();
     if (databaseImpl != null) {
@@ -748,25 +702,12 @@ stats
   /** 
  * Equivalent to getConfig().getTransactional() but cheaper.
  */
-  
-//#if TRANSACTIONS
-boolean
-//#endif
- 
-//#if TRANSACTIONS
-isTransactional
-//#endif
-() throws 
-//#if TRANSACTIONS
-DatabaseException
-//#endif
- 
-//#if TRANSACTIONS
-{
+boolean isTransactional() throws DatabaseException {
     return databaseImpl.isTransactional();
   }
 //#endif
-//#endif
+
+
   public Environment getEnvironment() throws DatabaseException {
     return envHandle;
   }
@@ -866,9 +807,9 @@ DatabaseException
  * alone to conditionalize whether we send this message, we don't even want
  * to construct the message if the level is not enabled.
  */
-  void trace(  Level level,  String methodName,
+  void trace(  Level level,  String methodName
 //#if TRANSACTIONS
-  Transaction txn
+  , Transaction txn
 //#endif
 ,  DatabaseEntry key,  DatabaseEntry data,  LockMode lockMode) throws DatabaseException {
 //#if LOGGINGBASE
@@ -878,12 +819,9 @@ DatabaseException
       StringBuffer sb=new StringBuffer();
       sb.append(methodName);
 //#if TRANSACTIONS
-      if (txn != null) 
-//#if TRANSACTIONS
-{
+      if (txn != null){
         sb.append(" txnId=").append(txn.getId());
       }
-//#endif
 //#endif
       sb.append(" key=").append(key.dumpData());
       if (data != null) {
@@ -898,59 +836,27 @@ DatabaseException
 //#endif
   }
 //#endif
+  
 //#if LOGGINGFINEST
   /** 
  * Send trace messages to the java.util.logger. Don't rely on the logger
  * alone to conditionalize whether we send this message, we don't even want
  * to construct the message if the level is not enabled.
  */
-  
-//#if LOGGINGFINEST
-void
-//#endif
- 
-//#if LOGGINGFINEST
-trace
-//#endif
-(
-//#if LOGGINGFINEST
-  Level level
-//#endif
-,
-//#if LOGGINGFINEST
-  String methodName
-//#endif
-,
+void trace(Level level, String methodName,
 //#if TRANSACTIONS
-//#if LOGGINGFINEST
-  Transaction txn
+  Transaction txn,
 //#endif
-//#endif
-,
-//#if LOGGINGFINEST
-  CursorConfig config
-//#endif
-) throws 
-//#if LOGGINGFINEST
-DatabaseException
-//#endif
- 
-//#if LOGGINGFINEST
-{
+  CursorConfig config) throws DatabaseException{
 //#if LOGGINGBASE
-    if (logger.isLoggable(level)) 
-//#if LOGGINGBASE
-{
+    if (logger.isLoggable(level)){
       StringBuffer sb=new StringBuffer();
       sb.append(methodName);
       sb.append(" name=" + getDebugName());
 //#if TRANSACTIONS
-      if (txn != null) 
-//#if TRANSACTIONS
-{
+      if (txn != null){
         sb.append(" txnId=").append(txn.getId());
       }
-//#endif
 //#endif
       if (config != null) {
         sb.append(" config=").append(config);
@@ -958,9 +864,7 @@ DatabaseException
       logger.log(level,sb.toString());
     }
 //#endif
-//#endif
   }
-//#endif
 //#endif
   /** 
  * Returns whether any triggers are currently associated with this primary.
@@ -978,8 +882,6 @@ DatabaseException
   private void acquireTriggerListReadLock() throws DatabaseException {
 //#if LATCHES
     EnvironmentImpl env=envHandle.getEnvironmentImpl();
-//#endif
-//#if LATCHES
     env.getTriggerLatch().acquireShared();
 //#endif
     if (triggerList == null) {
@@ -1003,8 +905,6 @@ DatabaseException
   private void acquireTriggerListWriteLock() throws DatabaseException {
 //#if LATCHES
     EnvironmentImpl env=envHandle.getEnvironmentImpl();
-//#endif
-//#if LATCHES
     env.getTriggerLatch().acquireExclusive();
 //#endif
     if (triggerList == null) {
@@ -1022,8 +922,6 @@ DatabaseException
     }
 //#if LATCHES
     EnvironmentImpl env=envHandle.getEnvironmentImpl();
-//#endif
-//#if LATCHES
     env.getTriggerLatch().release();
 //#endif
   }

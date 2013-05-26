@@ -16,8 +16,6 @@ import com.sleepycat.je.SecondaryCursor;
 import com.sleepycat.je.SecondaryDatabase;
 //#if TRANSACTIONS
 import com.sleepycat.je.Transaction;
-//#endif
-//#if TRANSACTIONS
 import com.sleepycat.je.TransactionConfig;
 //#endif
 /** 
@@ -112,9 +110,9 @@ public class DbCompat {
   }
   public static OperationStatus append(  Database db,
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
+  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
     throw new UnsupportedOperationException();
   }
 //#if TRANSACTIONS
@@ -184,25 +182,25 @@ public class DbCompat {
   }
   public static Database openDatabase(  Environment env,
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  String file,  String name,  DatabaseConfig config) throws DatabaseException, FileNotFoundException {
+  String file,  String name,  DatabaseConfig config) throws DatabaseException, FileNotFoundException {
     return env.openDatabase(
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,makeDbName(file,name),config);
+makeDbName(file,name),config);
   }
   public static SecondaryDatabase openSecondaryDatabase(  Environment env,
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  String file,  String name,  Database primary,  SecondaryConfig config) throws DatabaseException, FileNotFoundException {
+  String file,  String name,  Database primary,  SecondaryConfig config) throws DatabaseException, FileNotFoundException {
     return env.openSecondaryDatabase(
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,makeDbName(file,name),primary,config);
+ makeDbName(file,name),primary,config);
   }
   private static String makeDbName(  String file,  String name){
     if (file == null) {
