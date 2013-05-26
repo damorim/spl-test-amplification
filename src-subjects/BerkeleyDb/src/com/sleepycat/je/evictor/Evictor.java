@@ -38,8 +38,9 @@ import com.sleepycat.je.utilint.Tracer;
  * eviction.  Once the nodes are selected, it removes all references to them so
  * that they can be GC'd by the JVM.
  */
-public class Evictor extends 
+public class Evictor 
 //#if EVICTORDAEMON
+extends 
 DaemonThread
 //#endif
  {
@@ -87,7 +88,9 @@ DaemonThread
   EvictProfile evictProfile;
   private TestHook runnableHook;
   public Evictor(  EnvironmentImpl envImpl,  String name) throws DatabaseException {
+	//#if EVICTORDAEMON
     super(0,name,envImpl);
+    //#endif
     this.envImpl=envImpl;
     logManager=envImpl.getLogManager();
     nextNode=null;
@@ -104,7 +107,9 @@ DaemonThread
   }
   public String toString(){
     StringBuffer sb=new StringBuffer();
+  //#if EVICTORDAEMON
     sb.append("<Evictor name=\"").append(name).append("\"/>");
+    //#endif
     return sb.toString();
   }
 //#if EVICTORDAEMON
@@ -152,7 +157,9 @@ DaemonThread
  */
   public void alert(){
     if (!active) {
+    //#if EVICTORDAEMON
       wakeup();
+    //#endif
     }
   }
 //#if EVICTORDAEMON
@@ -183,7 +190,11 @@ DaemonThread
     active=true;
     try {
       boolean progress=true;
-      while (progress && (evictDuringShutdown || !isShutdownRequested()) && isRunnable(source)) {
+      while (progress && (evictDuringShutdown
+    		//#if EVICTORDAEMON
+    		  || !isShutdownRequested()
+    		//#endif  
+    		  ) && isRunnable(source)) {
         if (evictBatch(source,currentRequiredEvictBytes) == 0) {
           progress=false;
         }
@@ -354,11 +365,10 @@ nBINsStrippedThisRun
 //#if MEMORYBUDGET
     long maxMem=mb.getCacheBudget();
 //#endif
-    boolean doRun=
+    boolean doRun=false;
 //#if MEMORYBUDGET
-((currentUsage - maxMem) > 0)
+    doRun = ((currentUsage - maxMem) > 0);
 //#endif
-;
     if (doRun) {
       currentRequiredEvictBytes=
 //#if MEMORYBUDGET

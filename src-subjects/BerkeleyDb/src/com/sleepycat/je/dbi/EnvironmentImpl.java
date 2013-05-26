@@ -283,13 +283,12 @@ static {
 //#if CPTIME
     long checkpointerWakeupTime=Checkpointer.getWakeupPeriod(configManager);
 //#endif
-    checkpointer=new Checkpointer(this,
+    checkpointer=new Checkpointer(this
 //#if CPTIME
-checkpointerWakeupTime
+, checkpointerWakeupTime
 //#endif
-,
 //#if CHECKPOINTERDAEMON
-"Checkpointer"
+, "Checkpointer"
 //#endif
 );
 //#if INCOMPRESSOR
@@ -861,7 +860,9 @@ catch (      DatabaseException DBE) {
     if (evictor != null) 
 //#if EVICTOR
 {
+    //#if EVICTORDAEMON
       evictor.requestShutdown();
+    //#endif
     }
 //#endif
 //#endif
@@ -919,7 +920,9 @@ catch (      DatabaseException DBE) {
 //#if EVICTOR
   public void shutdownEvictor() throws InterruptedException {
     if (evictor != null) {
+   //#if EVICTORDAEMON	
       evictor.shutdown();
+   //#endif
       evictor.clearEnv();
       evictor=null;
     }

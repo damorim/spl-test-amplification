@@ -98,11 +98,7 @@ public interface TreeNodeProcessor {
         }
       }
     }
- catch (
-//#if MEMORYBUDGET
-    DatabaseException e
-//#endif
-) 
+ catch (DatabaseException e) 
 //#if MEMORYBUDGET
 {
 //#if MEMORYBUDGET

@@ -547,9 +547,9 @@ lookAheadCache
  * @param info
  * @param offset
  */
-  private void processLN(  Long fileNum,  TreeLocation location,  Long offset,  LNInfo info,
+  private void processLN(  Long fileNum,  TreeLocation location,  Long offset,  LNInfo info 
 //#if LOOKAHEADCACHE
-  LookAheadCache lookAheadCache
+, LookAheadCache lookAheadCache
 //#endif
 ,  Map dbCache) throws DatabaseException {
 //#if STATISTICS

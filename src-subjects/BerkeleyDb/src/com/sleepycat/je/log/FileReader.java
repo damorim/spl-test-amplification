@@ -153,11 +153,11 @@ public abstract class FileReader {
 //#if CHECKSUM
         boolean doValidate=doValidateChecksum && (isTargetEntry || alwaysValidateChecksum);
 //#endif
-        boolean collectData=
+        boolean collectData=false;
 //#if CHECKSUM
-doValidate
+        collectData = doValidate;
 //#endif
- || isTargetEntry;
+        collectData|= isTargetEntry;
 //#if CHECKSUM
         if (doValidate) 
 //#if CHECKSUM
@@ -193,13 +193,8 @@ doValidate
  catch (    EOFException e) {
       eof=true;
     }
-catch (
+catch (DatabaseException e) {
 //#if LOGGINGSEVERE
-    DatabaseException e
-//#endif
-) 
-//#if LOGGINGSEVERE
-{
       eof=true;
 //#if LOGGINGSEVERE
       LogEntryType problemType=LogEntryType.findType(currentEntryTypeNum,currentEntryTypeVersion);

@@ -646,13 +646,12 @@ bin == waitingOn
 //#if MEMORYBUDGET
       long newLNSize=ln.getMemorySizeIncludedByParent();
 //#endif
-      targetBin.updateEntry(targetIndex,newLsn,
+      targetBin.updateEntry(targetIndex,newLsn
 //#if MEMORYBUDGET
-oldLNSize
+, oldLNSize
 //#endif
-,
 //#if MEMORYBUDGET
-newLNSize
+, newLNSize
 //#endif
 );
       targetBin.setPendingDeleted(targetIndex);
@@ -935,13 +934,12 @@ newLNSize
 //#if MEMORYBUDGET
       long newLNSize=ln.getMemorySizeIncludedByParent();
 //#endif
-      targetBin.updateEntry(targetIndex,newLsn,
+      targetBin.updateEntry(targetIndex,newLsn 
 //#if MEMORYBUDGET
-oldLNSize
+, oldLNSize
 //#endif
-,
 //#if MEMORYBUDGET
-newLNSize
+, newLNSize
 //#endif
 );
 //#if LATCHES

@@ -42,9 +42,9 @@ abstract public class LogManager {
   static final int HEADER_BYTES=14;
   static final int CHECKSUM_BYTES=4;
   static final int PREV_BYTES=4;
-  static final int HEADER_CONTENT_BYTES=HEADER_BYTES - 
+  static final int HEADER_CONTENT_BYTES=HEADER_BYTES 
 //#if CHECKSUM
-CHECKSUM_BYTES
+-CHECKSUM_BYTES
 //#endif
 ;
 //#if CHECKSUM
@@ -124,14 +124,14 @@ CHECKSUM_BYTES
  * @param fsyncRequired if true, log files should also be fsynced.
  * @return LSN of the new log entry
  */
-  public long logForceFlush(  LoggableObject item,
+  public long logForceFlush(  LoggableObject item
 //#if FSYNC
-  boolean fsyncRequired
+  , boolean fsyncRequired
 //#endif
 ) throws DatabaseException {
-    return log(item,false,true,
+    return log(item,false,true
 //#if FSYNC
-fsyncRequired
+, fsyncRequired
 //#endif
 ,false,DbLsn.NULL_LSN);
   }
@@ -142,21 +142,33 @@ fsyncRequired
  * @return LSN of the new log entry
  */
   public long logForceFlip(  LoggableObject item) throws DatabaseException {
-    return log(item,false,true,false,true,DbLsn.NULL_LSN);
+    return log(item,false,true
+    		//#if FSYNC
+    		,false
+    		//#endif
+    		,true,DbLsn.NULL_LSN);
   }
   /** 
  * Write a log entry.
  * @return LSN of the new log entry
  */
   public long log(  LoggableObject item) throws DatabaseException {
-    return log(item,false,false,false,false,DbLsn.NULL_LSN);
+    return log(item,false,false
+    		//#if FSYNC
+    		,false
+    		//#endif
+    		,false,DbLsn.NULL_LSN);
   }
   /** 
  * Write a log entry.
  * @return LSN of the new log entry
  */
   public long log(  LoggableObject item,  boolean isProvisional,  long oldNodeLsn) throws DatabaseException {
-    return log(item,isProvisional,false,false,false,oldNodeLsn);
+    return log(item,isProvisional,false
+    		//#if FSYNC
+    		,false
+    		//#endif
+    		,false,oldNodeLsn);
   }
   /** 
  * Write a log entry.
@@ -170,9 +182,9 @@ fsyncRequired
  * obsolete, or null if the item is not a node or has no old LSN.
  * @return LSN of the new log entry
  */
-  private long log(  LoggableObject item,  boolean isProvisional,  boolean flushRequired,
+  private long log(  LoggableObject item,  boolean isProvisional,  boolean flushRequired
 //#if FSYNC
-  boolean fsyncRequired
+  , boolean fsyncRequired
 //#endif
 ,  boolean forceNewLogFile,  long oldNodeLsn) throws DatabaseException {
     if (readOnly) {
@@ -335,15 +347,14 @@ catch (    IOException e) {
     boolean wakeupCheckpointer=checkpointMonitor.recordLogWrite(entrySize,item);
 //#endif
 //#endif
-    return new LogResult(currentLsn,
+    return new LogResult(currentLsn
 //#if CPBYTES
 //#if CHECKPOINTERDAEMON
-wakeupCheckpointer
+, wakeupCheckpointer
 //#endif
 //#endif
-,
 //#if CLEANER
-wakeupCleaner
+, wakeupCleaner
 //#endif
 );
   }
@@ -597,15 +608,14 @@ static class LogResult {
 //#if CLEANER
     boolean wakeupCleaner;
 //#endif
-    LogResult(    long currentLsn,
+    LogResult(    long currentLsn 
 //#if CPBYTES
 //#if CHECKPOINTERDAEMON
-    boolean wakeupCheckpointer
+    , boolean wakeupCheckpointer
 //#endif
 //#endif
-,
 //#if CLEANER
-    boolean wakeupCleaner
+    , boolean wakeupCleaner
 //#endif
 ){
       this.currentLsn=currentLsn;
