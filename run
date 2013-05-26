@@ -1,0 +1,133 @@
+#!/bin/bash
+
+if [[ -z $CURDIR ]];
+then
+    echo "could not locate subject directory. please, define variable CURDIR."
+    exit;
+fi
+
+####### bound for test generation
+NUM_VALID_CONFIGURATIONS_FOR_TG=1
+####### bound for test execution
+NUM_RANDOM_CONFIGURATIONS_FOR_TE=1
+
+source common
+
+TIMESTAMP=`date +"%Y-%m-%d-%Hh%Mm"`
+BINDIR=$CURDIR/bin
+
+############################################
+## generate different sets of configurations
+## from all-configurations.txt:
+##   twise, random, and all-shuffled
+############################################
+./gen-twise-and-random $CURDIR
+
+javac -cp ${JUNIT} ${JAVASCRIPTSDIR}/MyTestRunner.java
+
+## TODO: break this in two scripts
+(
+    ############################################
+    ## generate tests for
+    ##   NUM_VALID_CONFIGURATIONS_FOR_TG
+    ## distinct products.
+    ############################################
+    echo "##################################################################"
+    echo "####################  test generation #############################"
+    echo "##################################################################"
+    a=0
+    date
+    while read line 
+    do
+	if [ $a -eq $NUM_VALID_CONFIGURATIONS_FOR_TG ]
+	then
+	    break
+	fi
+	a=$(($a+1));
+	CONFIGURATION=`echo $line`
+        ## remove old stuff
+	rm -rf $BINDIR
+	mkdir -p $BINDIR
+        ## preprocess and compile
+	./build "$CONFIGURATION" $CURDIR
+	if [ "$?" -ne 0 ]
+	then
+	    echo "compile error"
+	else
+	    NUM=`find $BINDIR -name "*.class" | wc -l`
+	    echo "$NUM classes generated"
+     	    ############################
+	    EVOSUITE_TESTS_DIRS=$CURDIR/evosuite-tests
+	    EVOSUITE_REPORTS_DIRS=$CURDIR/evosuite-report
+	    rm -rf ${EVOSUITE_TESTS_DIRS}
+	    rm -rf ${EVOSUITE_REPORTS_DIRS}
+	    ./evosuite "$BINDIR"
+	    EVO_OUTPUT="$CURDIR/evo-run-$a"
+	    rm -rf ${EVO_OUTPUT} ## trash if exists
+	    mkdir -p ${EVO_OUTPUT}
+	    mv evosuite-tests ${EVO_OUTPUT}
+	    mv evosuite-report ${EVO_OUTPUT}
+	    ############################
+	fi
+    done < "${CURDIR}/all-configurations-shuffled.txt"
+    
+    #########################
+    ## execute tests suite against
+    ##  NUM_RANDOM_CONFIGURATIONS_FOR_TE
+    #########################
+    echo "##################################################################"
+    echo "####################  test execution #############################"
+    echo "##################################################################"
+    a=0
+    date
+    while read line 
+    do
+	if [ $a -eq $NUM_RANDOM_CONFIGURATIONS_FOR_TE ]
+	then
+	    break
+	fi
+	a=$(($a+1));
+ 	CONFIGURATION=`echo $line`
+        ## remove old stuff
+	rm -rf $BINDIR
+	mkdir -p $BINDIR
+        ## preprocess and compile
+	./build "$CONFIGURATION" $CURDIR
+        ## compile tests
+	if [ "$?" -ne 0 ]
+	then
+	    echo "compile error"
+	else
+ 	    TMP_TEST_BIN="${CURDIR}/tmptest"
+	    COUNTER=0
+            while [ $COUNTER -lt ${NUM_VALID_CONFIGURATIONS_FOR_TG} ] 
+	    do
+		COUNTER=$(($COUNTER+1)); ## COUNTER = 1..$NUM_VALID_CONFIGURATIONS_FOR_TG
+		EVO_TESTS_SRC="${CURDIR}/evo-run-${COUNTER}"
+		echo "compiling tests from evo-run-${COUNTER} with configuration: ${CONFIGURATION}"
+		# clean the house
+ 		rm -rf ${TMP_TEST_BIN}
+ 		mkdir -p ${TMP_TEST_BIN}
+		# compile tests generated in evo-run-$COUNTER
+		CP="$BINDIR:${TMP_TEST_BIN}:${JUNIT}:${EVOSUITE}"
+ 		find ${EVO_TESTS_SRC} -name *.java | \
+		    xargs javac -d ${TMP_TEST_BIN} -cp ${CP}
+		NUMFILES=`find ${TMP_TEST_BIN} -name "*.class" | wc -l`
+		echo "compiled $NUMFILES test files"
+		(cd ${TMP_TEST_BIN};
+		    find . -name "*.class" > /tmp/testfiles.txt
+		)
+		echo "running test files"
+		java \
+		    -Dtests.file=/tmp/testfiles.txt \
+		    -Dconfiguration="${CONFIGURATION}" \
+		    -Devosuite.number="${EVO_TESTS_SRC}" \
+		    -cp "${CP}:${JAVASCRIPTSDIR}"  \
+		    MyTestRunner >> "${CURDIR}/output-${TIMESTAMP}.txt"
+            done
+	fi
+    done < "${CURDIR}/random-configurations.txt"
+
+    date
+    
+) 2>&1 | tee "${CURDIR}/log-${TIMESTAMP}.txt"
