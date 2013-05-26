@@ -4,3 +4,6 @@ log*.txt
 tmptest
 evo-run-*
 output*.txt
+all-configurations-shuffled.txt
+random-configurations.txt
+twise-configurations.txt

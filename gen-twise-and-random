@@ -1,11 +1,6 @@
 #!/bin/bash
 
 CURDIR=$1
-if [[ -z $CURDIR ]];
-then
-    echo "could not locate feature set. please, define variable CURDIR."
-    exit;
-fi
 
 if [[ -z $LIBSDIR ]];
 then
