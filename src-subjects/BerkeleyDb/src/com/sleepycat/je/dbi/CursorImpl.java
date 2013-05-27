@@ -1049,9 +1049,7 @@ public static class KeyChangeStatus {
  * key during the operation.
  */
   public KeyChangeStatus getNextWithKeyChangeStatus(  DatabaseEntry foundKey,  DatabaseEntry foundData,  LockType lockType,  boolean forward,
-//#if LATCHES
   boolean alreadyLatched
-//#endif
 ) throws DatabaseException {
     assert assertCursorState(true) : dumpToString(true);
 //#if LATCHES
@@ -1069,11 +1067,7 @@ public static class KeyChangeStatus {
           }
 //#endif
 //#endif
-          if (getNextDuplicate(foundKey,foundData,lockType,forward,
-//#if LATCHES
-alreadyLatched
-//#endif
-) == OperationStatus.SUCCESS) {
+          if (getNextDuplicate(foundKey,foundData,lockType,forward,alreadyLatched) == OperationStatus.SUCCESS) {
             result.status=OperationStatus.SUCCESS;
             result.keyChange=false;
             break;
@@ -1215,10 +1209,7 @@ alreadyLatched
  * cursor to next duplicate without fetching data.
  */
   public OperationStatus getNextDuplicate(  DatabaseEntry foundKey,  DatabaseEntry foundData,  LockType lockType,  boolean forward,
-//#if LATCHES
-  boolean alreadyLatched
-//#endif
-) throws DatabaseException {
+  boolean alreadyLatched) throws DatabaseException {
     assert assertCursorState(true) : dumpToString(true);
 //#if LATCHES
     assert checkAlreadyLatched(alreadyLatched) : dumpToString(true);

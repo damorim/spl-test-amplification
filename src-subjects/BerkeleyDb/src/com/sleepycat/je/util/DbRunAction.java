@@ -83,9 +83,8 @@ public class DbRunAction {
  else           if (action.equalsIgnoreCase("checkpoint")) {
             doAction=CHECKPOINT;
           }
- else 
 //#if EVICTOR
-          if (action.equalsIgnoreCase("evict")) 
+ else if (action.equalsIgnoreCase("evict")) 
 //#if EVICTOR
 {
             doAction=EVICT;

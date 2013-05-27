@@ -125,9 +125,7 @@ public class DbTree implements LoggableObject, LogReadable {
  * @param allowEvictionis whether eviction is allowed during cursor operations.
  */
   public synchronized DatabaseImpl createDb(  Locker locker,  String databaseName,  DatabaseConfig dbConfig,  Database databaseHandle,
-//#if EVICTOR
   boolean allowEviction
-//#endif
 ) throws DatabaseException {
     DatabaseId newId=new DatabaseId(getNextDbId());
     DatabaseImpl newDb=new DatabaseImpl(databaseName,newId,envImpl,dbConfig);
@@ -511,9 +509,7 @@ catch (    UnsupportedEncodingException UEE) {
  * @param allowEvictionis whether eviction is allowed during cursor operations.
  */
   public DatabaseImpl getDb(  Locker nameLocker,  String databaseName,  Database databaseHandle,
-//#if EVICTOR
   boolean allowEviction
-//#endif
 ) throws DatabaseException {
     try {
       CursorImpl nameCursor=null;
@@ -546,11 +542,7 @@ catch (    UnsupportedEncodingException UEE) {
         return null;
       }
  else {
-        return getDb(id,-1
-//#if EVICTOR
-, allowEviction
-//#endif
-,databaseName);
+        return getDb(id,-1, allowEviction,databaseName);
       }
     }
  catch (    UnsupportedEncodingException UEE) {
@@ -596,9 +588,7 @@ catch (    UnsupportedEncodingException UEE) {
  * @param allowEvictionis whether eviction is allowed during cursor operations.
  */
   public DatabaseImpl getDb(  DatabaseId dbId,  long lockTimeout,
-//#if EVICTOR
   boolean allowEviction,
-//#endif
   String dbNameIfAvailable) throws DatabaseException {
     if (dbId.equals(idDatabase.getId())) {
       return idDatabase;
