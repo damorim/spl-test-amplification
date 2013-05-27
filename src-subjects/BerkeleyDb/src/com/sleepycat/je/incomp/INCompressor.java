@@ -332,15 +332,15 @@ synchronized (binRefQueueSync) {
             continue;
           }
           if (binRef.deletedKeysExist()) {
-            boolean requeued=compressBin(binSearch.db,binSearch.bin,binRef,
+            boolean requeued=compressBin(binSearch.db,binSearch.bin,binRef
 //#if CLEANER
-tracker
+, tracker
 //#endif
 );
             if (!requeued) {
-              checkForRelocatedSlots(binSearch.db,binRef,
+              checkForRelocatedSlots(binSearch.db,binRef
 //#if CLEANER
-tracker
+, tracker
 //#endif
 );
             }
@@ -356,9 +356,9 @@ tracker
 //#if LATCHES
             foundBin.releaseLatch();
 //#endif
-            pruneBIN(binSearch.db,binRef,idKey,isDBIN,dupKey,
+            pruneBIN(binSearch.db,binRef,idKey,isDBIN,dupKey
 //#if CLEANER
-tracker
+, tracker
 //#endif
 );
           }
@@ -391,9 +391,9 @@ tracker
  * returns.
  * @return true if the BINReference was requeued by this method.
  */
-  private boolean compressBin(  DatabaseImpl db,  BIN bin,  BINReference binRef,
+  private boolean compressBin(  DatabaseImpl db,  BIN bin,  BINReference binRef
 //#if CLEANER
-  UtilizationTracker tracker
+  , UtilizationTracker tracker
 //#endif
 ) throws DatabaseException {
     boolean empty=false;
@@ -430,9 +430,9 @@ tracker
     }
 //#endif
     if (empty) {
-      requeued=pruneBIN(db,binRef,idKey,isDBIN,dupKey,
+      requeued=pruneBIN(db,binRef,idKey,isDBIN,dupKey
 //#if CLEANER
-tracker
+, tracker
 //#endif
 );
     }
@@ -444,25 +444,25 @@ tracker
  * @return true if the pruning was unable to proceed and the BINReference
  * was requeued.
  */
-  private boolean pruneBIN(  DatabaseImpl dbImpl,  BINReference binRef,  byte[] idKey,  boolean containsDups,  byte[] dupKey,
+  private boolean pruneBIN(  DatabaseImpl dbImpl,  BINReference binRef,  byte[] idKey,  boolean containsDups,  byte[] dupKey
 //#if CLEANER
-  UtilizationTracker tracker
+  , UtilizationTracker tracker
 //#endif
 ) throws DatabaseException {
     boolean requeued=false;
     try {
       Tree tree=dbImpl.getTree();
       if (containsDups) {
-        tree.deleteDup(idKey,dupKey,
+        tree.deleteDup(idKey,dupKey
 //#if CLEANER
-tracker
+, tracker
 //#endif
 );
       }
  else {
-        tree.delete(idKey,
+        tree.delete(idKey
 //#if CLEANER
-tracker
+, tracker
 //#endif
 );
       }
@@ -499,9 +499,9 @@ catch (    CursorsExistException e) {
         if (splitBin != null) {
           BINReference splitBinRef=splitBin.createReference();
           splitBinRef.addDeletedKey(key);
-          compressBin(db,splitBin,splitBinRef,
+          compressBin(db,splitBin,splitBinRef
 //#if CLEANER
-tracker
+, tracker
 //#endif
 );
         }
@@ -649,11 +649,11 @@ tracker
   }
   private boolean findDBAndBIN(  BINSearch binSearch,  BINReference binRef,  DbTree dbTree,  Map dbCache) throws DatabaseException {
     binSearch.db=dbTree.getDb(binRef.getDatabaseId(),lockTimeout,dbCache);
-    if ((binSearch.db == null) || (
+    if ((binSearch.db == null) 
 //#if DELETEOP
-binSearch.db.isDeleted()
+    		|| (binSearch.db.isDeleted())
 //#endif
-)) {
+) {
 //#if STATISTICS
       dbClosedBinsThisRun++;
 //#endif

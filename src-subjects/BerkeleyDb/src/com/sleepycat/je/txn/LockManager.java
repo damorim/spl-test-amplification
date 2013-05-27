@@ -59,11 +59,9 @@ public abstract class LockManager implements EnvConfigObserver {
   private static boolean lockTableDump=false;
   public LockManager(  EnvironmentImpl envImpl) throws DatabaseException {
     DbConfigManager configMgr=envImpl.getConfigManager();
-    nLockTables=
 //#if MEMORYBUDGET
-configMgr.getInt(EnvironmentParams.N_LOCK_TABLES)
+    nLockTables=configMgr.getInt(EnvironmentParams.N_LOCK_TABLES);
 //#endif
-;
     lockTables=new Map[nLockTables];
 //#if LATCHES
     lockTableLatches=new Latch[nLockTables];

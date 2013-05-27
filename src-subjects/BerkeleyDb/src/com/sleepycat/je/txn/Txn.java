@@ -185,7 +185,11 @@ synchronized (this) {
       }
       TxnPrepare prepareRecord=new TxnPrepare(id,xid);
       LogManager logManager=envImpl.getLogManager();
-      logManager.logForceFlush(prepareRecord,true);
+      logManager.logForceFlush(prepareRecord
+    		//#if FSYNC
+    		  ,true
+      		//#endif
+    		  );
     }
     setPrepared(true);
     return XAResource.XA_OK;
@@ -237,10 +241,18 @@ synchronized (this) {
           numWriteLocks=writeInfo.size();
           TxnCommit commitRecord=new TxnCommit(id,lastLoggedLsn);
           if (flushSyncBehavior == TXN_SYNC) {
-            commitLsn=logManager.logForceFlush(commitRecord,true);
+            commitLsn=logManager.logForceFlush(commitRecord
+            		//#if FSYNC
+            		, true
+            		//#endif
+            		);
           }
  else           if (flushSyncBehavior == TXN_WRITE_NOSYNC) {
-            commitLsn=logManager.logForceFlush(commitRecord,false);
+            commitLsn=logManager.logForceFlush(commitRecord
+            		//#if FSYNC
+            		, false
+            		//#endif
+            		);
           }
  else {
             commitLsn=logManager.log(commitRecord);
@@ -337,7 +349,11 @@ synchronized (this) {
         if (writeInfo != null) {
           if (writeAbortRecord) {
             if (forceFlush) {
-              abortLsn=envImpl.getLogManager().logForceFlush(abortRecord,true);
+              abortLsn=envImpl.getLogManager().logForceFlush(abortRecord
+            		//#if FSYNC
+            		  , true
+            		//#endif  
+            		  );
             }
  else {
               abortLsn=envImpl.getLogManager().log(abortRecord);
@@ -404,9 +420,9 @@ synchronized (this) {
           try {
             RecoveryManager.undo(
 //#if LOGGINGRECOVERY
-Level.FINER
+Level.FINER,
 //#endif
-,db,location,undoLN,undoEntry.getKey(),undoEntry.getDupKey(),undoLsn,abortLsn,abortKnownDeleted,null,false);
+db,location,undoLN,undoEntry.getKey(),undoEntry.getDupKey(),undoLsn,abortLsn,abortKnownDeleted,null,false);
           }
   finally {
             if (location.bin != null) {

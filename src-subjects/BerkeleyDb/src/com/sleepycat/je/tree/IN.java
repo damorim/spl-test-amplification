@@ -853,6 +853,8 @@ catch (        Exception e) {
     entryStates[idx]=state;
     setDirty(true);
   }
+  
+//#if MEMORYBUDGET
   /** 
  * Update the idx'th entry of this node. This flavor is used when the
  * target LN is being modified, by an operation like a delete or update. We
@@ -861,21 +863,13 @@ catch (        Exception e) {
  * in the caller, so instead of passing in the old and new nodes, we pass
  * in the old and new node sizes.
  */
-  public void updateEntry(  int idx,  long lsn,
-//#if MEMORYBUDGET
-  long oldLNSize
-//#endif
-,
-//#if MEMORYBUDGET
-  long newLNSize
-//#endif
-){
-//#if MEMORYBUDGET
+  public void updateEntry(  int idx,  long lsn, long oldLNSize, long newLNSize){
     updateMemorySize(oldLNSize,newLNSize);
-//#endif
     setLsn(idx,lsn);
     setDirty(true);
   }
+//#endif
+  
   /** 
  * Update the idx'th entry of this node.  Only update the key if the new
  * key is less than the existing key.

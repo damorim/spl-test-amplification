@@ -48,9 +48,9 @@ import com.sleepycat.je.utilint.Tracer;
  * flushed to the log. Checkpoint flushes must be done in ascending order from
  * the bottom of the tree up.
  */
-public class Checkpointer extends 
+public class Checkpointer 
 //#if CHECKPOINTERDAEMON
-DaemonThread
+extends DaemonThread
 //#endif
  {
   private EnvironmentImpl envImpl;
@@ -88,13 +88,12 @@ DaemonThread
   private int nDeltaINFlushThisRun;
 //#endif
   private volatile int highestFlushLevel;
-  public Checkpointer(  EnvironmentImpl envImpl,
+  public Checkpointer(  EnvironmentImpl envImpl
 //#if CPTIME
-  long waitTime
+  , long waitTime
 //#endif
-,
 //#if CHECKPOINTERDAEMON
-  String name
+  , String name
 //#endif
 ) throws DatabaseException {
 //#if CHECKPOINTERDAEMON
@@ -122,46 +121,30 @@ waitTime
   public int getHighestFlushLevel(){
     return highestFlushLevel;
   }
+  
+//#if CPTIME
+//#if CPBYTES
   /** 
  * Figure out the wakeup period. Supplied through this static method
  * because we need to pass wakeup period to the superclass and need to do
  * the calcuation outside this constructor.
  */
   public static long getWakeupPeriod(  DbConfigManager configManager) throws IllegalArgumentException, DatabaseException {
-//#if CPTIME
     long wakeupPeriod=PropUtil.microsToMillis(configManager.getLong(EnvironmentParams.CHECKPOINTER_WAKEUP_INTERVAL));
-//#endif
-//#if CPBYTES
     long bytePeriod=configManager.getLong(EnvironmentParams.CHECKPOINTER_BYTES_INTERVAL);
-//#endif
-//#if CPBYTES
-//#if CPTIME
-    if ((wakeupPeriod == 0) && (bytePeriod == 0)) 
-//#if CPBYTES
-//#if CPTIME
-{
+    if ((wakeupPeriod == 0) && (bytePeriod == 0)) {
       throw new IllegalArgumentException(EnvironmentParams.CHECKPOINTER_BYTES_INTERVAL.getName() + " and " + EnvironmentParams.CHECKPOINTER_WAKEUP_INTERVAL.getName()+ " cannot both be 0. ");
     }
-//#endif
-//#endif
-//#endif
-//#endif
-//#if CPBYTES
     if (bytePeriod == 0) {
-      return 0 + 
-//#if CPTIME
-wakeupPeriod
-//#endif
-;
+      return 0 + wakeupPeriod;
     }
- else 
-//#if CPBYTES
-{
+ else {
       return 0;
     }
-//#endif
-//#endif
   }
+//#endif
+//#endif
+
   /** 
  * Set checkpoint id -- can only be done after recovery.
  */
@@ -241,6 +224,7 @@ wakeupPeriod
  * 4. Lastly, use time based checking.
  */
   private boolean isRunnable(  CheckpointConfig config) throws DatabaseException {
+	  boolean result = false;
 //#if CPBYTES
     long useBytesInterval=0;
 //#endif
@@ -250,10 +234,10 @@ wakeupPeriod
     long nextLsn=DbLsn.NULL_LSN;
     try {
       if (config.getForce()) {
-        return true;
-      }
- else 
+        result = true;
+      } 
 //#if CPBYTES
+      else
       if (config.getKBytes() != 0) 
 //#if CPBYTES
 {
@@ -291,10 +275,10 @@ wakeupPeriod
 {
         nextLsn=envImpl.getFileManager().getNextLsn();
         if (DbLsn.getNoCleaningDistance(nextLsn,lastCheckpointEnd,logFileMax) >= useBytesInterval) {
-          return true;
+          result = true;
         }
  else {
-          return false;
+          result = false;
         }
       }
 //#endif
@@ -305,15 +289,15 @@ wakeupPeriod
 {
         long lastUsedLsn=envImpl.getFileManager().getLastUsedLsn();
         if (((System.currentTimeMillis() - lastCheckpointMillis) >= useTimeInterval) && (DbLsn.compareTo(lastUsedLsn,lastCheckpointEnd) != 0)) {
-          return true;
+          result = true;
         }
  else {
-          return false;
+          result = false;
         }
       }
 //#endif
  else {
-        return false;
+        result = false;
       }
 //#endif
 //#endif
@@ -356,6 +340,7 @@ wakeupPeriod
       Tracer.trace(Level.FINEST,envImpl,sb.toString());
 //#endif
     }
+    return result;
   }
   /** 
  * The real work to do a checkpoint. This may be called by the checkpoint
@@ -443,25 +428,8 @@ flushExtraLevel
         Set nodeSet=(Set)i.next();
         
 //#if MEMORYBUDGET
-int
-//#endif
- 
-//#if MEMORYBUDGET
-size
-//#endif
-=
-//#if MEMORYBUDGET
-nodeSet.size()
-//#endif
- * 
-//#if MEMORYBUDGET
-MemoryBudget.CHECKPOINT_REFERENCE_SIZE
-//#endif
-;
-//#if MEMORYBUDGET
+        int size = nodeSet.size()*MemoryBudget.CHECKPOINT_REFERENCE_SIZE;
         totalSize+=size;
-//#endif
-//#if MEMORYBUDGET
         dirtyMapMemSize+=size;
 //#endif
       }
@@ -469,9 +437,9 @@ MemoryBudget.CHECKPOINT_REFERENCE_SIZE
       mb.updateMiscMemoryUsage(totalSize);
 //#endif
       boolean allowDeltas=!config.getMinimizeRecoveryTime();
-      flushDirtyNodes(dirtyMap,flushAll,allowDeltas,
+      flushDirtyNodes(dirtyMap,flushAll,allowDeltas
 //#if CLEANER
-flushExtraLevel
+, flushExtraLevel
 //#endif
 ,checkpointStart);
 //#if CLEANER
@@ -479,16 +447,20 @@ flushExtraLevel
 //#endif
       CheckpointEnd endEntry=new CheckpointEnd(invokingSource,checkpointStart,envImpl.getRootLsn(),firstActiveLsn,Node.getLastId(),envImpl.getDbMapTree().getLastDbId(),
 //#if TRANSACTIONS
-envImpl.getTxnManager().getLastTxnId()
+envImpl.getTxnManager().getLastTxnId(),
 //#endif
-,checkpointId);
+checkpointId);
 //#if LOGGINGCONFIG
       trace(envImpl,invokingSource,true);
 //#endif
 //#if LOGGINGCONFIG
       traced=true;
 //#endif
-      lastCheckpointEnd=logManager.logForceFlush(endEntry,true);
+      lastCheckpointEnd=logManager.logForceFlush(endEntry
+    		//#if FSYNC
+    		  ,true
+    		//#endif
+    		  );
       lastFirstActiveLsn=firstActiveLsn;
 //#if STATISTICS
       lastCheckpointStart=checkpointStart;

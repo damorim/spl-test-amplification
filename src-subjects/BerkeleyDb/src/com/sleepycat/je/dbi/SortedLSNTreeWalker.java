@@ -98,21 +98,17 @@ public interface TreeNodeProcessor {
         }
       }
     }
- catch (DatabaseException e) 
-//#if MEMORYBUDGET
-{
+ catch (DatabaseException e){
 //#if MEMORYBUDGET
       mb.updateTreeMemoryUsage(memoryChange);
-//#endif
       throw e;
-    }
 //#endif
- finally 
+    }
+ finally{ 
 //#if LATCHES
-{
-      inList.releaseMajorLatch();
-    }
+	 inList.releaseMajorLatch();
 //#endif
+  }
     if (foundSome) {
       Iterator iter=foundSet.iterator();
       while (iter.hasNext()) {

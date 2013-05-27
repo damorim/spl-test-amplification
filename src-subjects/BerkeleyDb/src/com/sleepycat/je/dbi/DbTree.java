@@ -546,9 +546,9 @@ catch (    UnsupportedEncodingException UEE) {
         return null;
       }
  else {
-        return getDb(id,-1,
+        return getDb(id,-1
 //#if EVICTOR
-allowEviction
+, allowEviction
 //#endif
 ,databaseName);
       }
@@ -597,9 +597,9 @@ allowEviction
  */
   public DatabaseImpl getDb(  DatabaseId dbId,  long lockTimeout,
 //#if EVICTOR
-  boolean allowEviction
+  boolean allowEviction,
 //#endif
-,  String dbNameIfAvailable) throws DatabaseException {
+  String dbNameIfAvailable) throws DatabaseException {
     if (dbId.equals(idDatabase.getId())) {
       return idDatabase;
     }

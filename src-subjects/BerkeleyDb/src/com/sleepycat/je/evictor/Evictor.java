@@ -370,11 +370,11 @@ nBINsStrippedThisRun
     doRun = ((currentUsage - maxMem) > 0);
 //#endif
     if (doRun) {
-      currentRequiredEvictBytes=
+    	currentRequiredEvictBytes=
 //#if MEMORYBUDGET
-(currentUsage - maxMem)
+      (currentUsage - maxMem)+
 //#endif
- + evictBytesSetting;
+  evictBytesSetting;
       if (DEBUG) {
         if (source == SOURCE_CRITICAL) {
           System.out.println("executed: critical runnable");

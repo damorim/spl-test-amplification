@@ -530,10 +530,10 @@ public class RecoveryManager {
                 undo(
 //#if LOGGINGRECOVERY
 //#if LOGGINGBASE
-detailedTraceLevel
+detailedTraceLevel,
 //#endif
 //#endif
-,db,location,ln,reader.getKey(),reader.getDupTreeKey(),logLsn,abortLsn,abortKnownDeleted,info,true);
+db,location,ln,reader.getKey(),reader.getDupTreeKey(),logLsn,abortLsn,abortKnownDeleted,info,true);
               }
   finally {
                 if (location.bin != null) {
@@ -929,15 +929,12 @@ private static class RootDeleter implements WithRootLatched {
       success=false;
       throw new DatabaseException("lsnFromLog=" + DbLsn.getNoFormatString(lsn),e);
     }
- finally 
-//#if LOGGINGRECOVERY
-{
+ finally{
 //#if LOGGINGRECOVERY
       trace(detailedTraceLevel,db,TRACE_ROOT_REPLACE,success,inFromLog,lsn,null,true,rootUpdater.getReplaced(),rootUpdater.getInserted(),rootUpdater.getOriginalLsn(),DbLsn.NULL_LSN,-1);
 //#endif
-    }
-//#endif
-  }
+ }
+}
 private static class RootUpdater implements WithRootLatched {
     private Tree tree;
     private IN inFromLog;
@@ -1197,10 +1194,10 @@ private static class RootUpdater implements WithRootLatched {
   public static void undo(
 //#if LOGGINGRECOVERY
 //#if LOGGINGBASE
-  Level traceLevel
+  Level traceLevel,
 //#endif
 //#endif
-,  DatabaseImpl db,  TreeLocation location,  LN lnFromLog,  byte[] mainKey,  byte[] dupKey,  long logLsn,  long abortLsn,  boolean abortKnownDeleted,  RecoveryInfo info,  boolean splitsAllowed) throws DatabaseException {
+  DatabaseImpl db,  TreeLocation location,  LN lnFromLog,  byte[] mainKey,  byte[] dupKey,  long logLsn,  long abortLsn,  boolean abortKnownDeleted,  RecoveryInfo info,  boolean splitsAllowed) throws DatabaseException {
     boolean found=false;
     boolean replaced=false;
     boolean success=false;

@@ -203,8 +203,8 @@ catch (DatabaseException e) {
       Tracer.trace(env,"FileReader","readNextEntry","Halted log file reading at file 0x" + Long.toHexString(readBufferFileNum) + " offset 0x"+ Long.toHexString(nextEntryOffset)+ " offset(decimal)="+ nextEntryOffset+ ":\nentry="+ problemType+ "(typeNum="+ currentEntryTypeNum+ ",version="+ currentEntryTypeVersion+ ")\nprev=0x"+ Long.toHexString(currentEntryPrevOffset)+ "\nsize="+ currentEntrySize+ "\nNext entry should be at 0x"+ Long.toHexString((nextEntryOffset + LogManager.HEADER_BYTES + currentEntrySize))+ "\n:",e);
 //#endif
       throw e;
-    }
 //#endif
+    }
     return foundEntry;
   }
   protected boolean resyncReader(  long nextGoodRecordPostCorruption,  boolean dumpCorruptedBounds) throws DatabaseException, IOException {

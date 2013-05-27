@@ -18,13 +18,9 @@ import com.sleepycat.je.log.LoggableObject;
  * log itself, an output file, and stdout (the "console").  By default, only
  * the database file is enabled.
  */
-public class Tracer implements 
+public class Tracer
 //#if LOGGINGDBLOGHANDLER
-LoggableObject
-//#endif
-, 
-//#if LOGGINGDBLOGHANDLER
-LogReadable
+implements LoggableObject, LogReadable
 //#endif
  {
   public static final String INFO_FILES="je.info";

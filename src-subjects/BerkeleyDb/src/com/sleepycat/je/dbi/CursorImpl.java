@@ -332,11 +332,7 @@ public static class KeyChangeStatus {
       waitingOn.latch();
 //#endif
 //#if LATCHES
-      if (
-//#if LATCHES
-bin == waitingOn
-//#endif
-) {
+      if (bin == waitingOn) {
         return bin;
       }
 //#endif
@@ -648,10 +644,7 @@ bin == waitingOn
 //#endif
       targetBin.updateEntry(targetIndex,newLsn
 //#if MEMORYBUDGET
-, oldLNSize
-//#endif
-//#if MEMORYBUDGET
-, newLNSize
+, oldLNSize, newLNSize
 //#endif
 );
       targetBin.setPendingDeleted(targetIndex);
@@ -936,10 +929,7 @@ bin == waitingOn
 //#endif
       targetBin.updateEntry(targetIndex,newLsn 
 //#if MEMORYBUDGET
-, oldLNSize
-//#endif
-//#if MEMORYBUDGET
-, newLNSize
+, oldLNSize, newLNSize
 //#endif
 );
 //#if LATCHES
