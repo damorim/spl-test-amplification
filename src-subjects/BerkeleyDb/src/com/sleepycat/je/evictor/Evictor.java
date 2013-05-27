@@ -439,9 +439,9 @@ nBINsStrippedThisRun
         IN in=scanIter.next();
         nNodesScannedThisRun++;
         DatabaseImpl db=in.getDatabase();
-        if (db == null || 
+        if (db == null 
 //#if DELETEOP
-db.isDeleteFinished()
+ || db.isDeleteFinished()
 //#endif
 ) {
           String inInfo=" IN type=" + in.getLogType() + " id="+ in.getNodeId()+ " not expected on INList";

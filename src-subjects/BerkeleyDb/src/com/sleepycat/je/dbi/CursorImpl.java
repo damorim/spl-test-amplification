@@ -661,14 +661,11 @@ public static class KeyChangeStatus {
         locker.addDeleteInfo(dupBin,new Key(lnKey));
 //#endif
       }
- else 
-//#if INCOMPRESSOR
-{
+ else {
 //#if INCOMPRESSOR
         locker.addDeleteInfo(bin,new Key(lnKey));
 //#endif
       }
-//#endif
 //#if LOGGINGFINER
       trace(Level.FINER,TRACE_DELETE,targetBin,ln,targetIndex,oldLsn,newLsn);
 //#endif

@@ -19,13 +19,9 @@ public class LockerFactory {
  * Get a locker for a writable operation, checking whether the db and
  * environment is transactional or not. Must return a non null locker.
  */
-  public static Locker getWritableLocker(  Environment env,
+  public static Locker getWritableLocker(  Environment env
 //#if TRANSACTIONS
-  Transaction userTxn
-//#endif
-,
-//#if TRANSACTIONS
-  boolean dbIsTransactional
+  , Transaction userTxn,  boolean dbIsTransactional
 //#endif
 ) throws DatabaseException {
     return getWritableLocker(env,
@@ -44,17 +40,13 @@ dbIsTransactional
  * @param retainNonTxnLocksis true for DbTree operations, so that the handle lock may be
  * transferred out of the locker when the operation is complete.
  */
-  public static Locker getWritableLocker(  Environment env,
+  public static Locker getWritableLocker(  Environment env
 //#if TRANSACTIONS
-  Transaction userTxn
+  , Transaction userTxn, boolean dbIsTransactional
 //#endif
-,
+,  boolean retainNonTxnLocks
 //#if TRANSACTIONS
-  boolean dbIsTransactional
-//#endif
-,  boolean retainNonTxnLocks,
-//#if TRANSACTIONS
-  TransactionConfig autoCommitConfig
+, TransactionConfig autoCommitConfig
 //#endif
 ) throws DatabaseException {
     EnvironmentImpl envImpl=DbInternal.envGetEnvironmentImpl(env);

@@ -298,9 +298,9 @@ public class LatchedLockManager extends LockManager {
       try {
         dumpLockTableInternal(
 //#if STATISTICS
-stats
+stats,
 //#endif
-,i);
+i);
       }
   finally {
         lockTableLatches[i].release();

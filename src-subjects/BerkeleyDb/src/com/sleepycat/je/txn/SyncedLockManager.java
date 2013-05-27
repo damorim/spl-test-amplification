@@ -175,9 +175,9 @@ synchronized (lockTableLatches[lockTableIndex]) {
 synchronized (lockTableLatches[i]) {
         dumpLockTableInternal(
 //#if STATISTICS
-stats
+stats, 
 //#endif
-,i);
+i);
       }
 //#endif
     }

@@ -132,12 +132,9 @@ synchronized (this) {
  * checkpoint starts.
  */
   synchronized Set[] getFilesAtCheckpointStart(){
-    anyPendingDuringCheckpoint=!pendingLNs.isEmpty() || 
+    anyPendingDuringCheckpoint=!pendingLNs.isEmpty()  
 //#if DELETEOP
-!
-//#if DELETEOP
-pendingDBs.isEmpty()
-//#endif
+|| !pendingDBs.isEmpty()
 //#endif
 ;
     Set[] files=new Set[2];
@@ -259,9 +256,9 @@ pendingDBs.isEmpty()
  * synchronized block.  All methods that call this method are synchronized.
  */
   private void updateProcessedFiles(){
-    if (pendingLNs.isEmpty() && 
+    if (pendingLNs.isEmpty() 
 //#if DELETEOP
-pendingDBs.isEmpty()
+ && pendingDBs.isEmpty()
 //#endif
 ) {
       fullyProcessedFiles.addAll(checkpointedFiles);

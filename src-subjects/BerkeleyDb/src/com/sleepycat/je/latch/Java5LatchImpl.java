@@ -96,12 +96,11 @@ static private class JEReentrantLock extends ReentrantLock {
         stats.nAcquireNoWaitSuccessful++;
 //#endif
       }
- else 
+ else {
 //#if STATISTICS
-{
-        stats.nAcquireNoWaitUnsuccessful++;
-      }
+	 stats.nAcquireNoWaitUnsuccessful++;
 //#endif
+ }
       return ret;
     }
   finally {
