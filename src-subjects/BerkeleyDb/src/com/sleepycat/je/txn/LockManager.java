@@ -219,12 +219,11 @@ synchronized (locker) {
     }
  else     if (lockGrant == LockGrantType.DENIED) {
     }
- else 
+ else {
 //#if STATISTICS
-{
       nWaits++;
-    }
 //#endif
+ }
     return new LockAttemptResult(useLock,lockGrant,success);
   }
   /** 
@@ -561,9 +560,9 @@ synchronized (lockerToNotify) {
  */
   protected void dumpLockTableInternal(
 //#if STATISTICS
-  LockStats stats
+  LockStats stats, 
 //#endif
-,  int i){
+  int i){
     Map lockTable=lockTables[i];
 //#if STATISTICS
     stats.accumulateNTotalLocks(lockTable.size());

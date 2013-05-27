@@ -618,7 +618,9 @@ key,data,PutMode.NODUP);
 //#endif
     PreloadConfig config=new PreloadConfig();
     config.setMaxBytes(maxBytes);
+  //#if STATISTICS
     databaseImpl.preload(config);
+  //#endif
   }
   public void preload(  long maxBytes,  long maxMillisecs) throws DatabaseException {
     checkEnv();
@@ -629,7 +631,9 @@ key,data,PutMode.NODUP);
     PreloadConfig config=new PreloadConfig();
     config.setMaxBytes(maxBytes);
     config.setMaxMillisecs(maxMillisecs);
+  //#if STATISTICS
     databaseImpl.preload(config);
+  //#endif  
   }
 //#if STATISTICS
   public PreloadStats preload(  PreloadConfig config) throws DatabaseException {

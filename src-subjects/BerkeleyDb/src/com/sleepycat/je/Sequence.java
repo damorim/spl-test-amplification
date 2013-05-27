@@ -30,6 +30,8 @@ public class Sequence {
 //#if STATISTICS
   private int nGets;
   private int nCachedGets;
+//#endif
+//#if TRANSACTIONS
   private TransactionConfig autoCommitConfig;
 //#endif
 //#if LOGGINGBASE
@@ -58,11 +60,15 @@ public class Sequence {
     }
 //#if TRANSACTIONS
     if (config.getAutoCommitNoSync()){
+    //#if STATISTICS
       autoCommitConfig=new TransactionConfig();
       autoCommitConfig.setNoSync(true);
+    //#endif
     }
  else{
+	//#if STATISTICS
       autoCommitConfig=null;
+    //#endif
     }
 //#endif
     this.db=db;

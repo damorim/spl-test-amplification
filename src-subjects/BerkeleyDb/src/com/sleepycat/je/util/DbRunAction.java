@@ -73,9 +73,8 @@ public class DbRunAction {
             doAction=CLEAN;
           }
 //#endif
- else 
 //#if INCOMPRESSOR
-          if (action.equalsIgnoreCase("compress")) 
+          else if (action.equalsIgnoreCase("compress")) 
 //#if INCOMPRESSOR
 {
             doAction=COMPRESS;

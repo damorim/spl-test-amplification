@@ -771,9 +771,9 @@ private static class PreloadProcessor implements TreeNodeProcessor {
 //#if STATISTICS
     private PreloadStats stats;
 //#endif
-    PreloadProcessor(    EnvironmentImpl envImpl,    long maxBytes,    long targetTime,
+    PreloadProcessor(    EnvironmentImpl envImpl,    long maxBytes,    long targetTime
 //#if STATISTICS
-    PreloadStats stats
+    , PreloadStats stats
 //#endif
 ){
       this.envImpl=envImpl;
@@ -923,14 +923,12 @@ private final class PreloadWithRootLatched implements WithRootLatched {
 //#endif
     }
   }
+
+//#if STATISTICS
   /** 
  * Preload the cache, using up to maxBytes bytes or maxMillsecs msec.
  */
-  public 
-//#if STATISTICS
-PreloadStats
-//#endif
- preload(  PreloadConfig config) throws DatabaseException {
+  public PreloadStats preload(  PreloadConfig config) throws DatabaseException {
     long maxBytes=config.getMaxBytes();
     long maxMillisecs=config.getMaxMillisecs();
     long targetTime=Long.MAX_VALUE;
@@ -981,6 +979,8 @@ ret
     return ret;
 //#endif
   }
+  //#endif
+  
   public String dumpString(  int nSpaces){
     StringBuffer sb=new StringBuffer();
     sb.append(TreeUtils.indent(nSpaces));
