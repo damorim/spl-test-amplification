@@ -89,9 +89,9 @@ public abstract class Node implements LoggableObject, LogReadable, LogWritable {
  * Remove yourself from the in memory list if you're a type of node that 
  * is put there.
  */
-  abstract void accountForSubtreeRemoval(  INList inList,
+  abstract void accountForSubtreeRemoval(  INList inList
 //#if CLEANER
-  UtilizationTracker tracker
+  , UtilizationTracker tracker
 //#endif
 ) throws DatabaseException ;
   /** 

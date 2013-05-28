@@ -200,7 +200,11 @@ public class DbLoad {
     DatabaseConfig dbConfig=new DatabaseConfig();
     dbConfig.setSortedDuplicates(dupSort);
     dbConfig.setAllowCreate(true);
-    Database db=env.openDatabase(null,dbName,dbConfig);
+    Database db=env.openDatabase(
+      //#if TRANSACTIONS
+        null,
+      //#endif
+        dbName,dbConfig);
     loadData(db);
     db.close();
 //#if LOGGINGINFO
@@ -305,14 +309,22 @@ public class DbLoad {
       DatabaseEntry key=new DatabaseEntry(keyBytes);
       DatabaseEntry data=new DatabaseEntry(dataBytes);
       if (noOverwrite) {
-        if (db.putNoOverwrite(null,key,data) == OperationStatus.KEYEXIST) {
+        if (db.putNoOverwrite(
+          //#if TRANSACTIONS
+            null,
+          //#endif
+            key,data) == OperationStatus.KEYEXIST) {
           if (commandLine) {
             System.err.println("Key exists: " + key);
           }
         }
       }
  else {
-        db.put(null,key,data);
+        db.put(
+          //#if TRANSACTIONS
+            null,
+          //#endif
+            key,data);
       }
       count++;
       if ((progressInterval > 0) && (bytesReadThisInterval > progressInterval)) {

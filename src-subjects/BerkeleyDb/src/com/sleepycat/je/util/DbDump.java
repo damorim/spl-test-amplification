@@ -188,10 +188,18 @@ public class DbDump {
     DatabaseConfig dbConfig=new DatabaseConfig();
     dbConfig.setReadOnly(true);
     DbInternal.setUseExistingConfig(dbConfig,true);
-    Database db=env.openDatabase(null,dbName,dbConfig);
+    Database db=env.openDatabase(
+      //#if TRANSACTIONS
+        null,
+      //#endif
+        dbName,dbConfig);
     dupSort=db.getConfig().getSortedDuplicates();
     printHeader(outputFile,dupSort,formatUsingPrintable);
-    Cursor cursor=db.openCursor(null,null);
+    Cursor cursor=db.openCursor(
+      //#if TRANSACTIONS
+        null,
+      //#endif
+        null);
     while (cursor.getNext(foundKey,foundData,LockMode.DEFAULT) == OperationStatus.SUCCESS) {
       dumpOne(outputFile,foundKey.getData(),formatUsingPrintable);
       dumpOne(outputFile,foundData.getData(),formatUsingPrintable);

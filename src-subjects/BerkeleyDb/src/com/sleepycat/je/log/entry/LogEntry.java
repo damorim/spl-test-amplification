@@ -22,23 +22,12 @@ public interface LogEntry extends Cloneable {
  * @return a shallow clone.
  */
   public Object clone() throws CloneNotSupportedException ;
+   
+//#if TRANSACTIONS
   /** 
- * @return true if the LogEntry is a transactional log entry type.
- */
-  
-//#if TRANSACTIONS
-public
-//#endif
- 
-//#if TRANSACTIONS
-boolean
-//#endif
- 
-//#if TRANSACTIONS
-isTransactional
-//#endif
-();
-//#if TRANSACTIONS
+   * @return true if the LogEntry is a transactional log entry type.
+   */
+  public boolean isTransactional ();
   /** 
  * @return return the transaction id if this log entry is transactional,
  * 0 otherwise.

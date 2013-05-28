@@ -93,13 +93,11 @@ public class DbTree implements LoggableObject, LogReadable {
 //#if TRANSACTIONS
     if (envImpl.isNoLocking()) {
       return new BasicLocker(envImpl);
-    }
- else 
-//#if TRANSACTIONS
-{
+    } else {
       return new AutoTxn(envImpl,new TransactionConfig());
     }
-//#endif
+//#else
+    throw new RuntimeException("TYPE ERROR?");
 //#endif
   }
   /** 
@@ -176,8 +174,7 @@ public class DbTree implements LoggableObject, LogReadable {
   public void modifyDbRoot(  DatabaseImpl db) throws DatabaseException {
     if (db.getId().equals(ID_DB_ID) || db.getId().equals(NAME_DB_ID)) {
       envImpl.logMapTreeRoot();
-    }
- else {
+    } else {
       Locker locker=createLocker(envImpl);
       CursorImpl cursor=new CursorImpl(idDatabase,locker);
       boolean operationOk=false;
@@ -193,19 +190,19 @@ public class DbTree implements LoggableObject, LogReadable {
             mapLN=(MapLN)cursor.getCurrentLNAlreadyLatched(LockType.WRITE);
             assert mapLN != null;
           }
- catch (          DeadlockException DE) {
+      catch (          DeadlockException DE) {
             cursor.close();
             locker.operationEnd(false);
             locker=createLocker(envImpl);
             cursor=new CursorImpl(idDatabase,locker);
             continue;
           }
- finally 
-//#if LATCHES
-{
+          //#if LATCHES
+          finally 
+          {
             cursor.releaseBINs();
           }
-//#endif
+          //#endif
           break;
         }
         RewriteMapLN writeMapLN=new RewriteMapLN(cursor);

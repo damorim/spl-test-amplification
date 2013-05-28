@@ -21,33 +21,38 @@ public class SyncedLogManager extends LogManager {
   public SyncedLogManager(  EnvironmentImpl envImpl,  boolean readOnly) throws DatabaseException {
     super(envImpl,readOnly);
   }
-  protected LogResult logItem(  LoggableObject item,  boolean isProvisional,  boolean flushRequired,  boolean forceNewLogFile,  long oldNodeLsn,  boolean marshallOutsideLatch,  ByteBuffer marshalledBuffer,
+  
+  protected LogResult logItem(  LoggableObject item,  boolean isProvisional,  boolean flushRequired,  boolean forceNewLogFile,  long oldNodeLsn,  boolean marshallOutsideLatch,  ByteBuffer marshalledBuffer
 //#if CLEANER
-  UtilizationTracker tracker
+  , UtilizationTracker tracker
 //#endif
 ) throws IOException, DatabaseException {
 //#if LATCHES
 synchronized (logWriteLatch) {
-      return logInternal(item,isProvisional,flushRequired,forceNewLogFile,oldNodeLsn,marshallOutsideLatch,marshalledBuffer,
+      return logInternal(item,isProvisional,flushRequired,forceNewLogFile,oldNodeLsn,marshallOutsideLatch,marshalledBuffer
 //#if CLEANER
-tracker
+, tracker
 //#endif
 );
     }
+//#else
+return null; // -Marcelo (comperr owise)
 //#endif
   }
+  
   protected void flushInternal() throws LogException, DatabaseException {
-    try {
 //#if LATCHES
+    try {
 synchronized (logWriteLatch) {
         logBufferPool.writeBufferToFile(0);
       }
-//#endif
     }
  catch (    IOException e) {
       throw new LogException(e.getMessage());
     }
+//#endif
   }
+  
 //#if CLEANER
   /** 
  * @see LogManager#getUnflushableTrackedSummary

@@ -202,9 +202,9 @@ abstract public class LogManager {
         int entrySize=itemSize + HEADER_BYTES;
         marshalledBuffer=marshallIntoBuffer(item,itemSize,isProvisional,entrySize);
       }
-      logResult=logItem(item,isProvisional,flushRequired,forceNewLogFile,oldNodeLsn,marshallOutsideLatch,marshalledBuffer,
+      logResult=logItem(item,isProvisional,flushRequired,forceNewLogFile,oldNodeLsn,marshallOutsideLatch,marshalledBuffer
 //#if CLEANER
-tracker
+, tracker
 //#endif
 );
     }
@@ -244,17 +244,17 @@ catch (    IOException e) {
 //#endif
     return logResult.currentLsn;
   }
-  abstract protected LogResult logItem(  LoggableObject item,  boolean isProvisional,  boolean flushRequired,  boolean forceNewLogFile,  long oldNodeLsn,  boolean marshallOutsideLatch,  ByteBuffer marshalledBuffer,
+  abstract protected LogResult logItem(  LoggableObject item,  boolean isProvisional,  boolean flushRequired,  boolean forceNewLogFile,  long oldNodeLsn,  boolean marshallOutsideLatch,  ByteBuffer marshalledBuffer
 //#if CLEANER
-  UtilizationTracker tracker
+  , UtilizationTracker tracker
 //#endif
 ) throws IOException, DatabaseException ;
   /** 
  * Called within the log write critical section. 
  */
-  protected LogResult logInternal(  LoggableObject item,  boolean isProvisional,  boolean flushRequired,  boolean forceNewLogFile,  long oldNodeLsn,  boolean marshallOutsideLatch,  ByteBuffer marshalledBuffer,
+  protected LogResult logInternal(  LoggableObject item,  boolean isProvisional,  boolean flushRequired,  boolean forceNewLogFile,  long oldNodeLsn,  boolean marshallOutsideLatch,  ByteBuffer marshalledBuffer
 //#if CLEANER
-  UtilizationTracker tracker
+  , UtilizationTracker tracker
 //#endif
 ) throws IOException, DatabaseException {
     LogEntryType entryType=item.getLogType();

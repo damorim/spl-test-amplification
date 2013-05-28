@@ -1029,37 +1029,14 @@ catch (      DatabaseException DBE) {
  */
   
 //#if TRANSACTIONS
-public
-//#endif
- 
-//#if TRANSACTIONS
-Txn
-//#endif
- 
-//#if TRANSACTIONS
-txnBegin
-//#endif
-(
-//#if TRANSACTIONS
-  Transaction parent
-//#endif
-,
-//#if TRANSACTIONS
-  TransactionConfig txnConfig
-//#endif
-) throws 
-//#if TRANSACTIONS
-DatabaseException
-//#endif
- 
-//#if TRANSACTIONS
-{
+  public Txn txnBegin (Transaction parent, TransactionConfig txnConfig) throws DatabaseException {
     if (!isTransactional) {
       throw new DatabaseException("beginTransaction called, " + " but Environment was not opened " + "with transactional cpabilities");
     }
     return txnManager.txnBegin(parent,txnConfig);
   }
 //#endif
+
   public LogManager getLogManager(){
     return logManager;
   }

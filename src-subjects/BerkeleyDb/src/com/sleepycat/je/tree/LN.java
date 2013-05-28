@@ -122,39 +122,32 @@ public class LN extends Node implements LoggableObject, LogReadable {
       boolean logAbortKnownDeleted;
 //#if TRANSACTIONS
       Txn logTxn;
-//#endif
-//#if TRANSACTIONS
-      if (locker.isTransactional()) 
-//#if TRANSACTIONS
-{
+      if (locker.isTransactional()) {
         entryType=LogEntryType.LOG_DEL_DUPLN_TRANSACTIONAL;
         WriteLockInfo info=locker.getWriteLockInfo(getNodeId());
         logAbortLsn=info.getAbortLsn();
         logAbortKnownDeleted=info.getAbortKnownDeleted();
         logTxn=locker.getTxnLocker();
-      }
-//#endif
- else {
+      } else {
+//#endif      
         entryType=LogEntryType.LOG_DEL_DUPLN;
         logAbortLsn=DbLsn.NULL_LSN;
         logAbortKnownDeleted=true;
 //#if TRANSACTIONS
         logTxn=null;
-//#endif
       }
-//#endif
+//#endif      
       if (oldLsn == logAbortLsn) {
         oldLsn=DbLsn.NULL_LSN;
       }
-      DeletedDupLNLogEntry logEntry=new DeletedDupLNLogEntry(entryType,this,database.getId(),dupKey,lnKey,logAbortLsn,logAbortKnownDeleted,
-//#if TRANSACTIONS
-logTxn
-//#endif
-);
+      DeletedDupLNLogEntry logEntry=new DeletedDupLNLogEntry(entryType,this,database.getId(),dupKey,lnKey,logAbortLsn,logAbortKnownDeleted
+//#if TRANSACTIONS    		  
+    		  , logTxn
+//#endif    		  
+    		  );
       LogManager logManager=env.getLogManager();
       newLsn=logManager.log(logEntry,false,oldLsn);
-    }
- else {
+    } else {
       newLsn=log(env,database.getId(),lnKey,oldLsn,locker);
     }
     return newLsn;
@@ -182,9 +175,9 @@ logTxn
   /** 
  * No need to do anything, stop the search.
  */
-  void accountForSubtreeRemoval(  INList inList,
+  void accountForSubtreeRemoval(  INList inList
 //#if CLEANER
-  UtilizationTracker tracker
+,  UtilizationTracker tracker
 //#endif
 ){
   }
@@ -266,36 +259,30 @@ logTxn
     boolean logAbortKnownDeleted;
 //#if TRANSACTIONS
     Txn logTxn;
-//#endif
-//#if TRANSACTIONS
-    if (locker != null && locker.isTransactional()) 
-//#if TRANSACTIONS
-{
+    if (locker != null && locker.isTransactional()) {
       entryType=getTransactionalLogType();
       WriteLockInfo info=locker.getWriteLockInfo(getNodeId());
       logAbortLsn=info.getAbortLsn();
       logAbortKnownDeleted=info.getAbortKnownDeleted();
       logTxn=locker.getTxnLocker();
       assert logTxn != null;
-    }
-//#endif
- else {
+    } else {
+//#endif    	
       entryType=getLogType();
       logAbortLsn=DbLsn.NULL_LSN;
       logAbortKnownDeleted=false;
 //#if TRANSACTIONS
       logTxn=null;
-//#endif
     }
-//#endif
+//#endif    
     if (oldLsn == logAbortLsn) {
       oldLsn=DbLsn.NULL_LSN;
     }
-    LNLogEntry logEntry=new LNLogEntry(entryType,this,dbId,key,logAbortLsn,logAbortKnownDeleted,
-//#if TRANSACTIONS
-logTxn
-//#endif
-);
+    LNLogEntry logEntry=new LNLogEntry(entryType,this,dbId,key,logAbortLsn,logAbortKnownDeleted
+       //#if TRANSACTIONS
+       , logTxn
+       //#endif
+    		);
     LogManager logManager=env.getLogManager();
     return logManager.log(logEntry,isProvisional,oldLsn);
   }

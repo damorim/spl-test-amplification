@@ -76,12 +76,11 @@ public class LastFileReader extends FileReader {
           lastNum=attemptToMoveBadFile(e);
           fileHandle=null;
         }
- finally 
 //#if LATCHES
-{
-          if (fileHandle != null) {
-            fileHandle.release();
-          }
+        finally {
+        	if (fileHandle != null) {
+        		fileHandle.release();
+        	}
         }
 //#endif
       }

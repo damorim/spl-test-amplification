@@ -15,76 +15,82 @@ public final class TreeIterator implements Iterator {
   private int index;
   public TreeIterator(  Tree tree) throws DatabaseException {
     nextBin=(BIN)tree.getFirstNode();
-//#if LATCHES
+    //#if LATCHES
     if (nextBin != null) 
-//#if LATCHES
-{
+      //#if LATCHES
+    {
       nextBin.releaseLatch();
     }
-//#endif
-//#endif
+    //#endif
+    //#endif
     index=-1;
     this.tree=tree;
   }
   public boolean hasNext(){
     boolean ret=false;
     try {
-//#if LATCHES
+      //#if LATCHES
       if (nextBin != null) 
-//#if LATCHES
-{
+        //#if LATCHES
+      {
         nextBin.latch();
       }
-//#endif
-//#endif
+      //#endif
+      //#endif
       advance();
       ret=(nextBin != null) && (index < nextBin.getNEntries());
     }
- catch (    DatabaseException e) {
+    catch (    DatabaseException e) {
     }
- finally {
-//#if LATCHES
+    finally {
+      //#if LATCHES
       try 
-//#if LATCHES
-{
+      //#if LATCHES
+      {
         if (nextBin != null) {
           nextBin.releaseLatch();
         }
       }
-//#endif
- catch (      LatchNotHeldException e) {
+      //#endif
+      catch (      LatchNotHeldException e) {
       }
-//#endif
+      //#endif
     }
     return ret;
   }
+
   public Object next(){
     Object ret=null;
+    //#if LATCHES
     try {
+      //#endif
+
       if (nextBin == null) {
         throw new NoSuchElementException();
       }
-//#if LATCHES
+      //#if LATCHES
       nextBin.latch();
-//#endif
+      //#endif
       ret=nextBin.getKey(index);
+      //#if LATCHES
     }
- catch (    DatabaseException e) {
+    catch (DatabaseException e) {
     }
- finally 
-//#if LATCHES
-{
+    finally 
+    {
+
       try {
         if (nextBin != null) {
           nextBin.releaseLatch();
         }
       }
- catch (      LatchNotHeldException e) {
+      catch (      LatchNotHeldException e) {
       }
     }
-//#endif
+    //#endif
     return ret;
   }
+
   public void remove(){
     throw new UnsupportedOperationException();
   }

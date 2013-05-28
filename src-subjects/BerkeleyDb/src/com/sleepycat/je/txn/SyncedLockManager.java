@@ -24,6 +24,8 @@ public class SyncedLockManager extends LockManager {
 synchronized (lockTableLatches[lockTableIndex]) {
       return attemptLockInternal(nodeId,locker,type,nonBlockingRequest,lockTableIndex);
     }
+//#else
+throw new RuntimeException("TYPE ERROR?");
 //#endif
   }
   /** 
@@ -35,6 +37,8 @@ synchronized (lockTableLatches[lockTableIndex]) {
 synchronized (lockTableLatches[lockTableIndex]) {
       return makeTimeoutMsgInternal(lockOrTxn,locker,nodeId,type,grantType,useLock,timeout,start,now,database);
     }
+//#else
+throw new RuntimeException("TYPE ERROR?");
 //#endif
   }
   /** 
@@ -50,6 +54,8 @@ synchronized (lockTableLatches[lockTableIndex]) {
 synchronized (lockTableLatches[lockTableIndex]) {
       return releaseAndFindNotifyTargetsInternal(nodeId,lock,locker,removeFromLocker,lockTableIndex);
     }
+//#else
+throw new RuntimeException("TYPE ERROR?");
 //#endif
   }
   /** 
@@ -94,6 +100,8 @@ synchronized (lockTableLatches[lockTableIndex]) {
 synchronized (lockTableLatches[lockTableIndex]) {
       return isLockedInternal(nodeId,lockTableIndex);
     }
+//#else
+throw new RuntimeException("TYPE ERROR?");
 //#endif
   }
   /** 
@@ -105,6 +113,8 @@ synchronized (lockTableLatches[lockTableIndex]) {
 synchronized (lockTableLatches[lockTableIndex]) {
       return isOwnerInternal(nodeId,locker,type,lockTableIndex);
     }
+//#else
+throw new RuntimeException("TYPE ERROR?");
 //#endif
   }
   /** 
@@ -116,6 +126,8 @@ synchronized (lockTableLatches[lockTableIndex]) {
 synchronized (lockTableLatches[lockTableIndex]) {
       return isWaiterInternal(nodeId,locker,lockTableIndex);
     }
+//#else
+throw new RuntimeException("TYPE ERROR?");
 //#endif
   }
   /** 
@@ -127,6 +139,8 @@ synchronized (lockTableLatches[lockTableIndex]) {
 synchronized (lockTableLatches[lockTableIndex]) {
       return nWaitersInternal(nodeId,lockTableIndex);
     }
+//#else
+throw new RuntimeException("TYPE ERROR?");
 //#endif
   }
   /** 
@@ -138,6 +152,8 @@ synchronized (lockTableLatches[lockTableIndex]) {
 synchronized (lockTableLatches[lockTableIndex]) {
       return nOwnersInternal(nodeId,lockTableIndex);
     }
+//#else
+throw new RuntimeException("TYPE ERROR?");
 //#endif
   }
   /** 
@@ -149,6 +165,8 @@ synchronized (lockTableLatches[lockTableIndex]) {
 synchronized (lockTableLatches[lockTableIndex]) {
       return getWriteOwnerLockerInternal(nodeId,lockTableIndex);
     }
+//#else
+throw new RuntimeException("TYPE ERROR?");
 //#endif
   }
   /** 
@@ -160,6 +178,8 @@ synchronized (lockTableLatches[lockTableIndex]) {
 synchronized (lockTableLatches[lockTableIndex]) {
       return validateOwnershipInternal(nodeId,locker,type,flushFromWaiters,mb,lockTableIndex);
     }
+//#else
+throw new RuntimeException("TYPE ERROR?");
 //#endif
   }
   /** 

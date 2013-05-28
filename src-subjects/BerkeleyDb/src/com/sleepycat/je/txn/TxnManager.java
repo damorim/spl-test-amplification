@@ -179,43 +179,14 @@ public class TxnManager {
  * @return the new txn
  */
   
-//#if TRANSACTIONS
-public
-//#endif
- 
-//#if TRANSACTIONS
-Txn
-//#endif
- 
-//#if TRANSACTIONS
-txnBegin
-//#endif
-(
-//#if TRANSACTIONS
-  Transaction parent
-//#endif
-,
-//#if TRANSACTIONS
-  TransactionConfig txnConfig
-//#endif
-) throws 
-//#if TRANSACTIONS
-DatabaseException
-//#endif
- 
-//#if TRANSACTIONS
-{
-//#if TRANSACTIONS
-    if (parent != null) 
-//#if TRANSACTIONS
-{
+  //#if TRANSACTIONS
+  public Txn txnBegin(Transaction parent, TransactionConfig txnConfig) throws DatabaseException {
+    if (parent != null) {
       throw new DatabaseException("Nested transactions are not supported yet.");
     }
-//#endif
-//#endif
     return new Txn(env,txnConfig);
   }
-//#endif
+  //#endif
   /** 
  * Give transactions and environment access to lock manager.
  */

@@ -902,14 +902,13 @@ private final class PreloadWithRootLatched implements WithRootLatched {
       assert in.getDatabase() != null;
       lsnINMap.put(lsn,new INEntry(in,index));
     }
+    
     protected Node fetchLSN(    long lsn) throws DatabaseException {
       INEntry inEntry=(INEntry)lsnINMap.remove(new Long(lsn));
       assert (inEntry != null);
       IN in=inEntry.in;
-//#if LATCHES
+      //#if LATCHES
       in.latch();
-//#endif
-//#if LATCHES
       try {
         int index=inEntry.index;
         if (in.isEntryKnownDeleted(index) || in.getLsn(index) != lsn) {
@@ -917,10 +916,12 @@ private final class PreloadWithRootLatched implements WithRootLatched {
         }
         return in.fetchTarget(index);
       }
-  finally {
+      finally {
         in.releaseLatch();
       }
-//#endif
+      //#else 
+        throw new RuntimeException("TYPE ERROR?");
+      //#endif
     }
   }
 

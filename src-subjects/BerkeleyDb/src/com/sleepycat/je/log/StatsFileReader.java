@@ -27,7 +27,11 @@ public class StatsFileReader extends DumpFileReader {
  * Create this reader to start at a given LSN.
  */
   public StatsFileReader(  EnvironmentImpl env,  int readBufferSize,  long startLsn,  long finishLsn,  String entryTypes,  String txnIds,  boolean verbose) throws IOException, DatabaseException {
-    super(env,readBufferSize,startLsn,finishLsn,entryTypes,txnIds,verbose);
+    super(env,readBufferSize,startLsn,finishLsn,entryTypes
+    		//#if TRANSACTIONS
+    		//@  , txnIds
+    		//#endif
+    		, verbose);
     entryInfoMap=new TreeMap(new LogEntryTypeComparator());
     totalLogBytes=0;
     totalCount=0;

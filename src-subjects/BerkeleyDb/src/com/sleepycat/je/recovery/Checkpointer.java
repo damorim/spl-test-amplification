@@ -548,9 +548,9 @@ catch (
  * provisionally. That's because we don't need to process lower INs because
  * the higher INs will end up pointing at them.
  */
-  private void flushDirtyNodes(  SortedMap dirtyMap,  boolean flushAll,  boolean allowDeltas,
+  private void flushDirtyNodes(  SortedMap dirtyMap,  boolean flushAll,  boolean allowDeltas
 //#if CLEANER
-  boolean flushExtraLevel
+,  boolean flushExtraLevel
 //#endif
 ,  long checkpointStart) throws DatabaseException {
     while (dirtyMap.size() > 0) {
@@ -585,9 +585,9 @@ catch (
  * Scan the INList for all dirty INs. Arrange them in level sorted map for
  * level ordered flushing.
  */
-  private SortedMap selectDirtyINs(  boolean flushAll,
+  private SortedMap selectDirtyINs(  boolean flushAll
 //#if CLEANER
-  boolean flushExtraLevel
+,  boolean flushExtraLevel
 //#endif
 ) throws DatabaseException {
     SortedMap newDirtyMap=new TreeMap();

@@ -69,8 +69,6 @@ public interface TreeNodeProcessor {
     Set foundSet=new HashSet();
 //#if MEMORYBUDGET
     long memoryChange=0;
-//#endif
-//#if MEMORYBUDGET
     MemoryBudget mb=envImpl.getMemoryBudget();
 //#endif
 //#if LATCHES
@@ -89,8 +87,6 @@ public interface TreeNodeProcessor {
             iter.remove();
 //#if MEMORYBUDGET
             memoryChange+=(thisIN.getAccumulatedDelta() - thisIN.getInMemorySize());
-//#endif
-//#if MEMORYBUDGET
             thisIN.setInListResident(false);
 //#endif
           }
@@ -98,17 +94,17 @@ public interface TreeNodeProcessor {
         }
       }
     }
- catch (DatabaseException e){
-//#if MEMORYBUDGET
+    //#if MEMORYBUDGET
+    catch (DatabaseException e){
       mb.updateTreeMemoryUsage(memoryChange);
       throw e;
-//#endif
     }
- finally{ 
-//#if LATCHES
+    //#endif
+    finally{ 
+     //#if LATCHES
 	 inList.releaseMajorLatch();
-//#endif
-  }
+     //#endif
+    }
     if (foundSome) {
       Iterator iter=foundSet.iterator();
       while (iter.hasNext()) {

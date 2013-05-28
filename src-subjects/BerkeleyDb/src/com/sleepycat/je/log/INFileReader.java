@@ -72,11 +72,11 @@ public class INFileReader extends FileReader {
   /** 
  * Create this reader to start at a given LSN.
  */
-  public INFileReader(  EnvironmentImpl env,  int readBufferSize,  long startLsn,  long finishLsn,  boolean trackIds,  boolean mapDbOnly,  long partialCkptStart,
+  public INFileReader(  EnvironmentImpl env,  int readBufferSize,  long startLsn,  long finishLsn,  boolean trackIds,  boolean mapDbOnly,  long partialCkptStart
 //#if CLEANER
-  Map fileSummaryLsns
+  , Map fileSummaryLsns
 //#endif
-) throws IOException, DatabaseException {
+  ) throws IOException, DatabaseException {
     super(env,readBufferSize,true,startLsn,null,DbLsn.NULL_LSN,finishLsn);
     this.trackIds=trackIds;
     this.mapDbOnly=mapDbOnly;
@@ -90,8 +90,6 @@ public class INFileReader extends FileReader {
       this.partialCkptStart=partialCkptStart;
 //#if CLEANER
       this.fileSummaryLsns=fileSummaryLsns;
-//#endif
-//#if CLEANER
       fsTrackingEntry=(LNLogEntry)LogEntryType.LOG_FILESUMMARYLN.getNewLogEntry();
 //#endif
       dbIdTrackingMap=new HashMap();
@@ -126,8 +124,6 @@ public class INFileReader extends FileReader {
     nodeTrackingEntry=null;
 //#if CLEANER
     inTrackingEntry=null;
-//#endif
-//#if CLEANER
     fsTrackingEntry=null;
 //#endif
     isProvisional=LogEntryType.isProvisional(entryTypeVersion);
@@ -362,22 +358,11 @@ public class INFileReader extends FileReader {
  */
   
 //#if TRANSACTIONS
-public
-//#endif
- 
-//#if TRANSACTIONS
-long
-//#endif
- 
-//#if TRANSACTIONS
-getMaxTxnId
-//#endif
-()
-//#if TRANSACTIONS
-{
+  public long getMaxTxnId() {
     return maxTxnId;
   }
 //#endif
+  
   /** 
  * @return true if the last entry was a delete info entry.
  */

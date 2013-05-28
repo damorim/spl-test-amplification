@@ -36,7 +36,11 @@ public final class MapLN extends LN {
   }
   void makeDeleted(){
     deleted=true;
-    databaseImpl.getTree().setRoot(null,true);
+    databaseImpl.getTree().setRoot(null
+      //#if LATCHES
+        ,true
+      //#endif
+        );
   }
   public DatabaseImpl getDatabase(){
     return databaseImpl;

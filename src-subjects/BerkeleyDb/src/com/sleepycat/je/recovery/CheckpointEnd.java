@@ -25,9 +25,9 @@ public class CheckpointEnd implements LoggableObject, LogReadable {
   private long lastTxnId;
 //#endif
   private long id;
-  public CheckpointEnd(  String invoker,  long checkpointStartLsn,  long rootLsn,  long firstActiveLsn,  long lastNodeId,  int lastDbId,
+  public CheckpointEnd(  String invoker,  long checkpointStartLsn,  long rootLsn,  long firstActiveLsn,  long lastNodeId,  int lastDbId
 //#if TRANSACTIONS
-  long lastTxnId
+, long lastTxnId
 //#endif
 ,  long id){
     if (invoker == null) {

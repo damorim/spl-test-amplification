@@ -283,11 +283,14 @@ db,databaseName,dbConfig,dbConfig.getAllowPopulate());
         locker=LockerFactory.getWritableLocker(this,
 //#if TRANSACTIONS
 txn,
+dbConfig.getTransactional(),
 //#endif
+true
 //#if TRANSACTIONS
-dbConfig.getTransactional()
+, null
 //#endif
-,true,null);
+);
+        
 //#if TRANSACTIONS
         isWritableLocker=true;
 //#endif
@@ -296,8 +299,6 @@ dbConfig.getTransactional()
         locker=LockerFactory.getReadableLocker(this,
 //#if TRANSACTIONS
 txn,
-//#endif
-//#if TRANSACTIONS
 dbConfig.getTransactional(),
 //#endif
 true,false);
@@ -324,13 +325,15 @@ true,false);
           if (!isWritableLocker) {
             locker.operationEnd(OperationStatus.SUCCESS);
             locker=LockerFactory.getWritableLocker(this,
-//#if TRANSACTIONS
-txn,
-//#endif
-//#if TRANSACTIONS
-dbConfig.getTransactional(),
-//#endif
-true,null);
+                //#if TRANSACTIONS
+                txn,
+                dbConfig.getTransactional(),
+                //#endif
+                true
+                //#if TRANSACTIONS
+                ,null
+                //#endif
+                );
             isWritableLocker=true;
           }
           newDb.initNew(this,locker,databaseName,dbConfig);

@@ -368,7 +368,11 @@ public class RecoveryManager {
 //#endif
   }
   private void readINsAndTrackIds(  long rollForwardLsn) throws IOException, DatabaseException {
-    INFileReader reader=new INFileReader(env,readBufferSize,rollForwardLsn,info.nextAvailableLsn,true,false,info.partialCheckpointStartLsn,fileSummaryLsns);
+    INFileReader reader=new INFileReader(env,readBufferSize,rollForwardLsn,info.nextAvailableLsn,true,false,info.partialCheckpointStartLsn
+      //#if CLEANER
+        ,fileSummaryLsns
+      //#endif
+        );
     reader.addTargetType(LogEntryType.LOG_IN);
     reader.addTargetType(LogEntryType.LOG_BIN);
     reader.addTargetType(LogEntryType.LOG_IN_DELETE_INFO);
@@ -422,7 +426,11 @@ public class RecoveryManager {
  * Read INs and process.
  */
   private int readINs(  long rollForwardLsn,  boolean mapDbOnly,  LogEntryType inType1,  LogEntryType inType2,  LogEntryType inType3,  boolean requireExactMatch) throws IOException, DatabaseException {
-    INFileReader reader=new INFileReader(env,readBufferSize,rollForwardLsn,info.nextAvailableLsn,false,mapDbOnly,info.partialCheckpointStartLsn,fileSummaryLsns);
+    INFileReader reader=new INFileReader(env,readBufferSize,rollForwardLsn,info.nextAvailableLsn,false,mapDbOnly,info.partialCheckpointStartLsn
+      //#if CLEANER
+        ,fileSummaryLsns
+      //#endif
+        );
     if (inType1 != null) {
       reader.addTargetType(inType1);
     }
@@ -558,56 +566,26 @@ txnNodeId
           }
 //#endif
         }
- else 
-//#if TRANSACTIONS
-        if (
-//#if TRANSACTIONS
-reader.isPrepare()
-//#endif
-) 
-//#if TRANSACTIONS
-{
-          long prepareId=reader.getTxnPrepareId();
-          Long prepareIdL=new Long(prepareId);
-//#if TRANSACTIONS
-          if (!committedTxnIds.contains(prepareIdL) && !abortedTxnIds.contains(prepareIdL)) 
-//#if TRANSACTIONS
-{
-//#if TRANSACTIONS
-            TransactionConfig txnConf=new TransactionConfig();
-//#endif
-//#if TRANSACTIONS
-            Txn preparedTxn=new Txn(env,txnConf,prepareId);
-//#endif
-            preparedTxn.setLockTimeout(0);
-            preparedTxns.put(prepareIdL,preparedTxn);
-            env.getTxnManager().registerXATxn(reader.getTxnPrepareXid(),preparedTxn,true);
-//#if LOGGINGINFO
-            Tracer.trace(Level.INFO,env,"Found unfinished prepare record: id: " + reader.getTxnPrepareId() + " Xid: "+ reader.getTxnPrepareXid());
-//#endif
-          }
-//#endif
-//#endif
+        //#if TRANSACTIONS
+        else if (reader.isPrepare()) {
+        	long prepareId=reader.getTxnPrepareId();
+        	Long prepareIdL=new Long(prepareId);
+        	if (!committedTxnIds.contains(prepareIdL) && !abortedTxnIds.contains(prepareIdL)) {
+        		TransactionConfig txnConf=new TransactionConfig();
+        		Txn preparedTxn=new Txn(env,txnConf,prepareId);
+        		preparedTxn.setLockTimeout(0);
+        		preparedTxns.put(prepareIdL,preparedTxn);
+        		env.getTxnManager().registerXATxn(reader.getTxnPrepareXid(),preparedTxn,true);
+        		//#if LOGGINGINFO
+        		Tracer.trace(Level.INFO,env,"Found unfinished prepare record: id: " + reader.getTxnPrepareId() + " Xid: "+ reader.getTxnPrepareXid());
+        		//#endif
+        	}
+        } else if (reader.isAbort()) {
+        	abortedTxnIds.add(new Long(reader.getTxnAbortId()));
+        } else {
+        	committedTxnIds.add(new Long(reader.getTxnCommitId()));
         }
-//#endif
- else 
-//#if TRANSACTIONS
-        if (reader.isAbort()) 
-//#if TRANSACTIONS
-{
-//#if TRANSACTIONS
-          abortedTxnIds.add(new Long(reader.getTxnAbortId()));
-//#endif
-        }
-//#endif
- else 
-//#if TRANSACTIONS
-{
-          committedTxnIds.add(new Long(reader.getTxnCommitId()));
-        }
-//#endif
-//#endif
-//#endif
+        //#endif
       }
       info.nRepeatIteratorReads+=reader.getNRepeatIteratorReads();
     }
@@ -902,7 +880,11 @@ private static class RootDeleter implements WithRootLatched {
  * @return true if the in-memory root was replaced.
  */
     public IN doWork(    ChildReference root) throws DatabaseException {
-      tree.setRoot(null,false);
+      tree.setRoot(null
+        //#if LATCHES
+          ,false
+        //#endif
+          );
       return null;
     }
   }
@@ -953,13 +935,21 @@ private static class RootUpdater implements WithRootLatched {
       inFromLog.releaseLatch();
 //#endif
       if (root == null) {
-        tree.setRoot(newRoot,false);
+        tree.setRoot(newRoot
+          //#if LATCHES
+            ,false
+          //#endif
+            );
         inserted=true;
       }
  else {
         originalLsn=root.getLsn();
         if (DbLsn.compareTo(originalLsn,lsn) < 0) {
-          tree.setRoot(newRoot,false);
+          tree.setRoot(newRoot
+            //#if LATCHES
+              ,false
+            //#endif
+              );
           replaced=true;
         }
       }

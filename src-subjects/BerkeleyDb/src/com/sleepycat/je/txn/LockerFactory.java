@@ -24,15 +24,16 @@ public class LockerFactory {
   , Transaction userTxn,  boolean dbIsTransactional
 //#endif
 ) throws DatabaseException {
-    return getWritableLocker(env,
-//#if TRANSACTIONS
-userTxn
-//#endif
-,
-//#if TRANSACTIONS
-dbIsTransactional
-//#endif
-,false,null);
+    return getWritableLocker(env
+        //#if TRANSACTIONS
+        , userTxn
+        , dbIsTransactional
+        //#endif
+, false
+        //#if TRANSACTIONS
+        , null
+        //#endif
+        );
   }
   /** 
  * Get a locker for a writable operation, also specifying whether to retain
@@ -41,77 +42,57 @@ dbIsTransactional
  * transferred out of the locker when the operation is complete.
  */
   public static Locker getWritableLocker(  Environment env
-//#if TRANSACTIONS
-  , Transaction userTxn, boolean dbIsTransactional
-//#endif
-,  boolean retainNonTxnLocks
-//#if TRANSACTIONS
-, TransactionConfig autoCommitConfig
-//#endif
-) throws DatabaseException {
+      //#if TRANSACTIONS
+      , Transaction userTxn, boolean dbIsTransactional
+      //#endif
+      ,  boolean retainNonTxnLocks
+      //#if TRANSACTIONS
+      , TransactionConfig autoCommitConfig
+      //#endif
+      ) throws DatabaseException {
     EnvironmentImpl envImpl=DbInternal.envGetEnvironmentImpl(env);
-//#if TRANSACTIONS
+    //#if TRANSACTIONS
     boolean envIsTransactional=envImpl.isTransactional();
-//#endif
-//#if TRANSACTIONS
-    if (userTxn == null) 
-//#if TRANSACTIONS
-{
+    if (userTxn == null) {
       Transaction xaLocker=env.getThreadTransaction();
       if (xaLocker != null) {
         return DbInternal.getLocker(xaLocker);
       }
     }
-//#endif
-//#endif
-//#if TRANSACTIONS
-    if (
-//#if TRANSACTIONS
-dbIsTransactional && userTxn == null
-//#endif
-) 
-//#if TRANSACTIONS
-{
+    if (dbIsTransactional && userTxn == null) {
       if (autoCommitConfig == null) {
         autoCommitConfig=DbInternal.getDefaultTxnConfig(env);
       }
       return new AutoTxn(envImpl,autoCommitConfig);
     }
-//#endif
- else 
-//#if TRANSACTIONS
-    if (
-//#if TRANSACTIONS
-userTxn == null
-//#endif
-) {
-      if (retainNonTxnLocks) {
-        return new BasicLocker(envImpl);
+    else 
+      if (userTxn == null) {
+        if (retainNonTxnLocks) {
+          return new BasicLocker(envImpl);
+        }
+        else {
+          return new ThreadLocker(envImpl);
+        }
       }
- else {
-        return new ThreadLocker(envImpl);
+      else 
+      {
+        if (!envIsTransactional) {
+          throw new DatabaseException("A Transaction cannot be used because the" + " environment was opened" + " non-transactionally");
+        }
+        if (!dbIsTransactional) {
+          throw new DatabaseException("A Transaction cannot be used because the" + " database was opened" + " non-transactionally");
+        }
+        Locker locker=DbInternal.getLocker(userTxn);
+        if (locker.isReadCommittedIsolation() && !retainNonTxnLocks) {
+          return new ReadCommittedLocker(envImpl,locker);
+        }
+        else {
+          return locker;
+        }
       }
-    }
- else 
-//#if TRANSACTIONS
-{
-      if (!envIsTransactional) {
-        throw new DatabaseException("A Transaction cannot be used because the" + " environment was opened" + " non-transactionally");
-      }
-      if (!dbIsTransactional) {
-        throw new DatabaseException("A Transaction cannot be used because the" + " database was opened" + " non-transactionally");
-      }
-      Locker locker=DbInternal.getLocker(userTxn);
-      if (locker.isReadCommittedIsolation() && !retainNonTxnLocks) {
-        return new ReadCommittedLocker(envImpl,locker);
-      }
- else {
-        return locker;
-      }
-    }
-//#endif
-//#endif
-//#endif
+    //#else
+    throw new RuntimeException("TYPE ERROR?");
+    //#endif
   }
   /** 
  * Get a locker for a read or cursor operation. See getWritableLocker for an
@@ -119,13 +100,10 @@ userTxn == null
  */
   public static Locker getReadableLocker(  Environment env,
 //#if TRANSACTIONS
-  Transaction userTxn
+  Transaction userTxn,
+  boolean dbIsTransactional,
 //#endif
-,
-//#if TRANSACTIONS
-  boolean dbIsTransactional
-//#endif
-,  boolean retainNonTxnLocks,  boolean readCommittedIsolation) throws DatabaseException {
+  boolean retainNonTxnLocks,  boolean readCommittedIsolation) throws DatabaseException {
 //#if TRANSACTIONS
     if (userTxn != null && !dbIsTransactional) 
 //#if TRANSACTIONS
@@ -154,19 +132,16 @@ userTxn == null
  */
   public static Locker getReadableLocker(  Environment env,  Database dbHandle,  Locker locker,  boolean retainNonTxnLocks,  boolean readCommittedIsolation) throws DatabaseException {
     DatabaseImpl dbImpl=DbInternal.dbGetDatabaseImpl(dbHandle);
-//#if TRANSACTIONS
-    if (!dbImpl.isTransactional() && locker != null && locker.isTransactional()) 
-//#if TRANSACTIONS
-{
+    //#if TRANSACTIONS
+    if (!dbImpl.isTransactional() && locker != null && locker.isTransactional()) {
       throw new DatabaseException("A Transaction cannot be used because the" + " database was opened" + " non-transactionally");
     }
-//#endif
-//#endif
+    //#endif
     if (locker != null && 
-//#if TRANSACTIONS
-!locker.isTransactional()
-//#endif
- && !retainNonTxnLocks) {
+        //#if TRANSACTIONS
+        !locker.isTransactional() &&
+        //#endif
+        !retainNonTxnLocks) {
       locker=null;
     }
     if (locker != null && locker.isReadCommittedIsolation()) {
@@ -174,6 +149,7 @@ userTxn == null
     }
     return getReadableLocker(env,locker,retainNonTxnLocks,readCommittedIsolation);
   }
+  
   /** 
  * Get a locker for a read or cursor operation. See getWritableLocker for an
  * explanation of retainNonTxnLocks.

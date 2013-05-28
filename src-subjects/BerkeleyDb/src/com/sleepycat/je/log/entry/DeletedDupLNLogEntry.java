@@ -26,14 +26,14 @@ public class DeletedDupLNLogEntry extends LNLogEntry {
   /** 
  * Constructor to make an object that can write this entry.
  */
-  public DeletedDupLNLogEntry(  LogEntryType entryType,  LN ln,  DatabaseId dbId,  byte[] key,  byte[] dataAsKey,  long abortLsn,  boolean abortKnownDeleted,
+  public DeletedDupLNLogEntry(  LogEntryType entryType,  LN ln,  DatabaseId dbId,  byte[] key,  byte[] dataAsKey,  long abortLsn,  boolean abortKnownDeleted
 //#if TRANSACTIONS
-  Txn txn
+  , Txn txn
 //#endif
 ){
-    super(entryType,ln,dbId,key,abortLsn,abortKnownDeleted,
+    super(entryType,ln,dbId,key,abortLsn,abortKnownDeleted
 //#if TRANSACTIONS
-txn
+, txn
 //#endif
 );
     this.dataAsKey=dataAsKey;

@@ -322,29 +322,23 @@ public static class KeyChangeStatus {
       return false;
     }
   }
+
   public BIN latchBIN() throws DatabaseException {
-//#if LATCHES
+    //#if LATCHES
     while (bin != null) {
-//#if LATCHES
       BIN waitingOn=bin;
-//#endif
-//#if LATCHES
       waitingOn.latch();
-//#endif
-//#if LATCHES
       if (bin == waitingOn) {
         return bin;
       }
-//#endif
-//#if LATCHES
       waitingOn.releaseLatch();
-//#endif
     }
-//#endif
-//#if LATCHES
     return null;
-//#endif
+    //#else
+    throw new RuntimeException("TYPE ERROR?");
+    //#endif
   }
+
 //#if LATCHES
   public void releaseBIN() throws LatchNotHeldException {
     if (bin != null) {
@@ -352,45 +346,38 @@ public static class KeyChangeStatus {
     }
   }
 //#endif
+  
 //#if LATCHES
   public void latchBINs() throws DatabaseException {
-//#if LATCHES
     latchBIN();
-//#endif
-//#if LATCHES
     latchDBIN();
-//#endif
   }
 //#endif
+  
 //#if LATCHES
   public void releaseBINs() throws LatchNotHeldException {
     releaseBIN();
     releaseDBIN();
   }
 //#endif
+
   public DBIN latchDBIN() throws DatabaseException {
-//#if LATCHES
+    //#if LATCHES
     while (dupBin != null) {
-//#if LATCHES
       BIN waitingOn=dupBin;
-//#endif
-//#if LATCHES
       waitingOn.latch();
-//#endif
-//#if LATCHES
       if (dupBin == waitingOn) {
         return dupBin;
       }
-//#endif
-//#if LATCHES
       waitingOn.releaseLatch();
-//#endif
     }
-//#endif
-//#if LATCHES
     return null;
-//#endif
+    //#else
+    throw new RuntimeException("TYPE ERROR?");
+    //#endif
   }
+
+  
 //#if LATCHES
   public void releaseDBIN() throws LatchNotHeldException {
     if (dupBin != null) {
@@ -398,18 +385,21 @@ public static class KeyChangeStatus {
     }
   }
 //#endif
+  
   public Locker getLocker(){
     return locker;
   }
+  
   public void addCursor(  BIN bin){
     if (bin != null) {
-//#if LATCHES
+      //#if LATCHES
       assert bin.isLatchOwner();
-//#endif
+      //#endif
       bin.addCursor(this);
     }
   }
-  /** 
+  
+/** 
  * Add to the current cursor. (For dups)
  */
   public void addCursor(){
@@ -437,24 +427,27 @@ public static class KeyChangeStatus {
     removeCursorBIN();
     removeCursorDBIN();
   }
+  
   private void removeCursorBIN() throws DatabaseException {
     BIN abin=latchBIN();
     if (abin != null) {
       abin.removeCursor(this);
-//#if LATCHES
+      //#if LATCHES
       abin.releaseLatch();
-//#endif
+      //#endif
     }
   }
+  
   private void removeCursorDBIN() throws DatabaseException {
     DBIN abin=latchDBIN();
     if (abin != null) {
       abin.removeCursor(this);
-//#if LATCHES
+      //#if LATCHES
       abin.releaseLatch();
-//#endif
+      //#endif
     }
   }
+  
   /** 
  * Clear the reference to the dup tree, if any.
  */
@@ -462,9 +455,9 @@ public static class KeyChangeStatus {
     if (dupBin != null) {
       if (alreadyLatched) {
         dupBin.removeCursor(this);
-//#if LATCHES
+        //#if LATCHES
         dupBin.releaseLatch();
-//#endif
+        //#endif
       }
  else {
         removeCursorDBIN();
@@ -542,6 +535,7 @@ public static class KeyChangeStatus {
 //#endif
 //#endif
   }
+  
   public int count(  LockType lockType) throws DatabaseException {
     assert assertCursorState(true) : dumpToString(true);
     if (!database.getSortedDuplicates()) {
@@ -550,10 +544,8 @@ public static class KeyChangeStatus {
     if (bin == null) {
       return 0;
     }
-//#if LATCHES
+    //#if LATCHES
     latchBIN();
-//#endif
-//#if LATCHES
     try {
       if (bin.getNEntries() <= index) {
         return 0;
@@ -561,30 +553,27 @@ public static class KeyChangeStatus {
       Node n=bin.fetchTarget(index);
       if (n != null && n.containsDuplicates()) {
         DIN dupRoot=(DIN)n;
-//#if LATCHES
         dupRoot.latch();
-//#endif
-//#if LATCHES
         releaseBIN();
-//#endif
         DupCountLN dupCountLN=(DupCountLN)dupRoot.getDupCountLNRef().fetchTarget(database,dupRoot);
-//#if LATCHES
         dupRoot.releaseLatch();
-//#endif
         if (lockType != LockType.NONE) {
           locker.lock(dupCountLN.getNodeId(),lockType,false,database);
         }
         return dupCountLN.getDupCount();
       }
- else {
+      else {
         return 1;
       }
     }
-  finally {
+    finally {
       releaseBIN();
     }
-//#endif
+    //#else
+    throw new RuntimeException("TYPE ERROR?");
+    //#endif
   }
+  
   /** 
  * Delete the item pointed to by the cursor. If cursor is not initialized
  * or item is already deleted, return appropriate codes. Returns with
@@ -831,27 +820,23 @@ public static class KeyChangeStatus {
     if (bin == null) {
       return OperationStatus.KEYEMPTY;
     }
-//#if LATCHES
+    //#if LATCHES
     latchBINs();
-//#endif
+    //#endif
     boolean isDup=setTargetBin();
-//#if LATCHES
+    //#if LATCHES
     try {
       LN ln=(LN)targetBin.fetchTarget(targetIndex);
       byte[] lnKey=targetBin.getKey(targetIndex);
       Comparator userComparisonFcn=targetBin.getKeyComparator();
       if (targetBin.isEntryKnownDeleted(targetIndex) || ln == null) {
-//#if LATCHES
         releaseBINs();
-//#endif
         return OperationStatus.NOTFOUND;
       }
       LockResult lockResult=lockLN(ln,LockType.WRITE);
       ln=lockResult.getLN();
       if (ln == null) {
-//#if LATCHES
         releaseBINs();
-//#endif
         return OperationStatus.NOTFOUND;
       }
       byte[] foundDataBytes;
@@ -861,7 +846,7 @@ public static class KeyChangeStatus {
         foundDataBytes=lnKey;
         foundKeyBytes=targetBin.getDupKey();
       }
- else {
+      else {
         foundDataBytes=ln.getData();
         foundKeyBytes=lnKey;
       }
@@ -875,7 +860,7 @@ public static class KeyChangeStatus {
         if (len == 0) {
           newData=LogUtils.ZERO_LENGTH_BYTE_ARRAY;
         }
- else {
+        else {
           newData=new byte[len];
         }
         int pos=0;
@@ -888,12 +873,12 @@ public static class KeyChangeStatus {
         slicelen=origlen - (doff + dlen);
         if (slicelen > 0)         System.arraycopy(foundDataBytes,doff + dlen,newData,pos,slicelen);
       }
- else {
+      else {
         int len=data.getSize();
         if (len == 0) {
           newData=LogUtils.ZERO_LENGTH_BYTE_ARRAY;
         }
- else {
+        else {
           newData=new byte[len];
         }
         System.arraycopy(data.getData(),data.getOffset(),newData,0,len);
@@ -916,32 +901,32 @@ public static class KeyChangeStatus {
       }
       long oldLsn=targetBin.getLsn(targetIndex);
       lockResult.setAbortLsn(oldLsn,targetBin.isEntryKnownDeleted(targetIndex));
-//#if MEMORYBUDGET
+      //#if MEMORYBUDGET
       long oldLNSize=ln.getMemorySizeIncludedByParent();
-//#endif
+      //#endif
       byte[] newKey=(isDup ? targetBin.getDupKey() : lnKey);
       long newLsn=ln.modify(newData,database,newKey,oldLsn,locker);
-//#if MEMORYBUDGET
+      //#if MEMORYBUDGET
       long newLNSize=ln.getMemorySizeIncludedByParent();
-//#endif
+      //#endif
       targetBin.updateEntry(targetIndex,newLsn 
-//#if MEMORYBUDGET
-, oldLNSize, newLNSize
-//#endif
-);
-//#if LATCHES
+          //#if MEMORYBUDGET
+          , oldLNSize, newLNSize
+          //#endif
+          );
       releaseBINs();
-//#endif
-//#if LOGGINGFINER
+      //#if LOGGINGFINER
       trace(Level.FINER,TRACE_MOD,targetBin,ln,targetIndex,oldLsn,newLsn);
-//#endif
+      //#endif
       status=CURSOR_INITIALIZED;
       return OperationStatus.SUCCESS;
     }
-  finally {
+    finally {
       releaseBINs();
     }
-//#endif
+    //#else
+    throw new RuntimeException("TYPE ERROR?");
+    //#endif
   }
   /** 
  * Retrieve the current record.
@@ -973,17 +958,17 @@ public static class KeyChangeStatus {
  */
   public OperationStatus getCurrentAlreadyLatched(  DatabaseEntry foundKey,  DatabaseEntry foundData,  LockType lockType,  boolean first) throws DatabaseException {
     assert assertCursorState(true) : dumpToString(true);
-//#if LATCHES
+    //#if LATCHES
     assert checkAlreadyLatched(true) : dumpToString(true);
-//#endif
-//#if LATCHES
     try {
       return fetchCurrent(foundKey,foundData,lockType,first);
     }
-  finally {
+    finally {
       releaseBINs();
     }
-//#endif
+    //#else
+    throw new RuntimeException("TYPE ERROR?");
+    //#endif
   }
   /** 
  * Retrieve the current LN, return with the target bin unlatched.
@@ -1005,12 +990,10 @@ public static class KeyChangeStatus {
  * with the target BIN unlatched.
  */
   public LN getCurrentLNAlreadyLatched(  LockType lockType) throws DatabaseException {
-//#if LATCHES
+    //#if LATCHES
     try {
       assert assertCursorState(true) : dumpToString(true);
-//#if LATCHES
       assert checkAlreadyLatched(true) : dumpToString(true);
-//#endif
       if (bin == null) {
         return null;
       }
@@ -1019,9 +1002,7 @@ public static class KeyChangeStatus {
         ln=(LN)bin.fetchTarget(index);
       }
       if (ln == null) {
-//#if LATCHES
         releaseBIN();
-//#endif
         return null;
       }
       addCursor(bin);
@@ -1029,11 +1010,14 @@ public static class KeyChangeStatus {
       ln=lockResult.getLN();
       return ln;
     }
-  finally {
+    finally {
       releaseBINs();
     }
-//#endif
+    //#else
+      throw new RuntimeException("TYPE ERROR?");
+    //#endif
   }
+
   public OperationStatus getNext(  DatabaseEntry foundKey,  DatabaseEntry foundData,  LockType lockType,  boolean forward,  boolean alreadyLatched) throws DatabaseException {
     return getNextWithKeyChangeStatus(foundKey,foundData,lockType,forward,alreadyLatched).status;
   }
@@ -1374,14 +1358,14 @@ public static class KeyChangeStatus {
     assert assertCursorState(false) : dumpToString(true);
     IN in=null;
     boolean found=false;
-//#if LATCHES
+    //#if LATCHES
     try {
       if (duplicateRoot == null) {
         removeCursorBIN();
         if (first) {
           in=database.getTree().getFirstNode();
         }
- else {
+        else {
           in=database.getTree().getLastNode();
         }
         if (in != null) {
@@ -1395,28 +1379,24 @@ public static class KeyChangeStatus {
           if (bin.getNEntries() == 0) {
             found=true;
           }
- else {
+          else {
             Node n=null;
             if (!in.isEntryKnownDeleted(index)) {
               n=in.fetchTarget(index);
             }
             if (n != null && n.containsDuplicates()) {
               DIN dupRoot=(DIN)n;
-//#if LATCHES
               dupRoot.latch();
-//#endif
-//#if LATCHES
               in.releaseLatch();
-//#endif
               in=null;
               found=positionFirstOrLast(first,dupRoot);
             }
- else {
+            else {
               if (treeStatsAccumulator != null) {
                 if (n == null || ((LN)n).isDeleted()) {
                   treeStatsAccumulator.incrementDeletedLNCount();
                 }
- else {
+                else {
                   treeStatsAccumulator.incrementLNCount();
                 }
               }
@@ -1425,12 +1405,12 @@ public static class KeyChangeStatus {
           }
         }
       }
- else {
+      else {
         removeCursorDBIN();
         if (first) {
           in=database.getTree().getFirstNode(duplicateRoot);
         }
- else {
+        else {
           in=database.getTree().getLastNode(duplicateRoot);
         }
         if (in != null) {
@@ -1444,14 +1424,17 @@ public static class KeyChangeStatus {
       status=CURSOR_INITIALIZED;
       return found;
     }
- catch (    DatabaseException e) {
+    catch (    DatabaseException e) {
       if (in != null) {
         in.releaseLatch();
       }
       throw e;
     }
-//#endif
+    //#else
+    throw new RuntimeException("TYPE ERROR?");
+    //#endif
   }
+  
   public static final int FOUND=0x1;
   public static final int EXACT_KEY=0x2;
   public static final int EXACT_DATA=0x4;
@@ -1505,7 +1488,7 @@ public static class KeyChangeStatus {
     boolean foundLast=false;
     boolean exactSearch=searchMode.isExactSearch();
     BINBoundary binBoundary=new BINBoundary();
-//#if LATCHES
+    //#if LATCHES
     try {
       byte[] key=Key.makeKey(matchKey);
       bin=(BIN)database.getTree().search(key,Tree.SearchType.NORMAL,-1,binBoundary,true);
@@ -1534,7 +1517,7 @@ public static class KeyChangeStatus {
                 foundExactData=(searchResult & EXACT_DATA) != 0;
               }
             }
- else {
+            else {
               foundSomething=true;
               if (!containsDuplicates && exactSearch) {
                 LN ln=(LN)n;
@@ -1552,11 +1535,13 @@ public static class KeyChangeStatus {
       status=CURSOR_INITIALIZED;
       return (foundSomething ? FOUND : 0) | (foundExactKey ? EXACT_KEY : 0) | (foundExactData ? EXACT_DATA : 0)| (foundLast ? FOUND_LAST : 0);
     }
- catch (    DatabaseException e) {
+    catch (    DatabaseException e) {
       releaseBIN();
       throw e;
     }
-//#endif
+    //#else
+    throw new RuntimeException("TYPE ERROR?");
+    //#endif
   }
   /** 
  * For this type of search, we need to match both key and data.  This
@@ -1620,6 +1605,7 @@ public static class KeyChangeStatus {
     }
     return (found ? FOUND : 0) | (exact ? EXACT_DATA : 0);
   }
+  
   private OperationStatus fetchCurrent(  DatabaseEntry foundKey,  DatabaseEntry foundData,  LockType lockType,  boolean first) throws DatabaseException {
     TreeWalkerStatsAccumulator treeStatsAccumulator=getTreeStatsAccumulator();
     boolean duplicateFetch=setTargetBin();
@@ -1636,19 +1622,14 @@ public static class KeyChangeStatus {
       if (targetBin.isEntryPendingDeleted(targetIndex)) {
 //#if INCOMPRESSOR
         EnvironmentImpl envImpl=database.getDbEnvironment();
-//#endif
-//#if INCOMPRESSOR
         envImpl.addToCompressorQueue(targetBin,new Key(targetBin.getKey(targetIndex)),false);
 //#endif
       }
 //#if LATCHES
       try {
         n=targetBin.fetchTarget(targetIndex);
-      }
- catch (      DatabaseException DE) {
-//#if LATCHES
+      } catch (      DatabaseException DE) {
         targetBin.releaseLatchIfOwner();
-//#endif
         throw DE;
       }
 //#endif
@@ -1668,16 +1649,13 @@ public static class KeyChangeStatus {
       DIN duplicateRoot=(DIN)n;
 //#if LATCHES
       duplicateRoot.latch();
-//#endif
-//#if LATCHES
       targetBin.releaseLatch();
 //#endif
       if (positionFirstOrLast(first,duplicateRoot)) {
 //#if LATCHES
         try {
           return fetchCurrent(foundKey,foundData,lockType,first);
-        }
- catch (        DatabaseException DE) {
+        } catch (DatabaseException DE) {
           releaseBINs();
           throw DE;
         }
@@ -1722,6 +1700,8 @@ public static class KeyChangeStatus {
   finally {
       releaseBINs();
     }
+//#else
+    throw new RuntimeException("TYPE ERROR?");
 //#endif
   }
   /** 

@@ -241,22 +241,19 @@ public class IN extends Node implements Comparable, LoggableObject, LogReadable 
  * Latch this node if it is not latched by another thread, optionally
  * setting the generation if the latch succeeds.
  */
+//#if LATCHES
   public boolean latchNoWait(  boolean updateGeneration) throws DatabaseException {
-//#if LATCHES
-    if (latch.acquireNoWait()) {
-      if (updateGeneration) {
-        setGeneration();
-      }
-      return true;
-    }
- else 
-//#if LATCHES
-{
-      return false;
-    }
-//#endif
-//#endif
+	  if (latch.acquireNoWait()) {
+		  if (updateGeneration) {
+			  setGeneration();
+		  }
+		  return true;
+	  } else {
+		  return false;
+	  }
   }
+//#endif
+
 //#if LATCHES
   /** 
  * Latch this node and set the generation.
@@ -1264,35 +1261,32 @@ catch (        Exception e) {
   public boolean isCompressible(){
     return false;
   }
+  
   boolean validateSubtreeBeforeDelete(  int index) throws DatabaseException {
-//#if LATCHES
-    boolean needToLatch=!isLatchOwner();
-//#endif
-//#if LATCHES
-    try {
-//#if LATCHES
-      if (needToLatch) 
-//#if LATCHES
-{
-        latch();
-      }
-//#endif
-//#endif
-      if (index >= nEntries) {
-        return true;
-      }
- else {
-        Node child=fetchTarget(index);
-        return child != null && child.isValidForDelete();
-      }
-    }
-  finally {
-      if (needToLatch) {
-        releaseLatchIfOwner();
-      }
-    }
-//#endif
+	  //#if LATCHES
+	  boolean needToLatch=!isLatchOwner();
+	  try {
+		  if (needToLatch) {
+			  latch();
+		  }
+		  if (index >= nEntries) {
+			  return true;
+		  }
+		  else {
+			  Node child=fetchTarget(index);
+			  return child != null && child.isValidForDelete();
+		  }
+	  }
+	  finally {
+		  if (needToLatch) {
+			  releaseLatchIfOwner();
+		  }
+	  }
+	  //#else
+	  return false; // -Marcelo (comperr owise)
+	  //#endif
   }
+
   /** 
  * Return true if this node needs splitting.  For the moment, needing to be
  * split is defined by there being no free entries available.
@@ -1558,9 +1552,9 @@ catch (        Exception e) {
  * already held before this is called.  Also count removed nodes as
  * obsolete.
  */
-  void accountForSubtreeRemoval(  INList inList,
+  void accountForSubtreeRemoval(  INList inList
 //#if CLEANER
-  UtilizationTracker tracker
+  , UtilizationTracker tracker
 //#endif
 ) throws DatabaseException {
     if (nEntries > 1) {
@@ -1578,9 +1572,9 @@ catch (        Exception e) {
     for (int i=0; i < nEntries; i++) {
       Node n=fetchTarget(i);
       if (n != null) {
-        n.accountForSubtreeRemoval(inList,
+        n.accountForSubtreeRemoval(inList
 //#if CLEANER
-tracker
+, tracker
 //#endif
 );
       }
@@ -1591,36 +1585,32 @@ tracker
  * subtree. It can only have one IN child and no LN children.
  */
   boolean isValidForDelete() throws DatabaseException {
-//#if LATCHES
-    boolean needToLatch=!isLatchOwner();
-//#endif
-//#if LATCHES
-    try {
-//#if LATCHES
-      if (needToLatch) 
-//#if LATCHES
-{
-        latch();
-      }
-//#endif
-//#endif
-      if (nEntries > 1) {
-        return false;
-      }
- else       if (nEntries == 1) {
-        Node child=fetchTarget(0);
-        return child != null && child.isValidForDelete();
-      }
- else {
-        return true;
-      }
-    }
-  finally {
-      if (needToLatch) {
-        releaseLatchIfOwner();
-      }
-    }
-//#endif
+	//#if LATCHES
+	  boolean needToLatch=!isLatchOwner();
+	  try {
+		  if (needToLatch) 
+		  {
+			  latch();
+		  }
+		  if (nEntries > 1) {
+			  return false;
+		  }
+		  else       if (nEntries == 1) {
+			  Node child=fetchTarget(0);
+			  return child != null && child.isValidForDelete();
+		  }
+		  else {
+			  return true;
+		  }
+	  }
+	  finally {
+		  if (needToLatch) {
+			  releaseLatchIfOwner();
+		  }
+	  }
+	//#else
+	  return false; // -Marcelo and Sabrina (comperr owise)
+	//#endif
   }
   /** 
  * See if you are the parent of this child. If not, find a child of your's

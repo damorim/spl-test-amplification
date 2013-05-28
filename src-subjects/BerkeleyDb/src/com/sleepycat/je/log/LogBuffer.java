@@ -129,6 +129,7 @@ class LogBuffer implements LogSource {
       return false;
     }
   }
+  
 //#if LATCHES
   /** 
  * When modifying the buffer, acquire the readLatch. Call release() to
@@ -139,24 +140,28 @@ class LogBuffer implements LogSource {
     readLatch.acquire();
   }
 //#endif
-//#if LATCHES
+  
   /** 
  * @see LogSource#release
  */
   public void release() throws DatabaseException {
-    readLatch.releaseIfOwner();
-  }
+//#if LATCHES
+	  readLatch.releaseIfOwner();
 //#endif
+  }
+  
 //#if DISKFULLERRO
   boolean getRewriteAllowed(){
     return rewriteAllowed;
   }
 //#endif
+  
 //#if DISKFULLERRO
   void setRewriteAllowed(){
     rewriteAllowed=true;
   }
 //#endif
+  
   /** 
  * @see LogSource#getBytes
  */

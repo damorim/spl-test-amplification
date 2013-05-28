@@ -20,9 +20,9 @@ public abstract class DumpFileReader extends FileReader {
  */
   public DumpFileReader(  EnvironmentImpl env,  int readBufferSize,  long startLsn,  long finishLsn,  String entryTypes,
 //#if TRANSACTIONS
-  String txnIds
+  String txnIds,
 //#endif
-,  boolean verbose) throws IOException, DatabaseException {
+  boolean verbose) throws IOException, DatabaseException {
     super(env,readBufferSize,true,startLsn,null,DbLsn.NULL_LSN,finishLsn);
     targetEntryTypes=new HashSet();
     if (entryTypes != null) {
@@ -34,18 +34,13 @@ public abstract class DumpFileReader extends FileReader {
     }
 //#if TRANSACTIONS
     targetTxnIds=new HashSet();
-//#endif
-//#if TRANSACTIONS
-    if (txnIds != null) 
-//#if TRANSACTIONS
-{
+    if (txnIds != null) {
       StringTokenizer tokenizer=new StringTokenizer(txnIds,",");
       while (tokenizer.hasMoreTokens()) {
         String txnIdString=(String)tokenizer.nextToken();
         targetTxnIds.add(new Long(txnIdString.trim()));
       }
     }
-//#endif
 //#endif
     this.verbose=verbose;
   }

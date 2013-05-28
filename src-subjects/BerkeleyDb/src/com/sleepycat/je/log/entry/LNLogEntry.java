@@ -44,9 +44,9 @@ public class LNLogEntry implements LogEntry, LoggableObject, NodeLogEntry {
     this.isTransactional=isTransactional;
 //#endif
   }
-  public LNLogEntry(  LogEntryType entryType,  LN ln,  DatabaseId dbId,  byte[] key,  long abortLsn,  boolean abortKnownDeleted,
+  public LNLogEntry(  LogEntryType entryType,  LN ln,  DatabaseId dbId,  byte[] key,  long abortLsn,  boolean abortKnownDeleted
 //#if TRANSACTIONS
-  Txn txn
+  , Txn txn
 //#endif
 ){
     this.entryType=entryType;
@@ -57,8 +57,6 @@ public class LNLogEntry implements LogEntry, LoggableObject, NodeLogEntry {
     this.abortKnownDeleted=abortKnownDeleted;
 //#if TRANSACTIONS
     this.txn=txn;
-//#endif
-//#if TRANSACTIONS
     this.isTransactional=(txn != null);
 //#endif
     this.logClass=ln.getClass();
@@ -77,9 +75,7 @@ public class LNLogEntry implements LogEntry, LoggableObject, NodeLogEntry {
         dbId.readFromLog(entryBuffer,entryTypeVersion);
         key=LogUtils.readByteArray(entryBuffer);
 //#if TRANSACTIONS
-        if (isTransactional) 
-//#if TRANSACTIONS
-{
+        if (isTransactional) {
           abortLsn=LogUtils.readLong(entryBuffer);
           if (DbLsn.getFileNumber(abortLsn) == DbLsn.getFileNumber(DbLsn.NULL_LSN)) {
             abortLsn=DbLsn.NULL_LSN;
@@ -88,7 +84,6 @@ public class LNLogEntry implements LogEntry, LoggableObject, NodeLogEntry {
           txn=new Txn();
           txn.readFromLog(entryBuffer,entryTypeVersion);
         }
-//#endif
 //#endif
       }
  else {
@@ -112,26 +107,17 @@ catch (    InstantiationException e) {
     ln.dumpLog(sb,verbose);
     dbId.dumpLog(sb,verbose);
     sb.append(Key.dumpString(key,0));
-    if (
 //#if TRANSACTIONS
-isTransactional
-//#endif
-) {
-//#if TRANSACTIONS
-      if (abortLsn != DbLsn.NULL_LSN) 
-//#if TRANSACTIONS
-{
+    if (isTransactional) {
+      if (abortLsn != DbLsn.NULL_LSN) {
         sb.append(DbLsn.toString(abortLsn));
       }
-//#endif
-//#endif
       sb.append("<knownDeleted val=\"");
       sb.append(abortKnownDeleted ? "true" : "false");
       sb.append("\"/>");
-//#if TRANSACTIONS
       txn.dumpLog(sb,verbose);
-//#endif
     }
+//#endif
     return sb;
   }
   /** 
@@ -151,20 +137,8 @@ isTransactional
  */
   
 //#if TRANSACTIONS
-public
-//#endif
- 
-//#if TRANSACTIONS
-boolean
-//#endif
- 
-//#if TRANSACTIONS
-isTransactional
-//#endif
-()
-//#if TRANSACTIONS
-{
-    return isTransactional;
+  public boolean isTransactional () {
+	  return isTransactional;
   }
 //#endif
   /** 
@@ -172,27 +146,15 @@ isTransactional
  */
   
 //#if TRANSACTIONS
-public
-//#endif
- 
-//#if TRANSACTIONS
-long
-//#endif
- 
-//#if TRANSACTIONS
-getTransactionId
-//#endif
-()
-//#if TRANSACTIONS
-{
-    if (isTransactional) {
-      return txn.getId();
-    }
- else {
-      return 0;
-    }
+  public long getTransactionId () {
+	  if (isTransactional) {
+		  return txn.getId();
+	  } else {
+		  return 0;
+	  }
   }
 //#endif
+  
   /** 
  * @see NodeLogEntry#getNodeId
  */
@@ -227,12 +189,9 @@ getTransactionId
  */
   public void postLogWork(  long justLoggedLsn) throws DatabaseException {
 //#if TRANSACTIONS
-    if (isTransactional) 
-//#if TRANSACTIONS
-{
+    if (isTransactional) {
       txn.addLogInfo(justLoggedLsn);
     }
-//#endif
 //#endif
   }
   /** 
@@ -241,14 +200,11 @@ getTransactionId
   public int getLogSize(){
     int size=ln.getLogSize() + dbId.getLogSize() + LogUtils.getByteArrayLogSize(key);
 //#if TRANSACTIONS
-    if (isTransactional) 
-//#if TRANSACTIONS
-{
+    if (isTransactional) {
       size+=LogUtils.getLongLogSize();
       size++;
       size+=txn.getLogSize();
     }
-//#endif
 //#endif
     return size;
   }
@@ -260,31 +216,15 @@ getTransactionId
     dbId.writeToLog(destBuffer);
     LogUtils.writeByteArray(destBuffer,key);
 //#if TRANSACTIONS
-    if (
-//#if TRANSACTIONS
-isTransactional
-//#endif
-) 
-//#if TRANSACTIONS
-{
-//#if TRANSACTIONS
+    if (isTransactional) {
       LogUtils.writeLong(destBuffer,abortLsn);
-//#endif
-//#if TRANSACTIONS
       byte aKD=0;
-//#endif
-//#if TRANSACTIONS
-      if (abortKnownDeleted) 
-//#if TRANSACTIONS
-{
+      if (abortKnownDeleted) {
         aKD|=ABORT_KNOWN_DELETED_MASK;
       }
-//#endif
-//#endif
       destBuffer.put(aKD);
       txn.writeToLog(destBuffer);
     }
-//#endif
 //#endif
   }
   public LN getLN(){
@@ -296,38 +236,43 @@ isTransactional
   public byte[] getKey(){
     return key;
   }
+  
   public byte[] getDupKey(){
-    if (ln.isDeleted()) {
-      return null;
-    }
- else {
-      return ln.getData();
-    }
+	  if (ln.isDeleted()) {
+		  return null;
+	  }
+	  else {
+		  return ln.getData();
+	  }
   }
+  
   public long getAbortLsn(){
     return abortLsn;
   }
+  
   public boolean getAbortKnownDeleted(){
     return abortKnownDeleted;
   }
-//#if TRANSACTIONS
+
+  //#if TRANSACTIONS
   public Long getTxnId(){
-    if (isTransactional) {
-      return new Long(txn.getId());
-    }
- else {
-      return null;
-    }
+	  if (isTransactional) {
+		  return new Long(txn.getId());
+	  }
+	  else {
+		  return null;
+	  }
   }
-//#endif
+  //#endif
+  
 //#if TRANSACTIONS
   public Txn getUserTxn(){
-    if (isTransactional) {
-      return txn;
-    }
- else {
-      return null;
-    }
+	  if (isTransactional) {
+		  return txn;
+	  } else {
+		  return null;
+	  }
   }
 //#endif
+  
 }

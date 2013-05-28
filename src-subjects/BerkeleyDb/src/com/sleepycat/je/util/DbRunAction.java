@@ -316,8 +316,16 @@ return (end - start) / 1000 + " secs";
 }
 private static void preload(Environment env,String dbName) throws DatabaseException {
 System.out.println("Preload starting");
-Database db=env.openDatabase(null,dbName,null);
-Cursor cursor=db.openCursor(null,null);
+Database db=env.openDatabase(
+  //#if TRANSACTIONS
+    null,
+  //#endif
+    dbName,null);
+Cursor cursor=db.openCursor(
+  //#if TRANSACTIONS
+    null,
+  //#endif
+    null);
 try {
 DatabaseEntry key=new DatabaseEntry();
 DatabaseEntry data=new DatabaseEntry();

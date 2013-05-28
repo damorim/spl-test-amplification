@@ -141,9 +141,9 @@ public static class SearchType {
   /** 
  * Set the root for the tree. Should only be called within the root latch.
  */
-  public void setRoot(  ChildReference newRoot,
+  public void setRoot(  ChildReference newRoot
 //#if LATCHES
-  boolean notLatched
+  , boolean notLatched
 //#endif
 ){
 //#if LATCHES
@@ -227,31 +227,33 @@ private class RootChildReference extends ChildReference {
   public void setTreeStatsAccumulator(  TreeWalkerStatsAccumulator tSA){
     treeStatsAccumulatorTL.set(tSA);
   }
+  
   public IN withRootLatchedExclusive(  WithRootLatched wrl) throws DatabaseException {
-//#if LATCHES
-    try {
-//#if LATCHES
-      rootLatch.acquireExclusive();
-//#endif
-      return wrl.doWork(root);
-    }
-  finally {
-      rootLatch.release();
-    }
-//#endif
+	  //#if LATCHES
+	  try {
+		  rootLatch.acquireExclusive();
+		  return wrl.doWork(root);
+	  }
+	  finally {
+		  rootLatch.release();
+	  }
+	  //#else
+	  	throw new RuntimeException("TYPE ERROR?");
+	  //#endif
   }
+  
   public IN withRootLatchedShared(  WithRootLatched wrl) throws DatabaseException {
-//#if LATCHES
-    try {
-//#if LATCHES
-      rootLatch.acquireShared();
-//#endif
-      return wrl.doWork(root);
-    }
-  finally {
-      rootLatch.release();
-    }
-//#endif
+	  //#if LATCHES
+	  try {
+		  rootLatch.acquireShared();
+		  return wrl.doWork(root);
+	  }
+	  finally {
+		  rootLatch.release();
+	  }
+	  //#else
+	  throw new RuntimeException("TYPE ERROR?");
+	  //#endif
   }
   /** 
  * Deletes a BIN specified by key from the tree. If the BIN resides in a 
@@ -262,9 +264,9 @@ private class RootChildReference extends ChildReference {
  * @param idKey - the identifier key of the node to delete.
  * @param tracker is used for tracking obsolete node info.
  */
-  public void delete(  byte[] idKey,
+  public void delete(  byte[] idKey
 //#if CLEANER
-  UtilizationTracker tracker
+  , UtilizationTracker tracker
 //#endif
 ) throws DatabaseException, NodeNotEmptyException, CursorsExistException {
     IN subtreeRootIN=null;
@@ -320,9 +322,9 @@ tracker
 //#endif
       }
       INList inList=envImpl.getInMemoryINs();
-      accountForSubtreeRemoval(inList,subtreeRootIN,
+      accountForSubtreeRemoval(inList,subtreeRootIN
 //#if CLEANER
-tracker
+, tracker
 //#endif
 );
     }
@@ -341,9 +343,9 @@ tracker
  * @return the rootIN that has been detached, or null if there
  * hasn't been any removal.
  */
-  private IN logTreeRemoval(  IN rootIN,
+  private IN logTreeRemoval(  IN rootIN
 //#if CLEANER
-  UtilizationTracker tracker
+  , UtilizationTracker tracker
 //#endif
 ) throws DatabaseException {
 //#if LATCHES
@@ -419,9 +421,9 @@ tracker
  * @return true if the delete succeeded, false if there were still cursors
  * present on the leaf DBIN of the subtree that was located.
  */
-  public void deleteDup(  byte[] idKey,  byte[] mainKey,
+  public void deleteDup(  byte[] idKey,  byte[] mainKey
 //#if CLEANER
-  UtilizationTracker tracker
+  , UtilizationTracker tracker
 //#endif
 ) throws DatabaseException, NodeNotEmptyException, CursorsExistException {
     IN in=search(mainKey,SearchType.NORMAL,-1,null,false);
@@ -444,11 +446,11 @@ tracker
 //#endif
     if (deletedSubtreeRoot != null) {
       EnvironmentImpl envImpl=database.getDbEnvironment();
-      accountForSubtreeRemoval(envImpl.getInMemoryINs(),deletedSubtreeRoot,
-//#if CLEANER
-tracker
-//#endif
-);
+      accountForSubtreeRemoval(envImpl.getInMemoryINs(),deletedSubtreeRoot
+    		  //#if CLEANER
+    		  , tracker
+    		  //#endif
+    		  );
     }
   }
   /** 
@@ -811,52 +813,50 @@ tracker
  * Search the dup tree for the DBIN parent of this ln.
  */
   private boolean searchDupTreeForDBIN(  TreeLocation location,  byte[] dupKey,  DIN dupRoot,  LN ln,  boolean findDeletedEntries,  boolean indicateIfExact,  boolean exactSearch,  boolean splitsAllowed,  boolean updateGeneration) throws DatabaseException {
-    assert dupKey != null;
-//#if LATCHES
-    dupRoot.latch();
-//#endif
-//#if LATCHES
-    try {
-      if (maybeSplitDuplicateRoot(location.bin,location.index)) {
-        dupRoot=(DIN)location.bin.fetchTarget(location.index);
-      }
-//#if LATCHES
-      location.bin.releaseLatch();
-//#endif
-      location.lnKey=dupKey;
-      if (splitsAllowed) {
-        try {
-          location.bin=(BIN)searchSubTreeSplitsAllowed(dupRoot,location.lnKey,ln.getNodeId(),updateGeneration);
-        }
- catch (        SplitRequiredException e) {
-          throw new DatabaseException(e);
-        }
-      }
- else {
-        location.bin=(BIN)searchSubTree(dupRoot,location.lnKey,SearchType.NORMAL,ln.getNodeId(),null,updateGeneration);
-      }
-      location.index=location.bin.findEntry(location.lnKey,indicateIfExact,exactSearch);
-      boolean match;
-      if (findDeletedEntries) {
-        match=(location.index >= 0 && (location.index & IN.EXACT_MATCH) != 0);
-        location.index&=~IN.EXACT_MATCH;
-      }
- else {
-        match=(location.index >= 0);
-      }
-      if (match) {
-        location.childLsn=location.bin.getLsn(location.index);
-        return true;
-      }
- else {
-        return false;
-      }
-    }
- catch (    DatabaseException e) {
-      dupRoot.releaseLatchIfOwner();
-      throw e;
-    }
-//#endif
+	  assert dupKey != null;
+	  //#if LATCHES
+	  dupRoot.latch();
+	  try {
+		  if (maybeSplitDuplicateRoot(location.bin,location.index)) {
+			  dupRoot=(DIN)location.bin.fetchTarget(location.index);
+		  }
+		  location.bin.releaseLatch();
+		  location.lnKey=dupKey;
+		  if (splitsAllowed) {
+			  try {
+				  location.bin=(BIN)searchSubTreeSplitsAllowed(dupRoot,location.lnKey,ln.getNodeId(),updateGeneration);
+			  }
+			  catch (        SplitRequiredException e) {
+				  throw new DatabaseException(e);
+			  }
+		  }
+		  else {
+			  location.bin=(BIN)searchSubTree(dupRoot,location.lnKey,SearchType.NORMAL,ln.getNodeId(),null,updateGeneration);
+		  }
+		  location.index=location.bin.findEntry(location.lnKey,indicateIfExact,exactSearch);
+		  boolean match;
+		  if (findDeletedEntries) {
+			  match=(location.index >= 0 && (location.index & IN.EXACT_MATCH) != 0);
+			  location.index&=~IN.EXACT_MATCH;
+		  }
+		  else {
+			  match=(location.index >= 0);
+		  }
+		  if (match) {
+			  location.childLsn=location.bin.getLsn(location.index);
+			  return true;
+		  }
+		  else {
+			  return false;
+		  }
+	  }
+	  catch (    DatabaseException e) {
+		  dupRoot.releaseLatchIfOwner();
+		  throw e;
+	  }
+	  //#else
+	  	throw new RuntimeException("TYPE ERROR?");
+	  //#endif
   }
   /** 
  * Return a reference to the adjacent BIN.
@@ -886,120 +886,106 @@ tracker
  * Helper routine for above two routines to iterate through BIN's.
  */
   private BIN getNextBinInternal(  boolean traverseWithinDupTree,  BIN bin,  boolean forward) throws DatabaseException {
-    byte[] idKey=null;
-    if (bin.getNEntries() == 0) {
-      idKey=bin.getIdentifierKey();
-    }
- else     if (forward) {
-      idKey=bin.getKey(bin.getNEntries() - 1);
-    }
- else {
-      idKey=bin.getKey(0);
-    }
-    IN next=bin;
-//#if LATCHES
-    assert LatchSupport.countLatchesHeld() == 1 : LatchSupport.latchesHeldToString();
-//#endif
-    IN parent=null;
-    IN nextIN=null;
-//#if LATCHES
-    try {
-      while (true) {
-        SearchResult result=null;
-        if (!traverseWithinDupTree) {
-          result=getParentINForChildIN(next,true,true);
-          if (result.exactParentFound) {
-            parent=result.parent;
-          }
- else {
-//#if LATCHES
-            assert (LatchSupport.countLatchesHeld() == 0) : LatchSupport.latchesHeldToString();
-//#endif
-            return null;
-          }
-        }
- else {
-          if (next.isRoot()) {
-//#if LATCHES
-            next.releaseLatch();
-//#endif
-            return null;
-          }
- else {
-            result=getParentINForChildIN(next,true,true);
-            if (result.exactParentFound) {
-              parent=result.parent;
-            }
- else {
-              return null;
-            }
-          }
-        }
-//#if LATCHES
-        assert (LatchSupport.countLatchesHeld() == 1) : LatchSupport.latchesHeldToString();
-//#endif
-        int index=parent.findEntry(idKey,false,false);
-        boolean moreEntriesThisBin=false;
-        if (forward) {
-          index++;
-          if (index < parent.getNEntries()) {
-            moreEntriesThisBin=true;
-          }
-        }
- else {
-          if (index > 0) {
-            moreEntriesThisBin=true;
-          }
-          index--;
-        }
-        if (moreEntriesThisBin) {
-          nextIN=(IN)parent.fetchTarget(index);
-//#if LATCHES
-          nextIN.latch();
-//#endif
-//#if LATCHES
-          assert (LatchSupport.countLatchesHeld() == 2) : LatchSupport.latchesHeldToString();
-//#endif
-          if (nextIN instanceof BIN) {
-//#if LATCHES
-            parent.releaseLatch();
-//#endif
-            TreeWalkerStatsAccumulator treeStatsAccumulator=getTreeStatsAccumulator();
-            if (treeStatsAccumulator != null) {
-              nextIN.accumulateStats(treeStatsAccumulator);
-            }
-            return (BIN)nextIN;
-          }
- else {
-            IN ret=searchSubTree(nextIN,null,(forward ? SearchType.LEFT : SearchType.RIGHT),-1,null,true);
-//#if LATCHES
-            parent.releaseLatch();
-//#endif
-//#if LATCHES
-            assert LatchSupport.countLatchesHeld() == 1 : LatchSupport.latchesHeldToString();
-//#endif
-            if (ret instanceof BIN) {
-              return (BIN)ret;
-            }
- else {
-              throw new InconsistentNodeException("subtree did not have a BIN for leaf");
-            }
-          }
-        }
-        next=parent;
-      }
-    }
- catch (    DatabaseException e) {
-      next.releaseLatchIfOwner();
-      if (parent != null) {
-        parent.releaseLatchIfOwner();
-      }
-      if (nextIN != null) {
-        nextIN.releaseLatchIfOwner();
-      }
-      throw e;
-    }
-//#endif
+	  byte[] idKey=null;
+	  if (bin.getNEntries() == 0) {
+		  idKey=bin.getIdentifierKey();
+	  }
+	  else     if (forward) {
+		  idKey=bin.getKey(bin.getNEntries() - 1);
+	  }
+	  else {
+		  idKey=bin.getKey(0);
+	  }
+	  IN next=bin;
+	  //#if LATCHES
+	  assert LatchSupport.countLatchesHeld() == 1 : LatchSupport.latchesHeldToString();
+	  //#endif
+	  IN parent=null;
+	  IN nextIN=null;
+	  //#if LATCHES
+	  try {
+		  while (true) {
+			  SearchResult result=null;
+			  if (!traverseWithinDupTree) {
+				  result=getParentINForChildIN(next,true,true);
+				  if (result.exactParentFound) {
+					  parent=result.parent;
+				  }
+				  else {
+					  assert (LatchSupport.countLatchesHeld() == 0) : LatchSupport.latchesHeldToString();
+					  return null;
+				  }
+			  }
+			  else {
+				  if (next.isRoot()) {
+					  next.releaseLatch();
+					  return null;
+				  }
+				  else {
+					  result=getParentINForChildIN(next,true,true);
+					  if (result.exactParentFound) {
+						  parent=result.parent;
+					  }
+					  else {
+						  return null;
+					  }
+				  }
+			  }
+			  assert (LatchSupport.countLatchesHeld() == 1) : LatchSupport.latchesHeldToString();
+			  int index=parent.findEntry(idKey,false,false);
+			  boolean moreEntriesThisBin=false;
+			  if (forward) {
+				  index++;
+				  if (index < parent.getNEntries()) {
+					  moreEntriesThisBin=true;
+				  }
+			  }
+			  else {
+				  if (index > 0) {
+					  moreEntriesThisBin=true;
+				  }
+				  index--;
+			  }
+			  if (moreEntriesThisBin) {
+				  nextIN=(IN)parent.fetchTarget(index);
+				  nextIN.latch();
+				  assert (LatchSupport.countLatchesHeld() == 2) : LatchSupport.latchesHeldToString();
+				  if (nextIN instanceof BIN) {
+					  parent.releaseLatch();
+					  TreeWalkerStatsAccumulator treeStatsAccumulator=getTreeStatsAccumulator();
+					  if (treeStatsAccumulator != null) {
+						  nextIN.accumulateStats(treeStatsAccumulator);
+					  }
+					  return (BIN)nextIN;
+				  }
+				  else {
+					  IN ret=searchSubTree(nextIN,null,(forward ? SearchType.LEFT : SearchType.RIGHT),-1,null,true);
+					  parent.releaseLatch();
+					  assert LatchSupport.countLatchesHeld() == 1 : LatchSupport.latchesHeldToString();
+					  if (ret instanceof BIN) {
+						  return (BIN)ret;
+					  }
+					  else {
+						  throw new InconsistentNodeException("subtree did not have a BIN for leaf");
+					  }
+				  }
+			  }
+			  next=parent;
+		  }
+	  }
+	  catch (    DatabaseException e) {
+		  next.releaseLatchIfOwner();
+		  if (parent != null) {
+			  parent.releaseLatchIfOwner();
+		  }
+		  if (nextIN != null) {
+			  nextIN.releaseLatchIfOwner();
+		  }
+		  throw e;
+	  }
+	  //#else
+	  	throw new RuntimeException("TYPE ERROR?");
+	  //#endif
   }
   /** 
  * Split the root of the tree.
@@ -1386,63 +1372,57 @@ tracker
  * that has to be split.
  */
   private IN searchSubTreeUntilSplit(  IN parent,  byte[] key,  long nid,  boolean updateGeneration) throws DatabaseException, SplitRequiredException {
-    if (parent == null) {
-      return null;
-    }
-//#if LATCHES
-    assert parent.isLatchOwner();
-//#endif
-    if (parent.getNodeId() == nid) {
-//#if LATCHES
-      parent.releaseLatch();
-//#endif
-      return null;
-    }
-    int index;
-    IN child=null;
-//#if LATCHES
-    try {
-      do {
-        if (parent.getNEntries() == 0) {
-          return parent;
-        }
- else {
-          index=parent.findEntry(key,false,false);
-        }
-        assert index >= 0;
-        child=(IN)parent.fetchTarget(index);
-        child.latch(updateGeneration);
-        if (child.needsSplitting()) {
-//#if LATCHES
-          child.releaseLatch();
-//#endif
-//#if LATCHES
-          parent.releaseLatch();
-//#endif
-          throw splitRequiredException;
-        }
-        if (child.getNodeId() == nid) {
-//#if LATCHES
-          child.releaseLatch();
-//#endif
-          return parent;
-        }
-//#if LATCHES
-        parent.releaseLatch();
-//#endif
-        parent=child;
-      }
- while (!(parent instanceof BIN));
-      return parent;
-    }
- catch (    DatabaseException e) {
-      if (child != null) {
-        child.releaseLatchIfOwner();
-      }
-      parent.releaseLatchIfOwner();
-      throw e;
-    }
-//#endif
+	  if (parent == null) {
+		  return null;
+	  }
+	  //#if LATCHES
+	  assert parent.isLatchOwner();
+	  //#endif
+	  if (parent.getNodeId() == nid) {
+		  //#if LATCHES
+		  parent.releaseLatch();
+		  //#endif
+		  return null;
+	  }
+	  int index;
+	  IN child=null;
+	  //#if LATCHES
+	  try {
+		  do {
+			  if (parent.getNEntries() == 0) {
+				  return parent;
+			  }
+			  else {
+				  index=parent.findEntry(key,false,false);
+			  }
+			  assert index >= 0;
+			  child=(IN)parent.fetchTarget(index);
+			  child.latch(updateGeneration);
+			  if (child.needsSplitting()) {
+				  child.releaseLatch();
+				  parent.releaseLatch();
+				  throw splitRequiredException;
+			  }
+			  if (child.getNodeId() == nid) {
+				  child.releaseLatch();
+				  return parent;
+			  }
+			  parent.releaseLatch();
+			  parent=child;
+		  }
+		  while (!(parent instanceof BIN));
+		  return parent;
+	  }
+	  catch (    DatabaseException e) {
+		  if (child != null) {
+			  child.releaseLatchIfOwner();
+		  }
+		  parent.releaseLatchIfOwner();
+		  throw e;
+	  }
+	  //#else
+	  	throw new RuntimeException("TYPE ERROR?");
+	  //#endif
   }
   /** 
  * Do pre-emptive splitting in the subtree topped by the "parent" node.
@@ -1602,23 +1582,24 @@ tracker
  * updates the generation of the root when latching it.
  */
   public IN getRootIN(  boolean updateGeneration) throws DatabaseException {
-//#if LATCHES
-    rootLatch.acquireShared();
-//#endif
-    IN rootIN=null;
-//#if LATCHES
-    try {
-      if (root != null) {
-        rootIN=(IN)root.fetchTarget(database,null);
-        rootIN.latch(updateGeneration);
-      }
-      return rootIN;
-    }
-  finally {
-      rootLatch.release();
-    }
-//#endif
+	  //#if LATCHES
+	  rootLatch.acquireShared();
+	  IN rootIN=null;
+	  try {
+		  if (root != null) {
+			  rootIN=(IN)root.fetchTarget(database,null);
+			  rootIN.latch(updateGeneration);
+		  }
+		  return rootIN;
+	  }
+	  finally {
+		  rootLatch.release();
+	  }
+	  //#else
+	  	throw new RuntimeException("TYPE ERROR?");
+	  //#endif
   }
+
   /** 
  * Inserts a new LN into the tree.
  * @param ln The LN to insert into the tree.
@@ -1639,9 +1620,7 @@ tracker
 //#if LATCHES
     try {
       bin=findBinForInsert(key,logManager,inMemoryINs,cursor);
-//#if LATCHES
       assert bin.isLatchOwner();
-//#endif
       ChildReference newLNRef=new ChildReference(ln,key,DbLsn.NULL_LSN);
       cursor.setBIN(bin);
       int index=bin.insertEntry1(newLNRef);
@@ -1724,7 +1703,9 @@ tracker
   finally {
       cursor.releaseBIN();
     }
-//#endif
+//#else
+    return false; // Marcelo & Sabrina (comperr owise)
+//#endif    
   }
   /** 
  * Attempts to insert a duplicate at the current cursor BIN position.  If
@@ -2043,15 +2024,15 @@ tracker
     BIN bin;
     bin=cursor.latchBIN();
     if (bin != null) {
-      if (!bin.needsSplitting() && bin.isKeyInBounds(key)) {
-        return bin;
-      }
- else 
-//#if LATCHES
-{
-        bin.releaseLatch();
-      }
-//#endif
+    	if (!bin.needsSplitting() && bin.isKeyInBounds(key)) {
+    		return bin;
+    	}
+    	else {
+        //#if LATCHES
+    		bin.releaseLatch();
+    	//#endif
+
+    	}		
     }
     boolean rootLatchIsHeld=false;
 //#if LATCHES
@@ -2059,27 +2040,17 @@ tracker
       long logLsn;
       while (true) {
         rootLatchIsHeld=true;
-//#if LATCHES
         rootLatch.acquireShared();
-//#endif
         if (root == null) {
-//#if LATCHES
           rootLatch.release();
-//#endif
-//#if LATCHES
           rootLatch.acquireExclusive();
-//#endif
           if (root != null) {
-//#if LATCHES
             rootLatch.release();
-//#endif
             rootLatchIsHeld=false;
             continue;
           }
           bin=new BIN(database,key,maxMainTreeEntriesPerNode,1);
-//#if LATCHES
           bin.latch();
-//#endif
           logLsn=bin.logProvisional(logManager,null);
           IN rootIN=new IN(database,key,maxMainTreeEntriesPerNode,2);
           rootIN.setIsRoot(true);
@@ -2090,16 +2061,12 @@ tracker
           root=new ChildReference(rootIN,new byte[0],logLsn);
           inMemoryINs.add(bin);
           inMemoryINs.add(rootIN);
-//#if LATCHES
           rootLatch.release();
-//#endif
           rootLatchIsHeld=false;
           break;
         }
  else {
-//#if LATCHES
           rootLatch.release();
-//#endif
           rootLatchIsHeld=false;
           IN in=searchSplitsAllowed(key,-1,true);
           if (in == null) {
@@ -2123,9 +2090,10 @@ tracker
     }
     return bin;
   }
-  private void accountForSubtreeRemoval(  INList inList,  IN subtreeRoot,
+  
+  private void accountForSubtreeRemoval(  INList inList,  IN subtreeRoot
 //#if CLEANER
-  UtilizationTracker tracker
+  , UtilizationTracker tracker
 //#endif
 ) throws DatabaseException {
 //#if LATCHES
@@ -2249,11 +2217,9 @@ tracker
  * Unit test support to validate subtree pruning. Didn't want to make root
  * access public.
  */
+//#if LATCHES
   boolean validateDelete(  int index) throws DatabaseException {
-//#if LATCHES
     rootLatch.acquireShared();
-//#endif
-//#if LATCHES
     try {
       IN rootIN=(IN)root.fetchTarget(database,null);
       return rootIN.validateSubtreeBeforeDelete(index);
@@ -2261,8 +2227,9 @@ tracker
   finally {
       rootLatch.release();
     }
-//#endif
   }
+//#endif
+
   /** 
  * Debugging check that all resident nodes are on the INList and no stray
  * nodes are present in the unused portion of the IN arrays.

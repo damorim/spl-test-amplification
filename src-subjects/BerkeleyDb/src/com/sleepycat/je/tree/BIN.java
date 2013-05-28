@@ -592,51 +592,45 @@ cleaner.isEvictable(this,index)
  * Check if this node fits the qualifications for being part of a deletable
  * subtree. It can only have one IN child and no LN children.
  */
+//#if LATCHES
   boolean isValidForDelete() throws DatabaseException {
-    int validIndex=0;
-    int numValidEntries=0;
-//#if LATCHES
-    boolean needToLatch=!isLatchOwner();
-//#endif
-//#if LATCHES
-    try {
-//#if LATCHES
-      if (needToLatch) 
-//#if LATCHES
-{
-        latch();
-      }
-//#endif
-//#endif
-      for (int i=0; i < getNEntries(); i++) {
-        if (!isEntryKnownDeleted(i)) {
-          numValidEntries++;
-          validIndex=i;
-        }
-      }
-      if (numValidEntries > 1) {
-        return false;
-      }
- else {
-        if (nCursors() > 0) {
-          return false;
-        }
-        if (numValidEntries == 1) {
-          Node child=fetchTarget(validIndex);
-          return child != null && child.isValidForDelete();
-        }
- else {
-          return true;
-        }
-      }
-    }
-  finally {
-      if (needToLatch && isLatchOwner()) {
-        releaseLatch();
-      }
-    }
-//#endif
+	  int validIndex=0;
+	  int numValidEntries=0;
+	  boolean needToLatch=!isLatchOwner();
+	  try {
+		  if (needToLatch) {
+			  latch();
+		  }
+		  for (int i=0; i < getNEntries(); i++) {
+			  if (!isEntryKnownDeleted(i)) {
+				  numValidEntries++;
+				  validIndex=i;
+			  }
+		  }
+		  if (numValidEntries > 1) {
+			  return false;
+		  }
+		  else {
+			  if (nCursors() > 0) {
+				  return false;
+			  }
+			  if (numValidEntries == 1) {
+				  Node child=fetchTarget(validIndex);
+				  return child != null && child.isValidForDelete();
+			  }
+			  else {
+				  return true;
+			  }
+		  }
+	  }
+	  finally {
+		  if (needToLatch && isLatchOwner()) {
+			  releaseLatch();
+		  }
+	  }
   }
+//#endif
+  
   void accumulateStats(  TreeWalkerStatsAccumulator acc){
     acc.processBIN(this,new Long(getNodeId()),getLevel());
   }

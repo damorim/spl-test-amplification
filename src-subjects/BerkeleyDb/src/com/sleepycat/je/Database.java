@@ -182,20 +182,20 @@ static class DbState {
  */
   public void removeSequence(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  DatabaseEntry key) throws DatabaseException {
+  DatabaseEntry key) throws DatabaseException {
     delete(
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,key);
+key);
   }
   public synchronized Cursor openCursor(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  CursorConfig cursorConfig) throws DatabaseException {
+  CursorConfig cursorConfig) throws DatabaseException {
     checkEnv();
     checkRequiredDbState(OPEN,"Can't open a cursor");
     CursorConfig useConfig=(cursorConfig == null) ? CursorConfig.DEFAULT : cursorConfig;
@@ -211,9 +211,9 @@ txn
 //#endif
     Cursor ret=newDbcInstance(
 //#if TRANSACTIONS
-txn
+txn,
 //#endif
-,useConfig);
+useConfig);
     return ret;
   }
   /** 
@@ -221,9 +221,9 @@ txn
  */
   Cursor newDbcInstance(
 //#if TRANSACTIONS
-  Transaction txn
+  Transaction txn,
 //#endif
-,  CursorConfig cursorConfig) throws DatabaseException {
+  CursorConfig cursorConfig) throws DatabaseException {
     return new Cursor(this
 //#if TRANSACTIONS
 , txn
