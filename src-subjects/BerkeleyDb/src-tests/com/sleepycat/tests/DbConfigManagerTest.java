@@ -7,14 +7,14 @@
  * $Id: DbConfigManagerTest.java,v 1.25 2006/01/03 21:56:13 bostic Exp $
  */
 
-package com.sleepycat.je.dbi;
+package com.sleepycat.tests;
 
 import junit.framework.TestCase;
 
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.config.EnvironmentParams;
-import com.sleepycat.je.util.TestUtils;
+import com.sleepycat.je.dbi.DbConfigManager;
 
 public class DbConfigManagerTest extends TestCase {
 

@@ -7,16 +7,17 @@
  * $Id: EnvironmentConfigTest.java,v 1.8 2006/01/03 21:56:11 bostic Exp $
  */
 
-package com.sleepycat.je;
+package com.sleepycat.tests;
 
 import java.io.File;
 import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.config.EnvironmentParams;
-import com.sleepycat.je.util.TestUtils;
 
 public class EnvironmentConfigTest extends TestCase {
 

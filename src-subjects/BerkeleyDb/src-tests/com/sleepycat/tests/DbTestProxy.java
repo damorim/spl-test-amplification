@@ -7,8 +7,9 @@
  * $Id: DbTestProxy.java,v 1.9 2006/01/03 21:56:11 bostic Exp $
  */
 
-package com.sleepycat.je;
+package com.sleepycat.tests;
 
+import com.sleepycat.je.Cursor;
 import com.sleepycat.je.dbi.CursorImpl;
 
 /**

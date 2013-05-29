@@ -7,7 +7,7 @@
  * $Id: CleanerTest.java,v 1.83 2006/01/04 18:13:01 cwl Exp $
  */
 
-package com.sleepycat.je.cleaner;
+package com.sleepycat.tests;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,8 +40,6 @@ import com.sleepycat.je.config.EnvironmentParams;
 import com.sleepycat.je.dbi.EnvironmentImpl;
 import com.sleepycat.je.dbi.MemoryBudget;
 import com.sleepycat.je.log.FileManager;
-import com.sleepycat.je.util.StringDbt;
-import com.sleepycat.je.util.TestUtils;
 
 public class CleanerTest extends TestCase {
 

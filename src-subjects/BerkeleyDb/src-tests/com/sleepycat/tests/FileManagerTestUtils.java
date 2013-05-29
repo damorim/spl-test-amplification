@@ -7,12 +7,14 @@
  * $Id: FileManagerTestUtils.java,v 1.4 2006/01/03 21:56:21 bostic Exp $
  */
 
-package com.sleepycat.je.log;
+package com.sleepycat.tests;
 
 import java.io.IOException;
 
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.dbi.EnvironmentImpl;
+import com.sleepycat.je.log.FileManager;
+import com.sleepycat.je.log.LogBuffer;
 
 public class FileManagerTestUtils {
     public static void createLogFile(FileManager fileManager,

@@ -7,7 +7,7 @@
  * $Id: TestUtils.java,v 1.67 2006/01/10 17:57:34 linda Exp $
  */
 
-package com.sleepycat.je.util;
+package com.sleepycat.tests;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,7 +25,6 @@ import com.sleepycat.je.Cursor;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.DbInternal;
-import com.sleepycat.je.DbTestProxy;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.StatsConfig;

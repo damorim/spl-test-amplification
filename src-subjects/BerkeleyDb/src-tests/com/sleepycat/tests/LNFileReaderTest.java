@@ -7,7 +7,7 @@
  * $Id: LNFileReaderTest.java,v 1.81 2006/01/03 21:56:22 bostic Exp $
  */
 
-package com.sleepycat.je.log;
+package com.sleepycat.tests;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,11 +27,14 @@ import com.sleepycat.je.TransactionConfig;
 import com.sleepycat.je.config.EnvironmentParams;
 import com.sleepycat.je.dbi.DbConfigManager;
 import com.sleepycat.je.dbi.EnvironmentImpl;
+import com.sleepycat.je.log.FileManager;
+import com.sleepycat.je.log.LNFileReader;
+import com.sleepycat.je.log.LogEntryType;
+import com.sleepycat.je.log.LogManager;
 import com.sleepycat.je.tree.LN;
 import com.sleepycat.je.tree.MapLN;
 import com.sleepycat.je.txn.LockType;
 import com.sleepycat.je.txn.Txn;
-import com.sleepycat.je.util.TestUtils;
 import com.sleepycat.je.utilint.DbLsn;
 import com.sleepycat.je.utilint.Tracer;
 

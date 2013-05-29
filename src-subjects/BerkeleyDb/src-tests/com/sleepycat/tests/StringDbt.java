@@ -7,7 +7,7 @@
  * $Id: StringDbt.java,v 1.10 2006/01/03 21:56:36 bostic Exp $
  */
 
-package com.sleepycat.je.util;
+package com.sleepycat.tests;
 
 import com.sleepycat.je.DatabaseEntry;
 
