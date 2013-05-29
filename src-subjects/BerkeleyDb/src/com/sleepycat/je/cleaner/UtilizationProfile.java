@@ -934,7 +934,9 @@ synchronized (this) {
         bin.releaseLatch();
       }
     }
-//#endif
+  //#else
+    return false; // -Sabrina
+    //#endif
   }
 }
 //#endif

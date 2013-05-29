@@ -57,15 +57,19 @@ synchronized (logWriteLatch) {
   /** 
  * @see LogManager#getUnflushableTrackedSummary
  */
-  public TrackedFileSummary getUnflushableTrackedSummary(  long file) throws DatabaseException {
-//#if LATCHES
-synchronized (logWriteLatch) {
-      return getUnflushableTrackedSummaryInternal(file);
-    }
-//#endif
-  }
-//#endif
-//#if CLEANER
+	public TrackedFileSummary getUnflushableTrackedSummary(long file)
+			throws DatabaseException {
+		// #if LATCHES
+		synchronized (logWriteLatch) {
+			return getUnflushableTrackedSummaryInternal(file);
+		}
+		// #else
+		throw new RuntimeException("TYPE ERROR?");
+		// #endif
+	}
+// #endif
+	
+// #if CLEANER
   /** 
  * @see LogManager#countObsoleteLNs
  */
@@ -75,9 +79,12 @@ synchronized (logWriteLatch) {
 synchronized (logWriteLatch) {
       countObsoleteNodeInternal(tracker,lsn,type);
     }
+//#else
+	throw new RuntimeException("TYPE ERROR?");
 //#endif
   }
 //#endif
+  
 //#if CLEANER
   /** 
  * @see LogManager#countObsoleteNodes
