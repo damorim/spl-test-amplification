@@ -32,7 +32,9 @@ import com.sleepycat.je.StatsConfig;
 import com.sleepycat.je.dbi.CursorImpl;
 import com.sleepycat.je.dbi.EnvironmentImpl;
 import com.sleepycat.je.dbi.INList;
+//#if LATCHES
 import com.sleepycat.je.latch.LatchSupport;
+//#endif
 import com.sleepycat.je.log.FileManager;
 import com.sleepycat.je.tree.BIN;
 import com.sleepycat.je.tree.ChildReference;
@@ -82,16 +84,22 @@ public class TestUtils {
     }
 
     static public void checkLatchCount() {
+    	//#if LATCHES
         TestCase.assertTrue(LatchSupport.countLatchesHeld() == 0);
+        //#endif
     }
 
     static public void printLatchCount(String msg) {
+    	//#if LATCHES
         System.out.println(msg + " : " + LatchSupport.countLatchesHeld());
+        //#endif
     }
 
     static public void printLatches(String msg) {
         System.out.println(msg + " : ");
+      //#if LATCHES
         LatchSupport.dumpLatchesHeld();
+        //#endif
     }
 
     /**
@@ -295,7 +303,7 @@ public class TestUtils {
     public static long validateNodeMemUsage(EnvironmentImpl envImpl,
                                             boolean assertOnError)
         throws DatabaseException {
-
+    	//#if MEMORYBUDGET
         long total = tallyNodeMemUsage(envImpl);
         long nodeCacheUsage = envImpl.getMemoryBudget().getTreeMemoryUsage();
         NumberFormat formatter = NumberFormat.getNumberInstance();
@@ -318,30 +326,43 @@ public class TestUtils {
         }
 
         return nodeCacheUsage;
+        //#else
+        throw new RuntimeException("TYPE ERRROR?");
+        //#endif
     }
 
     public static long tallyNodeMemUsage(EnvironmentImpl envImpl)
         throws DatabaseException {
 
         INList inList = envImpl.getInMemoryINs();
+      //#if LATCHES
         inList.latchMajor();
+      //#endif
         long total = 0;
         try {
             Iterator iter = inList.iterator();
             while (iter.hasNext()) {
                 IN in = (IN) iter.next();
+              //#if LATCHES
                 in.latch();
+              //#endif
                 try {
+                	//#if MEMORYBUDGET
                     assert in.verifyMemorySize():
                         "in nodeId=" + in.getNodeId() +
                         ' ' + in.getClass().getName();
                     total += in.getInMemorySize();
+                    //#endif
                 } finally {
+                	 //#if LATCHES
                     in.releaseLatch();
+                    //#endif
                 }
             }
         } finally {
+        	 //#if LATCHES
             inList.releaseMajorLatch();
+            //#endif
         }
         return total;
     }
@@ -409,21 +430,29 @@ public class TestUtils {
 
 
         /* Log the BIN and update its parent entry. */
+      //#if LATCHES
         bin.latch();
+        //#endif
         SearchResult result = tree.getParentINForChildIN(bin, true, true);
         assert result.parent != null;
+        //#if LATCHES
         result.parent.releaseLatch();
+        //#endif
         assert result.exactParentFound;
         IN binParent = result.parent;
         long binLsn = logIN(env, bin, true, binParent);
         binParent.updateEntry(result.index, bin, binLsn);
 
         /* Log the BIN parent and update its parent entry. */
+        //#if LATCHES
         binParent.latch();
+        //#endif
         result = tree.getParentINForChildIN(binParent, true, true);
         IN inParent = null;
         if (result.parent != null) {
+        	 //#if LATCHES
             result.parent.releaseLatch();
+            //#endif
             assert result.exactParentFound;
             inParent = result.parent;
         }
@@ -451,14 +480,18 @@ public class TestUtils {
         throws DatabaseException {
 
         EnvironmentImpl envImpl = DbInternal.envGetEnvironmentImpl(env);
+        //#if LATCHES
         in.latch();
+        //#endif
         long lsn;
         if (provisional) {
             lsn = in.logProvisional(envImpl.getLogManager(), parent);
         } else {
             lsn = in.log(envImpl.getLogManager());
         }
+        //#if LATCHES
         in.releaseLatch();
+        //#endif
         return lsn;
     }
 
@@ -469,10 +502,14 @@ public class TestUtils {
         throws DatabaseException {
 
         Tree tree = bin.getDatabase().getTree();
+        //#if LATCHES
         bin.latch();
+        //#endif
         SearchResult result = tree.getParentINForChildIN(bin, true, true);
         assert result.parent != null;
+        //#if LATCHES
         result.parent.releaseLatch();
+        //#endif
         assert result.exactParentFound;
         return result.parent;
     }
@@ -504,7 +541,9 @@ public class TestUtils {
         int level = 0;
         if (rootIN != null) {
             level = rootIN.getLevel() & IN.LEVEL_MASK;
+            //#if LATCHES
             rootIN.releaseLatch();
+            //#endif
         }
 
         return (desiredDepth == level);

@@ -386,7 +386,11 @@ public class CleanerTest extends TestCase {
 	db2.close();
         assertEquals("Should have 0 as current file", 0L,
                      fileManager.getCurrentFileNum());
+    //#if LOGGINGBASE
+    //#if LOGGINGFILEHANDLER        
 	envImpl.forceLogFileFlip();
+	//#endif
+	//#endif
 	env.close();
 
         env = new Environment(envHome, envConfig);
@@ -736,9 +740,10 @@ public class CleanerTest extends TestCase {
         name = EnvironmentParams.CLEANER_DETAIL_MAX_MEMORY_PERCENTAGE.
             getName();
         setParam(name, "7");
+        //#if MEMORYBUDGET
         assertEquals((budget.getMaxMemory() * 7) / 100,
                      budget.getTrackerBudget());
-
+        //#endif
         /* je.cleaner.threads */
         name = EnvironmentParams.CLEANER_THREADS.getName();
         setParam(name, "7");

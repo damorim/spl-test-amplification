@@ -300,8 +300,10 @@ public class LNFileReaderTest extends TestCase {
 
         for (int i = 0; i < numIters; i++) {
             /* Add a debug record just to be filler. */
+        	//#if LOGGINGBASE
             Tracer rec = new Tracer("Hello there, rec " + (i+1));
             logManager.log(rec);
+            //#endif
 
             /* Make a transactional LN, we expect it to be there. */
             byte[] data = new byte[i+1];
@@ -377,12 +379,18 @@ public class LNFileReaderTest extends TestCase {
         }
 
         /* Make a marker log entry to pose as the end of file. */
+      //#if LOGGINGBASE
         Tracer rec = new Tracer("Pretend this is off the file");
         long lastLsn = logManager.log(rec);
+        //#endif
         db.close();
         logManager.flush();
         envImpl.getFileManager().clear();
+      //#if LOGGINGBASE
         return lastLsn;
+        //#else
+        throw new RuntimeException("TYPE ERROR?");
+        //#endif
     }
 
 
