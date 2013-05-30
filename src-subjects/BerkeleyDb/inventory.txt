@@ -1,0 +1,30 @@
+Oranges#OranfruiRu6Ghr#0.71#451#fruits#TriCounty Produce
+Oranges#OranfruiXRPFn1#0.73#263#fruits#Simply Fresh
+Oranges#OranfruiLEuzQj#0.69#261#fruits#Off the Vine
+Apples#ApplfruiZls4Du#1.20#472#fruits#TriCounty Produce
+Apples#Applfrui8fewZe#1.21#402#fruits#Simply Fresh
+Apples#ApplfruiXoT6xG#1.20#728#fruits#Off the Vine
+Bananas#BanafruipIlluX#0.50#207#fruits#TriCounty Produce
+Bananas#BanafruiEQhWuj#0.50#518#fruits#Simply Fresh
+Bananas#BanafruimpRgPO#0.50#741#fruits#Off the Vine
+Almonds#AlmofruiPPCLz8#0.55#600#fruits#TriCounty Produce
+Almonds#AlmofruidMyKmp#0.54#745#fruits#Simply Fresh
+Almonds#Almofrui7K0xzH#0.53#405#fruits#Off the Vine
+Allspice#AllsfruibJGK4R#0.94#669#fruits#TriCounty Produce
+Allspice#Allsfruilfvoeg#0.94#244#fruits#Simply Fresh
+Allspice#Allsfruio12BOS#0.95#739#fruits#Off the Vine
+Apricot#AprifruijphEpM#0.89#560#fruits#TriCounty Produce
+Apricot#AprifruiU1zIDn#0.91#980#fruits#Simply Fresh
+Apricot#AprifruichcwYS#0.95#668#fruits#Off the Vine
+Avocado#AvocfruiwYYomu#0.99#379#fruits#TriCounty Produce
+Avocado#AvocfruiT6IwWE#1.02#711#fruits#Simply Fresh
+Avocado#AvocfruisbK1h5#0.97#856#fruits#Off the Vine
+Bael Fruit#BaelfruilAU7Hj#0.41#833#fruits#TriCounty Produce
+Bael Fruit#BaelfruiX2KvqV#0.40#770#fruits#Simply Fresh
+Bael Fruit#Baelfruidjne4e#0.39#778#fruits#Off the Vine
+Betel Nut#BetefruiQYdHqQ#0.34#926#fruits#TriCounty Produce
+Betel Nut#Betefrui32BKAz#0.37#523#fruits#Simply Fresh
+Betel Nut#BetefruisaWzY4#0.34#510#fruits#Off the Vine
+Black Walnut#BlacfruiXxIuMU#0.57#923#fruits#TriCounty Produce
+Black Walnut#BlacfruiZXgY9t#0.59#312#fruits#Simply Fresh
+Black Walnut#BlacfruikWO0vz#0.60#877#fruits#Off the Vine
