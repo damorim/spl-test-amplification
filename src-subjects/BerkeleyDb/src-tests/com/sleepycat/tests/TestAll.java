@@ -1,126 +1,155 @@
 package com.sleepycat.tests;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.EnvironmentConfigTest;
-import com.sleepycat.je.cleaner.CleanerTest;
-import com.sleepycat.je.dbi.DbConfigManagerTest;
-import com.sleepycat.je.log.LNFileReaderTest;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.tests.gettingStarted.ExampleDatabasePut;
+import com.sleepycat.tests.gettingStarted.ExampleInventoryRead;
+import com.sleepycat.tests.gettingStarted.MyDbEnv;
 import com.sleepycat.tests.txn.TxnGuide;
 
 public class TestAll {
 
+	public static String logdisable = "logdisable";
 	public static boolean logON = true;
-	
-	public static void main(String[] args){
-		runTest(1);
-	}
+	public static boolean doCoverage = false;// NÂO COMITAR COM TRUE
 
-	public static void runTest(int test) {
+	public static void main(String[] args) throws InterruptedException {
+		int test = 1;
 
 		switch (test) {
 		case 1:
-			test1();
+			//#if TRANSACTIONS && IO && CLEANER
+			test1();// Works on both reduced and extended suite (for every valid
+					// feature set), including JPF for both.
+			//#endif
 			break;
 		case 2:
-			test2();
+			//#if LATCHES && FILEHANDLECACHE && CLEANER && EVICTOR && DELETEOP && MEMORY_BUDGET
+			test2();// Works on reduced suite and extended suite(for a certain
+					// feature set).
+			//#endif
 			break;
 		case 3:
-			test3();
+			//#if LATCHES && FILEHANDLECACHE && CLEANER && EVICTOR && DELETEOP && MEMORY_BUDGET
+			test3();// Works on reduced suite and extended suite(for a certain
+					// feature set).
+			//#endif
 			break;
 		case 4:
-			test4();
-			break;
-		case 5:
-			test5();
+			//#if LATCHES && FILEHANDLECACHE && CLEANER && EVICTOR && DELETEOP && MEMORY_BUDGET
+			test4();// Works on reduced suite and extended suite(for a certain
+					// feature set).
+			//#endif
 			break;
 		default:
 			throw new RuntimeException("This test does not exist");
 		}
-	}
 
-	private static void test5() {
-		LNFileReaderTest lnrt = new LNFileReaderTest();
-		try {
-			lnrt.setUp();
-			lnrt.testNoFile();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		} finally{
-			try {
-				lnrt.tearDown();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (DatabaseException e) {
-				e.printStackTrace();
+		if (true) {
+			if (logON) {
+				System.out.println("DONE");
 			}
-		}
-	}
-
-	private static void test4() {
-		DbConfigManagerTest dbct = new DbConfigManagerTest();
-		try {
-			dbct.testBasicParams();
-		} catch (Throwable e) {
-//			if (e.getClass() == InvalidConfigurationException.class) {
-//				throw new InvalidConfigurationException();
-//			}
-			e.printStackTrace();
-		}
-	}
-
-	private static void test3() {
-		EnvironmentConfigTest ect = new EnvironmentConfigTest();
-		try {
-			ect.testValidation();
-			ect.testSingleParam();
-			ect.testInconsistentParams();
-		} catch (Exception e) {
-//			if (e.getClass() == InvalidConfigurationException.class) {
-//				throw new InvalidConfigurationException();
-//			}
+			System.exit(0);
 		}
 	}
 
 	/**
-	 * This test initializes the database environment.
+	 * This test initializes the database environment. Minimum feature set: 1
+	 * TRANSACTIONS IO CLEANER
 	 */
 	public static void test1() {
-		CleanerTest ct = new CleanerTest();
+		Environment myDatabaseEnvironment = null;
+		File dbEnv = setup();
 		try {
-			ct.setUp();
-			try {
-//				ct.testCleanerNoDupes();
-				ct.testMutableConfig();
-			} catch (Throwable e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			EnvironmentConfig envConfig = new EnvironmentConfig();
+			envConfig.setAllowCreate(true);
+			envConfig.setTransactional(true);// so abilitar se transiction
+												// estiver no produto.
+			myDatabaseEnvironment = new Environment(dbEnv, envConfig);
+		} catch (DatabaseException dbe) {
+			dbe.printStackTrace();
+			System.err.println(dbe.toString());
+			// System.exit(1);
+		}
+		tearDown(dbEnv);
+
+		/**
+		 * MARCELO ADDED THIS TO DEAL WITH DAEMON THREADS
+		 */
+		if (true) {
+			if (logON) {
+				System.out.println("DONE");
 			}
-			ct.tearDown();
-		} catch (Exception e) {
-			e.printStackTrace();
+			System.exit(0);
 		}
 	}
 
 	/**
-	 * This test runs a transactional example.
+	 * This test inserts into and retrieves from a database by specifying an
+	 * environment directory for the data generated: Minimum feature set: 3
+	 * LATCHES FILEHANDLECACHE CLEANER EVICTOR DELETEOP MEMORY_BUDGET NIO 3
+	 * LATCHES FILEHANDLECACHE CLEANER EVICTOR DELETEOP MEMORY_BUDGET
+	 * CHUNCKEDNIO 3 LATCHES FILEHANDLECACHE CLEANER EVICTOR DELETEOP
+	 * MEMORY_BUDGET IO
+	 */
+	public static void test3() {
+		File dbEnv = setup();
+		SimpleExample appInsert = new SimpleExample(10, true, dbEnv, 10); // insert
+		SimpleExample appRetrieve = new SimpleExample(0, false, dbEnv, 0); // retrieve
+		try {
+			appInsert.run();
+			appRetrieve.run();
+		} catch (DatabaseException dbe) {
+			System.err.println("ExampleDatabasePut: " + dbe.toString());
+			dbe.printStackTrace();
+		} catch (Exception e) {
+			System.out.println("Exception: " + e.toString());
+			e.printStackTrace();
+		}
+		tearDown(dbEnv);
+	}
+
+	/**
+	 * This test puts and reads information in your database. Minimum feature
+	 * set: 2 LATCHES FILEHANDLECACHE CLEANER EVICTOR DELETEOP MEMORY_BUDGET NIO
+	 * 2 LATCHES FILEHANDLECACHE CLEANER EVICTOR DELETEOP MEMORY_BUDGET
+	 * CHUNCKEDNIO 2 LATCHES FILEHANDLECACHE CLEANER EVICTOR DELETEOP
+	 * MEMORY_BUDGET IO
 	 */
 	public static void test2() {
+		MyDbEnv myDbEnv = new MyDbEnv();
 		try {
-			TxnGuide.run();
+			ExampleDatabasePut.run(myDbEnv);
+			ExampleInventoryRead.run(myDbEnv);
+		} catch (DatabaseException dbe) {
+			System.err.println("ExampleDatabasePut: " + dbe.toString());
+			dbe.printStackTrace();
 		} catch (Exception e) {
-//			if (e.getClass() == InvalidConfigurationException.class) {
-//				throw new InvalidConfigurationException();
-//			}
+			System.out.println("Exception: " + e.toString());
+			e.printStackTrace();
+		} finally {
+			myDbEnv.close();
 		}
+		File dir = new File(System.getProperty("user.dir") + "/gsgEnv");
+		tearDown(dir);// organizar isso depois
+
+	}
+
+	/**
+	 * This test runs a transactional example. Minimum feature set: 4 LATCHES
+	 * FILEHANDLECACHE CLEANER EVICTOR DELETEOP MEMORY_BUDGET NIO 4 LATCHES
+	 * FILEHANDLECACHE CLEANER EVICTOR DELETEOP MEMORY_BUDGET CHUNCKEDNIO 4
+	 * LATCHES FILEHANDLECACHE CLEANER EVICTOR DELETEOP MEMORY_BUDGET IO
+	 */
+	public static void test4() {
+		TxnGuide.run();
 	}
 
 	public static File setup() {
-		File dir = new File("../BerkeleyDb/dbEnv");
+		File dir = new File(System.getProperty("user.dir") + "/dbEnv");
 		if (!dir.exists()) {
 			dir.mkdir();
 		}
@@ -131,7 +160,7 @@ public class TestAll {
 		if (file.exists()) {
 			if (file.isDirectory()) {
 				if (logON) {
-					// System.out.println("deleting dir: " + file);
+					System.out.println("deleting dir: " + file);
 				}
 				for (File f : file.listFiles()) {
 					if (!f.getName().contains("svn")) {
@@ -140,12 +169,11 @@ public class TestAll {
 				}
 			} else {
 				if (logON) {
-					// System.out.println("deleting file: " + file);
+					System.out.println("deleting file: " + file);
 				}
 				file.delete();
 			}
 
 		}
 	}
-
 }
