@@ -21,20 +21,28 @@ public class TestAll2 {
 
 		switch (test) {
 		case 1:
+			//#if TRANSACTIONS && IO && CLEANER
 			test1();// Works on both reduced and extended suite (for every valid
 					// feature set), including JPF for both.
+			//#endif
 			break;
 		case 2:
+			//#if LATCHES && FILEHANDLECACHE && CLEANER && EVICTOR && DELETEOP && MEMORY_BUDGET
 			test2();// Works on reduced suite and extended suite(for a certain
 					// feature set).
+			//#endif
 			break;
 		case 3:
+			//#if LATCHES && FILEHANDLECACHE && CLEANER && EVICTOR && DELETEOP && MEMORY_BUDGET
 			test3();// Works on reduced suite and extended suite(for a certain
 					// feature set).
+			//#endif
 			break;
 		case 4:
+			//#if LATCHES && FILEHANDLECACHE && CLEANER && EVICTOR && DELETEOP && MEMORY_BUDGET
 			test4();// Works on reduced suite and extended suite(for a certain
 					// feature set).
+			//#endif
 			break;
 		default:
 			throw new RuntimeException("This test does not exist");

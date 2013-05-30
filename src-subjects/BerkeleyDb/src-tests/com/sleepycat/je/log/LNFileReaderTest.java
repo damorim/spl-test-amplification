@@ -393,7 +393,7 @@ public class LNFileReaderTest extends TestCase {
       //#if LOGGINGBASE
         return lastLsn;
         //#else
-        throw new RuntimeException("TYPE ERROR?");
+//        throw new RuntimeException("TYPE ERROR?");
         //#endif
     }
 

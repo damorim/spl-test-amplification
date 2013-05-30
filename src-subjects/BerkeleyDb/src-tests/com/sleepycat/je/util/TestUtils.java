@@ -330,7 +330,7 @@ public class TestUtils {
 
         return nodeCacheUsage;
         //#else
-        throw new RuntimeException("TYPE ERRROR?");
+//        throw new RuntimeException("TYPE ERRROR?");
         //#endif
     }
 
