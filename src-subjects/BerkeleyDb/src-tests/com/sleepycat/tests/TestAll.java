@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.IOException;
 
 import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.EnvironmentConfigTest;
+import com.sleepycat.je.cleaner.CleanerTest;
+import com.sleepycat.je.dbi.DbConfigManagerTest;
+import com.sleepycat.je.log.LNFileReaderTest;
 import com.sleepycat.tests.txn.TxnGuide;
 
 public class TestAll {
