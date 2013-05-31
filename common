@@ -5,8 +5,14 @@ LIBSDIR="$BASEDIR/libs"
 JAVASCRIPTSDIR="$BASEDIR/java-scripts"
 EVOSUITE="$LIBSDIR/evosuite-20130504.jar"
 JUNIT="$LIBSDIR/junit-4.11.jar"
+LOG4J="$LIBSDIR/log4j-1.2.13.jar"
+SKARINGA="$LIBSDIR/skaringa-r3p7.jar"
+XSTREAM="$LIBSDIR/xstream-1.1.3.jar"
 
 export BASEDIR
 export LIBSDIR
 export EVOSUITE
 export JUNIT
+export LOG4J
+export SKARINGA
+export XSTREAM

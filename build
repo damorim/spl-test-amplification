@@ -36,7 +36,8 @@ $BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
 # $BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
 
 ## setting classpath
-CP=".:$JUNIT"
+CP=".:${JUNIT}:${LOG4J}:${SKARINGA}:${XSTREAM}"
+
 ## compiling
 (cd $OUTPUT;
     pwd
