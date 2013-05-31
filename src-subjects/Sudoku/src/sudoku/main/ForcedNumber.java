@@ -1,9 +1,9 @@
+//#if SOLVER
 package sudoku.main;
 
 public class ForcedNumber implements Solver {
 
     public boolean trySolve(Board board) {  //SOLVER
-    	//#if SOLVER
 	        // iterate over 
 	        // structure types
 	        for (int i = 0; i < Structure.values().length; i ++) {  //SOLVER
@@ -31,6 +31,6 @@ public class ForcedNumber implements Solver {
 	            } //SOLVER
 	        } //SOLVER
 	        return true; //SOLVER
-    	//#endif
     } //SOLVER
 }
+//#endif

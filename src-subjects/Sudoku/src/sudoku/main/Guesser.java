@@ -1,3 +1,4 @@
+//#if SOLVER
 package sudoku.main;
 import java.util.LinkedList;
 import java.util.List;
@@ -5,7 +6,6 @@ import java.util.List;
 public class Guesser {
 
     public List guess(Board board) { //SOLVER
-    	//#if SOLVER
 	        // find unset field with the least possibilities, i.e. struct and field index by iterating over rows
 	        int structIndex = -1; //SOLVER
 	        int elementIndex = -1; //SOLVER
@@ -34,7 +34,7 @@ public class Guesser {
 	
 	        } //SOLVER
 	        return guessed; //SOLVER
-    	//#endif
     } //SOLVER
 
 }
+//#endif

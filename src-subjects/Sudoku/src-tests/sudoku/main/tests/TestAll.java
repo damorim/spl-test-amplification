@@ -10,11 +10,11 @@ public class TestAll {
 	public static final int numberOfTests = 4;
 
 	public static void main(String[] args) {
-		// runTest(1);
-		// runTest(2);
-		// runTest(3);
-		// runTest(4);
-		runTest(5);
+//		runTest(1);
+//		runTest(2);
+//		runTest(3);
+//		runTest(4);
+//		runTest(5);
 	}
 
 	/**

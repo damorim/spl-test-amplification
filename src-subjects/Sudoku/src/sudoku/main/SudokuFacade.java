@@ -7,7 +7,9 @@ public class SudokuFacade {
 
 	private Board board;
 	private BoardManager bm; // BASE
+	// #if GENERATOR
 	private SudokuGenerator sGen; // GENERATOR
+	//#endif
 
 	public SudokuFacade() {
 		// #if BASE

@@ -106,18 +106,16 @@ public class Board
 
 	}
 
+// #if BASE && SOLVER
 	public boolean isSolved() { // SOLVER
-		// #if BASE && SOLVER
 		for (int i = 0; i < board.length; i++)
 			// SOLVER
 			if (!board[i].isSet()) // SOLVER
 				return false; // SOLVER
 		return true; // SOLVER
-		// #endif
 	} // SOLVER
 
 	public boolean trySetField(Structure str, int strIndex, int element, Field f) { // SOLVER
-		// #if BASE && SOLVER
 		boolean validRemoveAction = removeValueFromStructures(
 				getIndex(str, strIndex, element), f.getValue()); // SOLVER
 		if (validRemoveAction
@@ -128,11 +126,9 @@ public class Board
 		} else
 			// SOLVER
 			return false; // SOLVER
-		// #endif
 	} // SOLVER
-
+	
 	protected boolean removeValueFromStructures(int index, int value) { // SOLVER
-		// #if BASE && SOLVER
 		List relatedFieldIndices = getRelatedFieldIndices(index); // SOLVER
 		for (int i = 0; i < relatedFieldIndices.size(); i++) { // SOLVER
 			if (!board[(Integer) relatedFieldIndices.get(i)].isSet()) { // SOLVER
@@ -146,11 +142,9 @@ public class Board
 			} // SOLVER
 		} // SOLVER
 		return true; // SOLVER
-		// #endif
 	} // SOLVER
-
+	
 	protected int getStructureIndex(int index, Structure str) { // SOLVER
-		// #if BASE && SOLVER
 		int sqrt = (int) Math.round(Math.sqrt(Field.POSSIBILITIES)); // SOLVER
 		if (str.name().equals("ROW")) // SOLVER
 			return index / Field.POSSIBILITIES; // SOLVER
@@ -162,11 +156,9 @@ public class Board
 		else
 			// SOLVER
 			return -1; // SOLVER
-		// #endif
 	} // SOLVER
 
 	protected List getRelatedFieldIndices(int index) { // SOLVER
-		// #if BASE && SOLVER
 		List indices = new LinkedList(); // SOLVER
 		Structure str; // SOLVER
 		int strIndex; // SOLVER
@@ -182,33 +174,31 @@ public class Board
 			} // SOLVER
 		} // SOLVER
 		return indices; // SOLVER
-		// #endif
 	} // SOLVER
+// #endif
 
+	// #if BASE && STATES
 	public Object clone() throws CloneNotSupportedException { // STATES
-		// #if BASE && STATES
 		Board clone = new Board(); // STATES
 		for (int i = 0; i < board.length; i++) { // STATES
+			//#if SOLVER
 			clone.board[i] = (Field) board[i].clone(); // STATES
+			//#endif
 		} // STATES
 		return clone; // STATES
-		// #endif
 	}
 
 	private void writeObject(ObjectOutputStream aOutputStream)
 			throws IOException { // STATES
-		// #if BASE && STATES
 		aOutputStream.writeObject(board); // STATES
 		aOutputStream.defaultWriteObject(); // STATES
-		// #endif
 	} // STATES
 
 	private void readObject(ObjectInputStream aInputStream)
 			throws ClassNotFoundException, IOException { // STATES
-		// #if BASE && STATES
 		aInputStream.defaultReadObject(); // STATES
 		board = (Field[]) aInputStream.readObject(); // STATES
-		// #endif
 	} // STATES
+	// #endif
 
 }

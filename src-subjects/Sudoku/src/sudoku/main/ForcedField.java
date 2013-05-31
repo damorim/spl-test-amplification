@@ -1,9 +1,9 @@
+// #if SOLVER
 package sudoku.main;
 
 public class ForcedField implements Solver {
 
 	public boolean trySolve(Board board) { // SOLVER
-		// #if SOLVER
 		for (int i = 0; i < Field.POSSIBILITIES; i++)
 			// SOLVER
 			for (int j = 0; j < Field.POSSIBILITIES; j++)
@@ -16,6 +16,6 @@ public class ForcedField implements Solver {
 									.getRemainingPos().get(0)))) // SOLVER
 						return false; // SOLVER
 		return true; // SOLVER
-		// #endif
 	} // SOLVER
 }
+//#endif
