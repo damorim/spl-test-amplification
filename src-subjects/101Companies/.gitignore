@@ -2,7 +2,6 @@ bin
 evosuite*
 log*.txt
 tmptest
-evo-run-*
 output*.txt
 all-configurations-shuffled.txt
 random-configurations.txt
