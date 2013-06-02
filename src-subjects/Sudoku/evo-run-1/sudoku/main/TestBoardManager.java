@@ -8,10 +8,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.evosuite.junit.EvoSuiteRunner;
 import static org.junit.Assert.*;
+import java.io.File;
+import java.io.IOException;
 import sudoku.main.BoardManager;
+import sudoku.main.Structure;
 
 @RunWith(EvoSuiteRunner.class)
-public class TestBoardManager_0 {
+public class TestBoardManager {
 
 
   //Test case number: 0
@@ -38,5 +41,45 @@ public class TestBoardManager_0 {
   public void test0()  throws Throwable  {
       BoardManager boardManager0 = new BoardManager();
       boardManager0.updateSudokuViews();
+  }
+
+  //Test case number: 1
+  /*
+   * 3 covered goals:
+   * 1 Weak Mutation 9: sudoku.main.BoardManager.loadFile(Ljava/io/File;)V:42 - DeleteStatement: preLoadWrapper()V
+   * 2 sudoku.main.BoardManager.preLoadWrapper()V: root-Branch
+   * 3 Weak Mutation 9: sudoku.main.BoardManager.loadFile(Ljava/io/File;)V:42 - DeleteStatement: preLoadWrapper()V
+   */
+  @Test
+  public void test1()  throws Throwable  {
+      BoardManager boardManager0 = new BoardManager();
+      // Undeclared exception!
+      try {
+        boardManager0.loadFile((File) null);
+        fail("Expecting exception: NegativeArraySizeException");
+      } catch(NegativeArraySizeException e) {
+      }
+  }
+
+  //Test case number: 2
+  /*
+   * 6 covered goals:
+   * 1 Weak Mutation 111: sudoku.main.BoardManager.getField(Lsudoku/main/Structure;II)Lsudoku/main/Field;:125 - DeleteStatement: getBoard()Lsudoku/main/Board;
+   * 2 Weak Mutation 120: sudoku.main.BoardManager.getBoard()Lsudoku/main/Board;:131 - ReplaceComparisonOperator != null -> = null
+   * 3 sudoku.main.BoardManager.getField(Lsudoku/main/Structure;II)Lsudoku/main/Field;: root-Branch
+   * 4 sudoku.main.BoardManager.getBoard()Lsudoku/main/Board;: I4 Branch 9 IFNONNULL L131 - false
+   * 5 Weak Mutation 111: sudoku.main.BoardManager.getField(Lsudoku/main/Structure;II)Lsudoku/main/Field;:125 - DeleteStatement: getBoard()Lsudoku/main/Board;
+   * 6 Weak Mutation 120: sudoku.main.BoardManager.getBoard()Lsudoku/main/Board;:131 - ReplaceComparisonOperator != null -> = null
+   */
+  @Test
+  public void test2()  throws Throwable  {
+      BoardManager boardManager0 = new BoardManager();
+      Structure structure0 = Structure.COL;
+      // Undeclared exception!
+      try {
+        boardManager0.getField(structure0, 0, 0);
+        fail("Expecting exception: NegativeArraySizeException");
+      } catch(NegativeArraySizeException e) {
+      }
   }
 }

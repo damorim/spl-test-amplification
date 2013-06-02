@@ -8,11 +8,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.evosuite.junit.EvoSuiteRunner;
 import static org.junit.Assert.*;
+import java.io.File;
 import sudoku.main.Structure;
 import sudoku.main.SudokuFacade;
 
 @RunWith(EvoSuiteRunner.class)
-public class TestSudokuFacade_0 {
+public class TestSudokuFacade {
 
 
   //Test case number: 0
@@ -56,15 +57,36 @@ public class TestSudokuFacade_0 {
   @Test
   public void test0()  throws Throwable  {
       SudokuFacade sudokuFacade0 = new SudokuFacade();
-      Structure structure0 = Structure.COL;
+      Structure structure0 = Structure.ROW;
       // Undeclared exception!
       try {
-        sudokuFacade0.setField(structure0, (-1833), 0, 571);
+        sudokuFacade0.setField(structure0, 1, 1962, 0);
         fail("Expecting exception: ArrayIndexOutOfBoundsException");
       } catch(ArrayIndexOutOfBoundsException e) {
         /*
-         * -1833
+         * 1971
          */
       }
+  }
+
+  //Test case number: 1
+  /*
+   * 9 covered goals:
+   * 1 Weak Mutation 17: sudoku.main.SudokuFacade.loadFile(Ljava/io/File;)V:38 - DeleteField: bmLsudoku/main/BoardManager;
+   * 2 Weak Mutation 18: sudoku.main.SudokuFacade.loadFile(Ljava/io/File;)V:38 - DeleteStatement: loadFile(Ljava/io/File;)V
+   * 3 Weak Mutation 19: sudoku.main.SudokuFacade.loadFile(Ljava/io/File;)V:40 - DeleteStatement: printStackTrace()V
+   * 4 sudoku.main.SudokuFacade.loadFile(Ljava/io/File;)V: I3 Branch 1 IFNULL L36 - false
+   * 5 Weak Mutation 16: sudoku.main.SudokuFacade.loadFile(Ljava/io/File;)V:36 - ReplaceComparisonOperator = null -> != null
+   * 6 Weak Mutation 17: sudoku.main.SudokuFacade.loadFile(Ljava/io/File;)V:38 - DeleteField: bmLsudoku/main/BoardManager;
+   * 7 Weak Mutation 16: sudoku.main.SudokuFacade.loadFile(Ljava/io/File;)V:36 - ReplaceComparisonOperator = null -> != null
+   * 8 Weak Mutation 19: sudoku.main.SudokuFacade.loadFile(Ljava/io/File;)V:40 - DeleteStatement: printStackTrace()V
+   * 9 Weak Mutation 18: sudoku.main.SudokuFacade.loadFile(Ljava/io/File;)V:38 - DeleteStatement: loadFile(Ljava/io/File;)V
+   */
+  @Test
+  public void test1()  throws Throwable  {
+      SudokuFacade sudokuFacade0 = new SudokuFacade();
+      File file0 = new File("", "");
+      sudokuFacade0.loadFile(file0);
+      assertEquals("/", file0.getCanonicalPath());
   }
 }
