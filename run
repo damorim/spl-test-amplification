@@ -7,7 +7,7 @@ then
 fi
 
 ####### bound for test generation
-NUM_VALID_CONFIGURATIONS_FOR_TG=20
+NUM_VALID_CONFIGURATIONS_FOR_TG=1
 ####### bound for test execution
 NUM_RANDOM_CONFIGURATIONS_FOR_TE=0
 
@@ -50,25 +50,25 @@ javac -cp ${JUNIT} ${JAVASCRIPTSDIR}/MyTestRunner.java
 	mkdir -p $BINDIR
         ## preprocess and compile
 	./build "$CONFIGURATION" $CURDIR
-# 	if [ "$?" -ne 0 ]
-# 	then
-# 	    echo "compile error"
-# 	else
-# 	    NUM=`find $BINDIR -name "*.class" | wc -l`
-# 	    echo "$NUM classes generated"
-#      	    ############################
-# 	    EVOSUITE_TESTS_DIRS=$CURDIR/evosuite-tests
-# 	    EVOSUITE_REPORTS_DIRS=$CURDIR/evosuite-report
-# 	    rm -rf ${EVOSUITE_TESTS_DIRS}
-# 	    rm -rf ${EVOSUITE_REPORTS_DIRS}
-# 	    ./evosuite "$BINDIR"
-# 	    EVO_OUTPUT="$CURDIR/evo-run-$a"
-# 	    rm -rf ${EVO_OUTPUT} ## trash if exists
-# 	    mkdir -p ${EVO_OUTPUT}
-# 	    mv evosuite-tests ${EVO_OUTPUT}
-# 	    mv evosuite-report ${EVO_OUTPUT}
-# 	    ############################
-# 	fi
+ 	if [ "$?" -ne 0 ]
+ 	then
+ 	    echo "compile error"
+ 	else
+ 	    NUM=`find $BINDIR -name "*.class" | wc -l`
+ 	    echo "$NUM classes generated"
+      	    ############################
+ 	    EVOSUITE_TESTS_DIRS=$CURDIR/evosuite-tests
+ 	    EVOSUITE_REPORTS_DIRS=$CURDIR/evosuite-report
+ 	    rm -rf ${EVOSUITE_TESTS_DIRS}
+ 	    rm -rf ${EVOSUITE_REPORTS_DIRS}
+ 	    ./evosuite "$BINDIR"
+ 	    EVO_OUTPUT="$CURDIR/evo-run-$a"
+ 	    rm -rf ${EVO_OUTPUT} ## trash if exists
+ 	    mkdir -p ${EVO_OUTPUT}
+ 	    mv evosuite-tests ${EVO_OUTPUT}
+ 	    mv evosuite-report ${EVO_OUTPUT}
+ 	    ############################
+ 	fi
     done < "${CURDIR}/all-configurations-shuffled.txt"
     
     #########################
