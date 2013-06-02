@@ -138,17 +138,21 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
 
 	public void hook3(int crcval) throws IOException {
 		// #if DERIVATIVE_GZIPCRC
+		//#if CRC
 		if (crcval != ((int) headCRC.getValue() & 0xffff))
 			throw new IOException("Header CRC value mismatch");
+		//#endif
 		// #endif
 	}
 
 	public void hook4(int crcval) throws IOException {
 		// #if DERIVATIVE_GZIPCRC
+		//#if CRC
 		if (crcval != (int) crc.getValue())
 			throw new IOException("GZIP crc sum mismatch, theirs \""
 					+ Integer.toHexString(crcval) + "\" and ours \""
 					+ Integer.toHexString((int) crc.getValue()));
+		//#endif
 		// #endif
 	}
 
