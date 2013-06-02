@@ -1,0 +1,9 @@
+bin
+evosuite*
+log*.txt
+tmptest
+output*.txt
+all-configurations-shuffled.txt
+random-configurations.txt
+twise-configurations.txt
+bin2
