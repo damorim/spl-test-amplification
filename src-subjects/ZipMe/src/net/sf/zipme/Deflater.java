@@ -180,14 +180,14 @@ public class Deflater {
 		//#endif
 	}
 
+	//#if BASE
 	/**
 	 * Gets the number of output bytes so far.
 	 */
 	public int getTotalOut() {
-		//#if BASE
 			return (int) totalOut;
-		//#endif
 	}
+	//#endif
 
 	protected void hook24(int lvl) {
 		//#if COMPRESS
@@ -203,13 +203,12 @@ public class Deflater {
 
 	}
 
+	//#if COMPRESS
 	/**
 	 * Gets the number of input bytes processed so far.
 	 */
 	public int getTotalIn() {
-		//#if COMPRESS
 			return (int) engine.getTotalIn();
-		//#endif
 	}
 
 	/**
@@ -218,9 +217,7 @@ public class Deflater {
 	 * @since 1.5
 	 */
 	public long getBytesRead() {
-		//#if COMPRESS
 			return engine.getTotalIn();
-		//#endif
 	}
 
 	/**
@@ -229,11 +226,10 @@ public class Deflater {
 	 * @since 1.5
 	 */
 	public long getBytesWritten() {
-		//#if COMPRESS
 			return totalOut;
-		//#endif
 	}
-
+//#endif
+	
 	/**
 	 * Flushes the current input block. Further calls to deflate() will produce
 	 * enough output to inflate everything in the current input block. This is

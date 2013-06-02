@@ -10,6 +10,7 @@ package net.sf.zipme;
  * @date Jan 6, 2000
  */
 class DeflaterHuffman {
+// #if BASE
 	private static final int BUFSIZE = 1 << (DeflaterConstants.DEFAULT_MEM_LEVEL + 6);
 	private static final int LITERAL_NUM = 286;
 	private static final int DIST_NUM = 30;
@@ -31,34 +32,34 @@ class DeflaterHuffman {
 		int maxLength;
 
 		Tree(int elems, int minCodes, int maxLength) {
-			// #if BASE
+			
 			this.minNumCodes = minCodes;
 			this.maxLength = maxLength;
 			freqs = new short[elems];
 			bl_counts = new int[maxLength];
-			// #endif
+			
 		}
 
 		void reset() {
-			// #if BASE
+			
 			for (int i = 0; i < freqs.length; i++)
 				freqs[i] = 0;
 			codes = null;
 			length = null;
-			// #endif
+			
 		}
 
 		final void writeSymbol(int code) {
-			// #if BASE
+			
 			if (DeflaterConstants.DEBUGGING) {
 				freqs[code]--;
 			}
 			pending.writeBits(codes[code] & 0xffff, length[code]);
-			// #endif
+			
 		}
 
 		final void checkEmpty() {
-			// #if BASE
+			
 			boolean empty = true;
 			for (int i = 0; i < freqs.length; i++)
 				if (freqs[i] != 0) {
@@ -68,18 +69,18 @@ class DeflaterHuffman {
 			if (!empty)
 				throw new Error();
 			System.err.println("checkEmpty suceeded!");
-			// #endif
+			
 		}
 
 		void setStaticCodes(short[] stCodes, byte[] stLength) {
-			// #if BASE
+			
 			codes = stCodes;
 			length = stLength;
-			// #endif
+			
 		}
 
 		public void buildCodes() {
-			// #if BASE
+			
 			int[] nextCode = new int[maxLength];
 			int code = 0;
 			codes = new short[freqs.length];
@@ -106,11 +107,11 @@ class DeflaterHuffman {
 					nextCode[bits - 1] += 1 << (16 - bits);
 				}
 			}
-			// #endif
+			
 		}
 
 		private void buildLength(int childs[]) {
-			// #if BASE
+			
 			this.length = new byte[freqs.length];
 			int numNodes = childs.length / 2;
 			int numLeafs = (numNodes + 1) / 2;
@@ -172,11 +173,11 @@ class DeflaterHuffman {
 							+ freqs[childs[2 * i]] + " len: "
 							+ length[childs[2 * i]]);
 			}
-			// #endif
+			
 		}
 
 		void buildTree() {
-			// #if BASE
+			
 			int numSymbols = freqs.length;
 			int[] heap = new int[numSymbols];
 			int heapLen = 0;
@@ -254,10 +255,10 @@ class DeflaterHuffman {
 			if (heap[0] != childs.length / 2 - 1)
 				throw new RuntimeException("Weird!");
 			buildLength(childs);
-			// #endif
+			
 		}
 
-		// #if BASE
+		
 		int getEncodedLength() {
 			int len = 0;
 			for (int i = 0; i < freqs.length; i++)
@@ -265,10 +266,10 @@ class DeflaterHuffman {
 			return len;
 		}
 
-		// #endif
+		
 
 		void calcBLFreq(Tree blTree) {
-			// #if BASE
+			
 			int max_count;
 			int min_count;
 			int count;
@@ -304,11 +305,11 @@ class DeflaterHuffman {
 				else
 					blTree.freqs[REP_11_138]++;
 			}
-			// #endif
+			
 		}
 
 		void writeTree(Tree blTree) {
-			// #if BASE
+			
 			int max_count;
 			int min_count;
 			int count;
@@ -350,7 +351,7 @@ class DeflaterHuffman {
 				}
 			}
 		}
-		// #endif
+		
 	}
 
 	DeflaterPending pending;
@@ -364,7 +365,7 @@ class DeflaterHuffman {
 	private static short staticDCodes[];
 	private static byte staticDLength[];
 
-	// #if BASE
+	
 	/**
 	 * Reverse the bits of a 16 bit value.
 	 */
@@ -375,10 +376,10 @@ class DeflaterHuffman {
 					.charAt(value >> 12));
 	}
 
-	// #endif
+	
 
 	static {
-		// #if BASE
+		
 		staticLCodes = new short[LITERAL_NUM];
 		staticLLength = new byte[LITERAL_NUM];
 		int i = 0;
@@ -404,31 +405,31 @@ class DeflaterHuffman {
 			staticDCodes[i] = bitReverse(i << 11);
 			staticDLength[i] = 5;
 		}
-		// #endif
+		
 	}
 
 	public DeflaterHuffman(DeflaterPending pending) {
-		// #if BASE
+		
 		this.pending = pending;
 		literalTree = new Tree(LITERAL_NUM, 257, 15);
 		distTree = new Tree(DIST_NUM, 1, 15);
 		blTree = new Tree(BITLEN_NUM, 4, 7);
 		d_buf = new short[BUFSIZE];
 		l_buf = new byte[BUFSIZE];
-		// #endif
+		
 	}
 
 	public final void reset() {
-		// #if BASE
+		
 		last_lit = 0;
 		extra_bits = 0;
 		literalTree.reset();
 		distTree.reset();
 		blTree.reset();
-		// #endif
+		
 	}
 
-	// #if BASE
+
 	private int l_code(int len) {
 		if (len == 255)
 			return 285;
@@ -449,10 +450,10 @@ class DeflaterHuffman {
 		return code + distance;
 	}
 
-	// #endif
+	
 
 	public void sendAllTrees(int blTreeCodes) {
-		// #if BASE
+		
 		blTree.buildCodes();
 		literalTree.buildCodes();
 		distTree.buildCodes();
@@ -465,11 +466,11 @@ class DeflaterHuffman {
 		distTree.writeTree(blTree);
 		if (DeflaterConstants.DEBUGGING)
 			blTree.checkEmpty();
-		// #endif
+		
 	}
 
 	public void compressBlock() {
-		// #if BASE
+		
 		for (int i = 0; i < last_lit; i++) {
 			int litlen = l_buf[i] & 0xff;
 			int dist = d_buf[i];
@@ -504,12 +505,12 @@ class DeflaterHuffman {
 			literalTree.checkEmpty();
 			distTree.checkEmpty();
 		}
-		// #endif
+		
 	}
 
 	public void flushStoredBlock(byte[] stored, int stored_offset,
 			int stored_len, boolean lastBlock) {
-		// #if BASE
+		
 		if (DeflaterConstants.DEBUGGING)
 			System.err.println("Flushing stored block " + stored_len);
 		pending.writeBits((DeflaterConstants.STORED_BLOCK << 1)
@@ -519,12 +520,12 @@ class DeflaterHuffman {
 		pending.writeShort(~stored_len);
 		pending.writeBlock(stored, stored_offset, stored_len);
 		reset();
-		// #endif
+		
 	}
 
 	public void flushBlock(byte[] stored, int stored_offset, int stored_len,
 			boolean lastBlock) {
-		// #if BASE
+		
 		literalTree.freqs[EOF_SYMBOL]++;
 		literalTree.buildTree();
 		distTree.buildTree();
@@ -566,17 +567,17 @@ class DeflaterHuffman {
 			compressBlock();
 			reset();
 		}
-		// #endif
+		
 	}
 
 	public final boolean isFull() {
-		// #if BASE
+		
 		return last_lit == BUFSIZE;
-		// #endif
+		
 	}
 
 	public final boolean tallyLit(int lit) {
-		// #if BASE
+		
 		if (DeflaterConstants.DEBUGGING) {
 			if (lit > 32 && lit < 127)
 				System.err.println("(" + (char) lit + ")");
@@ -587,11 +588,11 @@ class DeflaterHuffman {
 		l_buf[last_lit++] = (byte) lit;
 		literalTree.freqs[lit]++;
 		return last_lit == BUFSIZE;
-		// #endif
+		
 	}
 
 	public final boolean tallyDist(int dist, int len) {
-		// #if BASE
+		
 		if (DeflaterConstants.DEBUGGING)
 			System.err.println("[" + dist + "," + len + "]");
 		d_buf[last_lit] = (short) dist;
@@ -605,6 +606,7 @@ class DeflaterHuffman {
 		if (dc >= 4)
 			extra_bits += dc / 2 - 1;
 		return last_lit == BUFSIZE;
-		// #endif
+		
 	}
+//#endif
 }

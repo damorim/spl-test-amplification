@@ -11,7 +11,13 @@ package net.sf.zipme;
  * @author Per Bothner
  * @date April 1, 1999.
  */
-public class CRC32 implements Checksum {
+public class CRC32 
+//#if ADLER32CHECKSUM
+//#if CRC
+implements Checksum 
+//#endif
+//#endif
+{
 	/**
 	 * The crc data checksum so far.
 	 */
@@ -43,6 +49,7 @@ public class CRC32 implements Checksum {
 	//#endif
 
 	//#if CRC
+	//#if ADLER32CHECKSUM
 	/**
 	 * Returns the CRC32 data checksum computed so far.
 	 */
@@ -50,13 +57,16 @@ public class CRC32 implements Checksum {
 			return (long) crc & 0xffffffffL;
 	}
 	//#endif
+	//#endif
 
 	/**
 	 * Resets the CRC32 data checksum as if no update was ever called.
 	 */
 	public void reset() {
 		//#if CRC
+		//#if ADLER32CHECKSUM
 			crc = 0;
+		//#endif
 		//#endif
 	}
 
@@ -68,10 +78,12 @@ public class CRC32 implements Checksum {
 	 */
 	public void update(int bval) {
 		//#if CRC
+		//#if ADLER32CHECKSUM
 			int c = ~crc;
 			c = crc_table[(c ^ bval) & 0xff] ^ (c >>> 8);
 			crc = ~c;
 		//#endif
+	    //#endif
 	}
 
 	/**
@@ -85,11 +97,13 @@ public class CRC32 implements Checksum {
 	 *            the length of the data
 	 */
 	public void update(byte[] buf, int off, int len) {
+		//#if ADLER32CHECKSUM
 		//#if CRC
 			int c = ~crc;
 			while (--len >= 0)
 				c = crc_table[(c ^ buf[off++]) & 0xff] ^ (c >>> 8);
 			crc = ~c;
+		//#endif
 		//#endif
 	}
 

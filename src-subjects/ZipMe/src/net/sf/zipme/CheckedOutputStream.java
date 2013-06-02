@@ -1,5 +1,5 @@
 //
-
+//#if BASE
 package net.sf.zipme;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,10 +24,10 @@ public class CheckedOutputStream extends OutputStream {
  * using the supplied Checksum.
  */
   public CheckedOutputStream(  OutputStream out,  Checksum cksum){
-	  //#if BASE
+	  
 	    this.out=out;
 	    this.sum=cksum;
-	  //#endif
+	  
   }
   
   /** 
@@ -35,21 +35,21 @@ public class CheckedOutputStream extends OutputStream {
  * far call <code>getChecksum.getValue()</code>.
  */
   public Checksum getChecksum(){
-	  //#if BASE
+	  
 		  return sum;
-	  //#endif
+	  
   }
   
   /** 
  * Writes one byte to the OutputStream and updates the Checksum.
  */
   public void write(  int bval) throws IOException {
-	  //#if BASE
+	  
 	    out.write(bval);
 	  //#if ADLER32CHECKSUM
 	    sum.update(bval);
 	  //#endif
-	  //#endif
+	  
   }
   
   /** 
@@ -62,21 +62,21 @@ public class CheckedOutputStream extends OutputStream {
  * @exception IOException If an error occurs
  */
   public void write(  byte[] buf) throws IOException {
-	  //#if BASE
+	  
 		  write(buf,0,buf.length);
-		//#endif
+		
   }
   
   /** 
  * Writes the byte array to the OutputStream and updates the Checksum.
  */
   public void write(  byte[] buf,  int off,  int len) throws IOException {
-	  //#if BASE
+	  
 	    out.write(buf,off,len);
 	  //#if ADLER32CHECKSUM
 	    sum.update(buf,off,len);
 	  //#endif
-	  //#endif
+	  
   }
   
   /** 
@@ -85,10 +85,10 @@ public class CheckedOutputStream extends OutputStream {
  * @exception IOException If an error occurs
  */
   public void close() throws IOException {
-	  //#if BASE
+	  
 	    flush();
 	    out.close();
-	  //#endif
+	  
   }
   
   /** 
@@ -97,9 +97,9 @@ public class CheckedOutputStream extends OutputStream {
  * @exception IOException If an error occurs
  */
   public void flush() throws IOException {
-	  //#if BASE
+	  
 		  out.flush();
-		//#endif
+		
   }
   
   /** 
@@ -107,3 +107,4 @@ public class CheckedOutputStream extends OutputStream {
  */
   private Checksum sum;
 }
+//#endif

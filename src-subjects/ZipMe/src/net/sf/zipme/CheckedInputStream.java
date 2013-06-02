@@ -1,5 +1,5 @@
 //
-
+//#if BASE
 package net.sf.zipme;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,13 +24,13 @@ public class CheckedInputStream extends InputStream {
  * using the supplied Checksum.
  */
   public CheckedInputStream(  InputStream in,  Checksum sum){
-	  //#if BASE
+	  
 	    this.in=in;
 	    this.sum=sum;
-	  //#endif
+	  
   }
   
-//#if BASE
+
   /** 
  * Returns the Checksum object used. To get the data checksum computed so
  * far call <code>getChecksum.getValue()</code>.
@@ -38,9 +38,9 @@ public class CheckedInputStream extends InputStream {
   public Checksum getChecksum(){
 		  return sum;
   }
-//#endif
+
   
-  //#if BASE 
+   
   /** 
  * Reads one byte, updates the checksum and returns the read byte
  * (or -1 when the end of file was reached).
@@ -54,9 +54,9 @@ public class CheckedInputStream extends InputStream {
 	    }
 	    return x;
   }
-//#endif
 
-//#if BASE
+
+
   /** 
  * Calls the <code>read(byte[], int, int)</code> overloaded method.  
  * Note that 
@@ -70,9 +70,9 @@ public class CheckedInputStream extends InputStream {
   public int read(  byte[] buf) throws IOException {
 		  return read(buf,0,buf.length);
   }
-//#endif  
   
-//#if BASE
+  
+
   /** 
  * Reads at most len bytes in the supplied buffer and updates the checksum
  * with it. Returns the number of bytes actually read or -1 when the end
@@ -87,9 +87,9 @@ public class CheckedInputStream extends InputStream {
 	    }
 	    return r;
   }
-//#endif  
   
-//#if BASE  
+  
+  
   /** 
  * Skips n bytes by reading them in a temporary buffer and updating the
  * the checksum with that buffer. Returns the actual number of bytes skiped
@@ -112,16 +112,16 @@ public class CheckedInputStream extends InputStream {
 	    }
 	    return s;
   }
-//#endif
+
   
   /** 
  * Calls the <code>in.mark(int)</code> method.
  * @param readlimit The parameter passed to <code>in.mark(int)</code>
  */
   public void mark(  int readlimit){
-	  //#if BASE
+	  
 		  in.mark(readlimit);
-      //#endif
+      
   }
   
   /** 
@@ -130,12 +130,12 @@ public class CheckedInputStream extends InputStream {
  * otherwise
  */
   public boolean markSupported(){
-	  //#if BASE
+	  
 		  return in.markSupported();
-	  //#endif
+	  
   }
   
-//#if BASE
+
   /** 
  * Calls the <code>in.reset()</code> method.
  * @exception IOException If an error occurs
@@ -152,7 +152,7 @@ public class CheckedInputStream extends InputStream {
   public int available() throws IOException {
 		  return in.available();
   }
-//#endif
+
   
   /** 
  * This method closes the input stream by closing the input stream that
@@ -161,12 +161,13 @@ public class CheckedInputStream extends InputStream {
  * @exception IOException If an error occurs
  */
   public void close() throws IOException {
-	  //#if BASE
+	  
 		  in.close();
-	  //#endif
+	  
   }
   /** 
  * The checksum object. 
  */
   private Checksum sum;
 }
+//#endif
