@@ -9,9 +9,9 @@ import net.sf.zipme.GZIPOutputStream;
 
 public class GZIPTest {
     private static final String NOCLEANUP_OPT = "--no-cleanup";
-    private static File fileToZip = new File("../ZipMe/src/net/test/GZIPTest.java");
-    private static File zipFile = new File("../ZipMe/src/net/test/GZIPTest.java.gz");
-    private static File unzipFile = new File("../ZipMe/src/net/test/GZIPTest-Copy.java");
+    private static File fileToZip = new File("../ZipMe/src-tests/net/test/GZIPTest.java");
+    private static File zipFile = new File("../ZipMe/src/net-tests/test/GZIPTest.java.gz");
+    private static File unzipFile = new File("../ZipMe/src-tests/net/test/GZIPTest-Copy.java");
 
     public static void main(String[] argv) throws IOException {
         if (!fileToZip.exists()) {
