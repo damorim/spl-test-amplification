@@ -368,11 +368,7 @@ public class Txn extends Locker implements LogWritable, LogReadable {
 					if (writeAbortRecord) {
 						if (forceFlush) {
 							abortLsn = envImpl.getLogManager().logForceFlush(
-									abortRecord
-									// #if FSYNC
-									, true
-							// #endif
-									);
+									abortRecord, true);
 						} else {
 							abortLsn = envImpl.getLogManager().log(abortRecord);
 						}

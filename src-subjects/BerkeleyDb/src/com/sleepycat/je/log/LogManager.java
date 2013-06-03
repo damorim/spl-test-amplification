@@ -351,9 +351,10 @@ abstract public class LogManager {
 			logBufferPool.writeCompleted(currentLsn, flushRequired);
 		}
 		item.postLogWork(currentLsn);
+		boolean wakeupCheckpointer = false;
 		// #if CPBYTES
 		// #if CHECKPOINTERDAEMON
-		boolean wakeupCheckpointer = checkpointMonitor.recordLogWrite(
+		wakeupCheckpointer = checkpointMonitor.recordLogWrite(
 				entrySize, item);
 		// #endif
 		// #endif

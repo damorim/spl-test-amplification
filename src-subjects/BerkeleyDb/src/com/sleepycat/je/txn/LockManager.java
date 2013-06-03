@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.DeadlockException;
-//#if STATISTICS
 import com.sleepycat.je.LockStats;
-//#endif
 import com.sleepycat.je.RunRecoveryException;
 //#if STATISTICS
 import com.sleepycat.je.StatsConfig;
@@ -656,20 +654,12 @@ public abstract class LockManager implements EnvConfigObserver {
 	/**
 	 * Dump the lock table to the lock stats.
 	 */
-	abstract protected void dumpLockTable(
-	// #if STATISTICS
-			LockStats stats
-	// #endif
-	) throws DatabaseException;
+	abstract protected void dumpLockTable(LockStats stats) throws DatabaseException;
 
 	/**
 	 * Do the real work of dumpLockTableInternal.
 	 */
-	protected void dumpLockTableInternal(
-	// #if STATISTICS
-			LockStats stats,
-			// #endif
-			int i) {
+	protected void dumpLockTableInternal(LockStats stats,int i) {
 		Map lockTable = lockTables[i];
 		// #if STATISTICS
 		stats.accumulateNTotalLocks(lockTable.size());

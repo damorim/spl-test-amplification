@@ -185,6 +185,7 @@ public class Database {
 		}
 	}
 
+	//#if TRANSACTIONS	
 	/**
 	 * Javadoc for this public method is generated via the doc templates in the
 	 * doc_src directory.
@@ -200,15 +201,17 @@ public class Database {
 		// #endif
 		return new Sequence(this, txn, key, config);
 	}
+	//#endif
 
 	/**
 	 * Javadoc for this public method is generated via the doc templates in the
 	 * doc_src directory.
 	 */
+	//#if TRANSACTIONS
 	public void removeSequence(Transaction txn, DatabaseEntry key) throws DatabaseException {
 		delete(txn, key);
 	}
-
+	
 	public synchronized Cursor openCursor(Transaction txn,
 			CursorConfig cursorConfig) throws DatabaseException {
 		checkEnv();
@@ -225,7 +228,9 @@ public class Database {
 		Cursor ret = newDbcInstance(txn, useConfig);
 		return ret;
 	}
+	//#endif
 
+	//#if TRANSACTIONS
 	/**
 	 * Is overridden by SecondaryDatabase.
 	 */
@@ -246,8 +251,10 @@ public class Database {
 		OperationStatus commitStatus = OperationStatus.NOTFOUND;
 		Locker locker = null;
 		try {
+			// #if TRANSACTIONS
 			locker = LockerFactory.getWritableLocker(envHandle, txn,
 					isTransactional());
+			//#endif
 			commitStatus = deleteInternal(locker, key);
 			return commitStatus;
 		} finally {
@@ -256,6 +263,7 @@ public class Database {
 			}
 		}
 	}
+	//#endif
 
 	/**
 	 * Internal version of delete() that does no parameter checking. Notify
@@ -297,6 +305,7 @@ public class Database {
 		}
 	}
 
+	//#if TRANSACTIONS
 	public OperationStatus get(Transaction txn, DatabaseEntry key,
 			DatabaseEntry data, LockMode lockMode) throws DatabaseException {
 		checkEnv();
@@ -348,7 +357,7 @@ public class Database {
 			}
 		}
 	}
-
+	//#if TRANSACTIONS
 	public OperationStatus put(
 			Transaction txn, DatabaseEntry key, DatabaseEntry data)
 			throws DatabaseException {
@@ -391,6 +400,7 @@ public class Database {
 		// #endif
 		return putInternal(txn, key, data, PutMode.NODUP);
 	}
+	//#endif
 
 	/**
 	 * Internal version of put() that does no parameter checking.
@@ -401,8 +411,10 @@ public class Database {
 		Cursor cursor = null;
 		OperationStatus commitStatus = OperationStatus.KEYEXIST;
 		try {
+			// #if TRANSACTIONS
 			locker = LockerFactory.getWritableLocker(envHandle, txn,
 					isTransactional());
+			//#endif
 			cursor = new Cursor(this, locker, null);
 			cursor.setNonCloning(true);
 			commitStatus = cursor.putInternal(key, data, putMode);
@@ -416,6 +428,7 @@ public class Database {
 			}
 		}
 	}
+	//#endif
 
 	/** 
  */

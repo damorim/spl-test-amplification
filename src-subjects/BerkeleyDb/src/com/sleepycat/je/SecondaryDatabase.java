@@ -221,7 +221,7 @@ public class SecondaryDatabase extends Database {
 			CursorConfig cursorConfig) throws DatabaseException {
 		return (SecondaryCursor) openCursor(txn, cursorConfig);
 	}
-
+	//#if TRANSACTIONS
 	/**
 	 * Overrides Database method.
 	 */
@@ -229,6 +229,7 @@ public class SecondaryDatabase extends Database {
 			throws DatabaseException {
 		return new SecondaryCursor(this, txn, cursorConfig);
 	}
+	//#endif
 
 	/**
 	 * Javadoc for this public method is generated via the doc templates in the
@@ -297,7 +298,9 @@ public class SecondaryDatabase extends Database {
 		}
 		SecondaryCursor cursor = null;
 		try {
+			//#if TRANSACTIONS
 			cursor = new SecondaryCursor(this, txn, cursorConfig);
+			//#endif
 			return cursor.search(key, pKey, data, lockMode, SearchMode.SET);
 		} finally {
 			if (cursor != null) {
@@ -339,7 +342,9 @@ public class SecondaryDatabase extends Database {
 		}
 		SecondaryCursor cursor = null;
 		try {
+			//#if TRANSACTIONS
 			cursor = new SecondaryCursor(this, txn, cursorConfig);
+			//#endif
 			return cursor.search(key, pKey, data, lockMode, SearchMode.BOTH);
 		} finally {
 			if (cursor != null) {

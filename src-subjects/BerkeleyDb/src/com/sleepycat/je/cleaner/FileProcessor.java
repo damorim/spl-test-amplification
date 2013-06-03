@@ -482,7 +482,7 @@ class FileProcessor extends DaemonThread {
 		}
 		return true;
 	}
-
+	// #if LOOKAHEADCACHE
 	/**
 	 * Processes the first LN in the look ahead cache and removes it from the
 	 * cache. While the BIN is latched, look through the BIN for other LNs in
@@ -618,6 +618,7 @@ class FileProcessor extends DaemonThread {
 			// #endif
 		}
 	}
+	//#endif
 
 	/**
 	 * Processes an LN that was found in the tree. Lock the LN's node ID and

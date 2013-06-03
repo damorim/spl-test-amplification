@@ -583,9 +583,11 @@ public class RecoveryManager {
 							ln.postFetchInit(db, logLsn);
 							// #if LATCHES
 							try {
+								// #if LOGGINGRECOVERY
 								undo(detailedTraceLevel,db, location, ln, reader.getKey(),
 										reader.getDupTreeKey(), logLsn,
 										abortLsn, abortKnownDeleted, info, true);
+								//#endif
 							} finally {
 								if (location.bin != null) {
 									location.bin.releaseLatchIfOwner();
@@ -952,11 +954,7 @@ public class RecoveryManager {
 		 * @return true if the in-memory root was replaced.
 		 */
 		public IN doWork(ChildReference root) throws DatabaseException {
-			tree.setRoot(null
-			// #if LATCHES
-					, false
-			// #endif
-			);
+			tree.setRoot(null, false);
 			return null;
 		}
 	}

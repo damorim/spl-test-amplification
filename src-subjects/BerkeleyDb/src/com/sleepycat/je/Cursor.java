@@ -56,6 +56,8 @@ public class Cursor {
 //#if LOGGINGBASE
   private Logger logger;
 //#endif
+
+  //#if TRANSACTIONS
   /** 
  * Creates a cursor for a given user transaction.
  * <p>If txn is null, a non-transactional cursor will be created that
@@ -70,6 +72,7 @@ public class Cursor {
     Locker locker=LockerFactory.getReadableLocker(dbHandle.getEnvironment(),txn, dbHandle.isTransactional(),false,cursorConfig.getReadCommitted());
     init(dbHandle,dbHandle.getDatabaseImpl(),locker,dbHandle.isWritable(),cursorConfig);
   }
+//#endif
   /** 
  * Creates a cursor for a given locker.
  * <p>If locker is null or is non-transactional, a non-transactional cursor

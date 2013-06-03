@@ -37,6 +37,8 @@ public class Sequence {
 //#if LOGGINGBASE
   private Logger logger;
 //#endif
+  
+//#if TRANSACTIONS
   /** 
  * Opens a sequence handle, adding the sequence record if appropriate.
  */
@@ -76,7 +78,9 @@ public class Sequence {
     Cursor cursor=null;
     OperationStatus status=OperationStatus.NOTFOUND;
     try {
+    	//#if TRANSACTIONS
       locker=LockerFactory.getWritableLocker(db.getEnvironment(),txn, db.isTransactional(),false, autoCommitConfig);
+//#endif
       cursor=new Cursor(db,locker,null);
       if (useConfig.getAllowCreate()) {
         rangeMin=useConfig.getRangeMin();
@@ -114,6 +118,8 @@ public class Sequence {
     cacheValue=storedValue;
     cacheLast=increment ? (storedValue - 1) : (storedValue + 1);
   }
+//#endif  
+  
   /** 
  * Javadoc for this public method is generated via
  * the doc templates in the doc_src directory.
@@ -143,7 +149,9 @@ public class Sequence {
       Cursor cursor=null;
       OperationStatus status=OperationStatus.NOTFOUND;
       try {
+    	//#if TRANSACTIONS
         locker=LockerFactory.getWritableLocker(db.getEnvironment(),txn, db.isTransactional(), false, autoCommitConfig);
+        //#endif
         cursor=new Cursor(db,locker,null);
         readDataRequired(cursor,LockMode.RMW);
         if (overflow) {

@@ -324,13 +324,17 @@ public class DbLoad {
 			DatabaseEntry key = new DatabaseEntry(keyBytes);
 			DatabaseEntry data = new DatabaseEntry(dataBytes);
 			if (noOverwrite) {
+				//#if TRANSACTIONS
 				if (db.putNoOverwrite(null,key, data) == OperationStatus.KEYEXIST) {
 					if (commandLine) {
 						System.err.println("Key exists: " + key);
 					}
 				}
+				//#endif
 			} else {
+				//#if TRANSACTIONS
 				db.put(null,key, data);
+				//#endif
 			}
 			count++;
 			if ((progressInterval > 0)

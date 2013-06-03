@@ -277,11 +277,12 @@ static {
  * Read configurations for daemons, instantiate.
  */
 	private void createDaemons() throws DatabaseException {
+		long checkpointerWakeupTime = 0;
 		// #if EVICTOR
 		evictor = new Evictor(this, "Evictor");
 		// #endif
 		// #if CPTIME
-		long checkpointerWakeupTime = Checkpointer
+		checkpointerWakeupTime = Checkpointer
 				.getWakeupPeriod(configManager);
 		// #endif
 		checkpointer = new Checkpointer(this, checkpointerWakeupTime, "Checkpointer");

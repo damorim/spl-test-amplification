@@ -108,11 +108,13 @@ public class DbCompat {
   public static OperationStatus putBefore(  Cursor cursor,  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
     throw new UnsupportedOperationException();
   }
+
+//#if TRANSACTIONS  
   public static OperationStatus append(  Database db,Transaction txn,
 		  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
     throw new UnsupportedOperationException();
   }
-//#if TRANSACTIONS
+
   public static Transaction getThreadTransaction(  Environment env) throws DatabaseException {
     return env.getThreadTransaction();
   }
@@ -177,6 +179,7 @@ public class DbCompat {
   public static void setRecordPad(  DatabaseConfig dbConfig,  int val){
     throw new UnsupportedOperationException();
   }
+//#if TRANSACTIONS  
   public static Database openDatabase(  Environment env,Transaction txn,
   String file,  String name,  DatabaseConfig config) throws DatabaseException, FileNotFoundException {
     return env.openDatabase(txn,makeDbName(file,name),config);
@@ -185,6 +188,7 @@ public class DbCompat {
   String file,  String name,  Database primary,  SecondaryConfig config) throws DatabaseException, FileNotFoundException {
     return env.openSecondaryDatabase(txn,makeDbName(file,name),primary,config);
   }
+//#endif
   private static String makeDbName(  String file,  String name){
     if (file == null) {
       return name;

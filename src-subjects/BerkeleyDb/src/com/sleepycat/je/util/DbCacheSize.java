@@ -375,6 +375,7 @@ public class DbCacheSize {
 				}
 				key.setData(a);
 			}
+			//#if TRANSACTIONS
 			OperationStatus status = db.putNoOverwrite(null, key, data);
 			if (status == OperationStatus.KEYEXIST && randomKeys) {
 				i -= 1;
@@ -385,6 +386,7 @@ public class DbCacheSize {
 				out.println("*** " + status);
 				return;
 			}
+			//#endif
 			if (i % 10000 == 0) {
 				// #if STATISTICS
 				EnvironmentStats stats = env.getStats(null);

@@ -92,9 +92,8 @@ public class DbRunAction {
 						doAction = EVICT;
 					}
 					// #endif
-					else
 					// #if DELETEOP
-					if (action.equalsIgnoreCase("removedb"))
+					else if (action.equalsIgnoreCase("removedb"))
 					// #if DELETEOP
 					{
 						doAction = REMOVEDB;

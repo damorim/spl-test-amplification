@@ -630,9 +630,9 @@ public static class KeyChangeStatus {
       long newLsn=ln.delete(database,lnKey,dupKey,oldLsn,locker);
 //#if MEMORYBUDGET
       long newLNSize=ln.getMemorySizeIncludedByParent();
-//#endif
       targetBin.updateEntry(targetIndex,newLsn, oldLNSize, newLNSize);
       targetBin.setPendingDeleted(targetIndex);
+//#endif
 //#if LATCHES
       releaseBINs();
 //#endif

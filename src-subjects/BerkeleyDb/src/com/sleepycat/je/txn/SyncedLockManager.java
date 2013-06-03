@@ -2,9 +2,7 @@ package com.sleepycat.je.txn;
 
 import java.util.Set;
 import com.sleepycat.je.DatabaseException;
-//#if STATISTICS
 import com.sleepycat.je.LockStats;
-//#endif
 import com.sleepycat.je.dbi.DatabaseImpl;
 import com.sleepycat.je.dbi.EnvironmentImpl;
 import com.sleepycat.je.dbi.MemoryBudget;

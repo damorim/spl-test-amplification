@@ -1,4 +1,3 @@
-//#if STATISTICS
 package com.sleepycat.je;
 import java.io.Serializable;
 //#if STATISTICS
@@ -11,6 +10,7 @@ import com.sleepycat.je.latch.LatchStats;
  * via the doc templates in the doc_src directory.
  */
 public class LockStats implements Serializable {
+	//#if STATISTICS
   /** 
  * Total locks currently in lock table.
  */
@@ -186,5 +186,7 @@ public class LockStats implements Serializable {
 //#endif
     return sb.toString();
   }
-}
+  
 //#endif
+}
+
