@@ -959,11 +959,7 @@ private final class PreloadWithRootLatched implements WithRootLatched {
 //#if STATISTICS
     PreloadStats ret=new PreloadStats();
 //#endif
-    PreloadProcessor callback=new PreloadProcessor(envImpl,maxBytes,targetTime,
-//#if STATISTICS
-ret
-//#endif
-);
+    PreloadProcessor callback=new PreloadProcessor(envImpl,maxBytes,targetTime,ret);
     SortedLSNTreeWalker walker=new PreloadLSNTreeWalker(this,callback,config);
 //#if STATISTICS
     try {

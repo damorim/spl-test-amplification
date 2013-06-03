@@ -292,9 +292,9 @@ public class MemoryBudget implements EnvConfigObserver {
 //#if MEMORYBUDGET
 static {
     boolean is64=false;
-    boolean isJVM14=
+    boolean isJVM14
 //#if LATCHES
-(LatchSupport.getJava5LatchClass() == null)
+=(LatchSupport.getJava5LatchClass() == null)
 //#endif
 ;
     String overrideArch=System.getProperty(FORCE_JVM_ARCH);
@@ -511,13 +511,9 @@ static {
 //#endif
     logBufferBudget=newLogBufferBudget;
 //#if MEMORYBUDGET
-    trackerBudget=
+    trackerBudget
 //#if CLEANER
-true ? 
-//#if CLEANER
-newTrackerBudget
-//#endif
- : newMaxMemory
+= true ? newTrackerBudget : newMaxMemory
 //#endif
 ;
 //#endif

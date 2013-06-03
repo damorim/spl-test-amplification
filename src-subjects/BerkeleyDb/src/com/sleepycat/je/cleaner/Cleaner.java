@@ -44,11 +44,7 @@ import com.sleepycat.je.utilint.Tracer;
  * flavors) that are superceded by later versions.  Those that are "current"
  * are propagated to a newer log file so that older log files can be deleted.
  */
-public class Cleaner implements 
-//#if CLEANERDAEMON
- DaemonRunner,
-//#endif
- EnvConfigObserver {
+public class Cleaner implements DaemonRunner,EnvConfigObserver {
   static final String CLEAN_IN="CleanIN:";
   static final String CLEAN_LN="CleanLN:";
   static final String CLEAN_MIGRATE_LN="CleanMigrateLN:";
@@ -582,19 +578,11 @@ catch (          IOException e) {
         parentDIN.latch(UPDATE_GENERATION);
         ChildReference dclRef=parentDIN.getDupCountLNRef();
         processedHere=false;
-        migrateDupCountLN(db,dclRef.getLsn(),parentDIN,dclRef
-        		//#if STATISTICS
-        		,true
-        		//#endif
-        		,true,ln.getNodeId(),CLEAN_PENDING_LN);
+        migrateDupCountLN(db,dclRef.getLsn(),parentDIN,dclRef,true,true,ln.getNodeId(),CLEAN_PENDING_LN);
       }
  else {
         processedHere=false;
-        migrateLN(db,bin.getLsn(index),bin,index
-        		//#if STATISTICS
-        		,true
-        		//#endif
-        		,true,ln.getNodeId(),CLEAN_PENDING_LN);
+        migrateLN(db,bin.getLsn(index),bin,index,true,true,ln.getNodeId(),CLEAN_PENDING_LN);
       }
       completed=true;
     }
@@ -683,11 +671,7 @@ catch (          IOException e) {
       long childLsn=bin.getLsn(index);
       if (shouldMigrateLN(migrateFlag,isResident,proactiveMigration,isBinInDupDb,childLsn)) {
         if (isResident) {
-          migrateLN(db,childLsn,bin,index,
-        		//#if STATISTICS
-        		  migrateFlag,
-        		//#endif
-        		  false,0,CLEAN_MIGRATE_LN);
+          migrateLN(db,childLsn,bin,index,migrateFlag,false,0,CLEAN_MIGRATE_LN);
         }
  else {
           if (sortedIndices == null) {
@@ -710,11 +694,7 @@ catch (          IOException e) {
         int index=sortedIndices[i].intValue();
         long childLsn=bin.getLsn(index);
         boolean migrateFlag=bin.getMigrate(index);
-        migrateLN(db,childLsn,bin,index,
-        		//#if STATISTICS
-        		migrateFlag,
-        		//#endif
-        		false,0,CLEAN_MIGRATE_LN);
+        migrateLN(db,childLsn,bin,index,migrateFlag,false,0,CLEAN_MIGRATE_LN);
       }
     }
   }
@@ -739,11 +719,7 @@ catch (          IOException e) {
     boolean isBinInDupDb=false;
     long childLsn=dclRef.getLsn();
     if (shouldMigrateLN(migrateFlag,isResident,proactiveMigration,isBinInDupDb,childLsn)) {
-      migrateDupCountLN(db,childLsn,din,dclRef,
-    		//#if STATISTICS
-    		  migrateFlag,
-    		//#endif  
-    		  false,0,CLEAN_MIGRATE_LN);
+      migrateDupCountLN(db,childLsn,din,dclRef,migrateFlag, false,0,CLEAN_MIGRATE_LN);
     }
   }
   /** 
@@ -788,11 +764,7 @@ catch (          IOException e) {
  * Migrate an LN in the given BIN entry, if it is not obsolete.  The BIN is
  * latched on entry to this method and is left latched when it returns.
  */
-  private void migrateLN(  DatabaseImpl db,  long lsn,  BIN bin,  int index,
-//#if STATISTICS
-  boolean wasCleaned,
-//#endif
-  boolean isPending,  long lockedPendingNodeId,  String cleanAction) throws DatabaseException {
+  private void migrateLN(  DatabaseImpl db,  long lsn,  BIN bin,  int index, boolean wasCleaned, boolean isPending,  long lockedPendingNodeId,  String cleanAction) throws DatabaseException {
     boolean obsolete=false;
     boolean migrated=false;
     boolean lockDenied=false;

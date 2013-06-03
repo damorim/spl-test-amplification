@@ -229,21 +229,13 @@ public class Environment {
 	 * Javadoc for this public method is generated via the doc templates in the
 	 * doc_src directory.
 	 */
-	public synchronized Database openDatabase(
-	// #if TRANSACTIONS
-			Transaction txn,
-			// #endif
-			String databaseName, DatabaseConfig dbConfig)
+	public synchronized Database openDatabase(Transaction txn,String databaseName, DatabaseConfig dbConfig)
 			throws DatabaseException {
 		if (dbConfig == null) {
 			dbConfig = DatabaseConfig.DEFAULT;
 		}
 		Database db = new Database(this);
-		openDb(
-		// #if TRANSACTIONS
-		txn,
-		// #endif
-				db, databaseName, dbConfig, false);
+		openDb(txn,db, databaseName, dbConfig, false);
 		return db;
 	}
 
@@ -251,30 +243,18 @@ public class Environment {
 	 * Javadoc for this public class is generated via the doc templates in the
 	 * doc_src directory.
 	 */
-	public synchronized SecondaryDatabase openSecondaryDatabase(
-			// #if TRANSACTIONS
-			Transaction txn,
-			// #endif
-			String databaseName, Database primaryDatabase,
+	public synchronized SecondaryDatabase openSecondaryDatabase(Transaction txn,String databaseName, Database primaryDatabase,
 			SecondaryConfig dbConfig) throws DatabaseException {
 		if (dbConfig == null) {
 			dbConfig = SecondaryConfig.DEFAULT;
 		}
 		SecondaryDatabase db = new SecondaryDatabase(this, dbConfig,
 				primaryDatabase);
-		openDb(
-		// #if TRANSACTIONS
-		txn,
-		// #endif
-				db, databaseName, dbConfig, dbConfig.getAllowPopulate());
+		openDb(txn,db, databaseName, dbConfig, dbConfig.getAllowPopulate());
 		return db;
 	}
 
-	private void openDb(
-			// #if TRANSACTIONS
-			Transaction txn,
-			// #endif
-			Database newDb, String databaseName, DatabaseConfig dbConfig,
+	private void openDb(Transaction txn,Database newDb, String databaseName, DatabaseConfig dbConfig,
 			boolean needWritableLockerForInit) throws DatabaseException {
 		checkEnv();
 		DatabaseUtil.checkForNullParam(databaseName, "databaseName");
@@ -289,25 +269,13 @@ public class Environment {
 		try {
 			boolean isWritableLocker = true;
 			if (needWritableLockerForInit) {
-				locker = LockerFactory.getWritableLocker(this,
-				// #if TRANSACTIONS
-						txn, dbConfig.getTransactional(),
-						// #endif
-						true
-						// #if TRANSACTIONS
-						, null
-				// #endif
-						);
+				locker = LockerFactory.getWritableLocker(this,txn, dbConfig.getTransactional(),true, null);
 
 				// #if TRANSACTIONS
 				isWritableLocker = true;
 				// #endif
 			} else {
-				locker = LockerFactory.getReadableLocker(this,
-				// #if TRANSACTIONS
-						txn, dbConfig.getTransactional(),
-						// #endif
-						true, false);
+				locker = LockerFactory.getReadableLocker(this,txn, dbConfig.getTransactional(),true, false);
 				// #if TRANSACTIONS
 				isWritableLocker = !dbConfig.getTransactional()
 						|| locker.isTransactional();
@@ -332,15 +300,7 @@ public class Environment {
 				if (dbConfig.getAllowCreate()) {
 					if (!isWritableLocker) {
 						locker.operationEnd(OperationStatus.SUCCESS);
-						locker = LockerFactory.getWritableLocker(this,
-						// #if TRANSACTIONS
-								txn, dbConfig.getTransactional(),
-								// #endif
-								true
-								// #if TRANSACTIONS
-								, null
-						// #endif
-								);
+						locker = LockerFactory.getWritableLocker(this,txn, dbConfig.getTransactional(),true, null);
 						isWritableLocker = true;
 					}
 					newDb.initNew(this, locker, databaseName, dbConfig);
@@ -384,25 +344,14 @@ public class Environment {
 	 * Javadoc for this public method is generated via the doc templates in the
 	 * doc_src directory.
 	 */
-	public void removeDatabase(
-	// #if TRANSACTIONS
-			Transaction txn,
-			// #endif
-			String databaseName) throws DatabaseException {
+	public void removeDatabase(Transaction txn,String databaseName) throws DatabaseException {
 		checkHandleIsValid();
 		checkEnv();
 		DatabaseUtil.checkForNullParam(databaseName, "databaseName");
 		Locker locker = null;
 		boolean operationOk = false;
 		try {
-			locker = LockerFactory.getWritableLocker(this,
-			// #if TRANSACTIONS
-					txn,
-					// #endif
-					// #if TRANSACTIONS
-					environmentImpl.isTransactional(),
-					// #endif
-					true, null);
+			locker = LockerFactory.getWritableLocker(this,txn,environmentImpl.isTransactional(),true, null);
 			environmentImpl.dbRemove(locker, databaseName);
 			operationOk = true;
 		} finally {
@@ -418,11 +367,7 @@ public class Environment {
 	 * Javadoc for this public method is generated via the doc templates in the
 	 * doc_src directory.
 	 */
-	public void renameDatabase(
-	// #if TRANSACTIONS
-			Transaction txn,
-			// #endif
-			String databaseName, String newName) throws DatabaseException {
+	public void renameDatabase(Transaction txn,String databaseName, String newName) throws DatabaseException {
 		DatabaseUtil.checkForNullParam(databaseName, "databaseName");
 		DatabaseUtil.checkForNullParam(newName, "newName");
 		checkHandleIsValid();
@@ -430,14 +375,7 @@ public class Environment {
 		Locker locker = null;
 		boolean operationOk = false;
 		try {
-			locker = LockerFactory.getWritableLocker(this,
-			// #if TRANSACTIONS
-					txn,
-					// #endif
-					// #if TRANSACTIONS
-					environmentImpl.isTransactional(),
-					// #endif
-					true, null);
+			locker = LockerFactory.getWritableLocker(this,txn,environmentImpl.isTransactional(),true, null);
 			environmentImpl.dbRename(locker, databaseName, newName);
 			operationOk = true;
 		} finally {
@@ -453,11 +391,7 @@ public class Environment {
 	 * Javadoc for this public method is generated via the doc templates in the
 	 * doc_src directory.
 	 */
-	public long truncateDatabase(
-	// #if TRANSACTIONS
-			Transaction txn,
-			// #endif
-			String databaseName, boolean returnCount) throws DatabaseException {
+	public long truncateDatabase(Transaction txn,String databaseName, boolean returnCount) throws DatabaseException {
 		checkHandleIsValid();
 		checkEnv();
 		DatabaseUtil.checkForNullParam(databaseName, "databaseName");
@@ -465,14 +399,7 @@ public class Environment {
 		boolean operationOk = false;
 		long count = 0;
 		try {
-			locker = LockerFactory.getWritableLocker(this,
-			// #if TRANSACTIONS
-					txn,
-					// #endif
-					// #if TRANSACTIONS
-					environmentImpl.isTransactional(),
-					// #endif
-					true, null);
+			locker = LockerFactory.getWritableLocker(this,txn,environmentImpl.isTransactional(),true, null);
 			count = environmentImpl.truncate(locker, databaseName, returnCount);
 			operationOk = true;
 		} finally {

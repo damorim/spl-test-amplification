@@ -12,11 +12,7 @@ public class PrintFileReader extends DumpFileReader {
  * Create this reader to start at a given LSN.
  */
   public PrintFileReader(  EnvironmentImpl env,  int readBufferSize,  long startLsn,  long finishLsn,  String entryTypes,  String txnIds,  boolean verbose) throws IOException, DatabaseException {
-    super(env,readBufferSize,startLsn,finishLsn,entryTypes
-    		//#if TRANSACTIONS
-    		//@  , txnIds
-    		//#endif
-    		, verbose);
+    super(env,readBufferSize,startLsn,finishLsn,entryTypes, txnIds, verbose);
   }
   /** 
  * This reader prints the log entry item.

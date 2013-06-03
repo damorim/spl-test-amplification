@@ -770,11 +770,7 @@ synchronized (this) {
 //#if TRANSACTIONS
       autoTxn=new AutoTxn(env,new TransactionConfig());
 //#endif
-      DatabaseImpl db=dbTree.getDb(autoTxn,DbTree.UTILIZATION_DB_NAME,null
-//#if EVICTOR
-,true
-//#endif
-);
+      DatabaseImpl db=dbTree.getDb(autoTxn,DbTree.UTILIZATION_DB_NAME,null,true);
       if (db == null) {
         if (env.isReadOnly()) {
           return false;

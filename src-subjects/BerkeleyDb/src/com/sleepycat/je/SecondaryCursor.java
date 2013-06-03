@@ -16,16 +16,8 @@ public class SecondaryCursor extends Cursor {
  * Cursor constructor. Not public. To get a cursor, the user should
  * call SecondaryDatabase.cursor();
  */
-  SecondaryCursor(  SecondaryDatabase dbHandle,
-//#if TRANSACTIONS
-  Transaction txn,
-//#endif
-  CursorConfig cursorConfig) throws DatabaseException {
-    super(dbHandle,
-//#if TRANSACTIONS
-txn,
-//#endif
-cursorConfig);
+  SecondaryCursor(  SecondaryDatabase dbHandle,Transaction txn,CursorConfig cursorConfig) throws DatabaseException {
+    super(dbHandle,txn,cursorConfig);
     secondaryDb=dbHandle;
     primaryDb=dbHandle.getPrimaryDatabase();
   }

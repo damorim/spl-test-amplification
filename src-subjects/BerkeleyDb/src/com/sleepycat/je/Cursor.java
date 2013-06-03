@@ -62,19 +62,12 @@ public class Cursor {
  * releases locks for the prior operation when the next operation
  * suceeds.</p>
  */
-  Cursor(  Database dbHandle,
-//#if TRANSACTIONS
-  Transaction txn, 
-//#endif
+  Cursor(  Database dbHandle,Transaction txn,
   CursorConfig cursorConfig) throws DatabaseException {
     if (cursorConfig == null) {
       cursorConfig=CursorConfig.DEFAULT;
     }
-    Locker locker=LockerFactory.getReadableLocker(dbHandle.getEnvironment()
-//#if TRANSACTIONS
-,txn, dbHandle.isTransactional()
-//#endif
-,false,cursorConfig.getReadCommitted());
+    Locker locker=LockerFactory.getReadableLocker(dbHandle.getEnvironment(),txn, dbHandle.isTransactional(),false,cursorConfig.getReadCommitted());
     init(dbHandle,dbHandle.getDatabaseImpl(),locker,dbHandle.isWritable(),cursorConfig);
   }
   /** 

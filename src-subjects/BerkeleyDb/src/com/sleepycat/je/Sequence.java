@@ -40,11 +40,7 @@ public class Sequence {
   /** 
  * Opens a sequence handle, adding the sequence record if appropriate.
  */
-  Sequence(  Database db,
-//#if TRANSACTIONS
-  Transaction txn,
-//#endif
-  DatabaseEntry key,  SequenceConfig config) throws DatabaseException {
+  Sequence(  Database db,Transaction txn,DatabaseEntry key,  SequenceConfig config) throws DatabaseException {
     if (db.getDatabaseImpl().getSortedDuplicates()) {
       throw new IllegalArgumentException("Sequences not supported in databases configured for " + "duplicates");
     }
@@ -80,15 +76,7 @@ public class Sequence {
     Cursor cursor=null;
     OperationStatus status=OperationStatus.NOTFOUND;
     try {
-      locker=LockerFactory.getWritableLocker(db.getEnvironment(),
-//#if TRANSACTIONS
-txn, db.isTransactional(),
-//#endif
-false
-//#if TRANSACTIONS
-, autoCommitConfig
-//#endif
-);
+      locker=LockerFactory.getWritableLocker(db.getEnvironment(),txn, db.isTransactional(),false, autoCommitConfig);
       cursor=new Cursor(db,locker,null);
       if (useConfig.getAllowCreate()) {
         rangeMin=useConfig.getRangeMin();
@@ -139,11 +127,7 @@ false
  * since multiple threads may share a single handle.  Multiple handles
  * for the same database/key may be used to increase concurrency.</p>
  */
-  public synchronized long get(
-//#if TRANSACTIONS
-  Transaction txn,
-//#endif
-  int delta) throws DatabaseException {
+  public synchronized long get(Transaction txn,int delta) throws DatabaseException {
     if (delta <= 0) {
       throw new IllegalArgumentException("Sequence delta must be greater than zero");
     }
@@ -159,15 +143,7 @@ false
       Cursor cursor=null;
       OperationStatus status=OperationStatus.NOTFOUND;
       try {
-        locker=LockerFactory.getWritableLocker(db.getEnvironment()
-//#if TRANSACTIONS
-,txn, db.isTransactional()
-//#endif
-, false
-//#if TRANSACTIONS
-, autoCommitConfig
-//#endif
-);
+        locker=LockerFactory.getWritableLocker(db.getEnvironment(),txn, db.isTransactional(), false, autoCommitConfig);
         cursor=new Cursor(db,locker,null);
         readDataRequired(cursor,LockMode.RMW);
         if (overflow) {

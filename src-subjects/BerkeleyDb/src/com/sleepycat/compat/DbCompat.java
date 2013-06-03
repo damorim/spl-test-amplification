@@ -108,11 +108,8 @@ public class DbCompat {
   public static OperationStatus putBefore(  Cursor cursor,  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
     throw new UnsupportedOperationException();
   }
-  public static OperationStatus append(  Database db,
-//#if TRANSACTIONS
-  Transaction txn,
-//#endif
-  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
+  public static OperationStatus append(  Database db,Transaction txn,
+		  DatabaseEntry key,  DatabaseEntry data) throws DatabaseException {
     throw new UnsupportedOperationException();
   }
 //#if TRANSACTIONS
@@ -180,27 +177,13 @@ public class DbCompat {
   public static void setRecordPad(  DatabaseConfig dbConfig,  int val){
     throw new UnsupportedOperationException();
   }
-  public static Database openDatabase(  Environment env,
-//#if TRANSACTIONS
-  Transaction txn,
-//#endif
+  public static Database openDatabase(  Environment env,Transaction txn,
   String file,  String name,  DatabaseConfig config) throws DatabaseException, FileNotFoundException {
-    return env.openDatabase(
-//#if TRANSACTIONS
-txn,
-//#endif
-makeDbName(file,name),config);
+    return env.openDatabase(txn,makeDbName(file,name),config);
   }
-  public static SecondaryDatabase openSecondaryDatabase(  Environment env,
-//#if TRANSACTIONS
-  Transaction txn,
-//#endif
+  public static SecondaryDatabase openSecondaryDatabase(  Environment env, Transaction txn,
   String file,  String name,  Database primary,  SecondaryConfig config) throws DatabaseException, FileNotFoundException {
-    return env.openSecondaryDatabase(
-//#if TRANSACTIONS
-txn,
-//#endif
- makeDbName(file,name),primary,config);
+    return env.openSecondaryDatabase(txn,makeDbName(file,name),primary,config);
   }
   private static String makeDbName(  String file,  String name){
     if (file == null) {

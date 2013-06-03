@@ -414,11 +414,7 @@ class FileProcessor extends DaemonThread {
 					// #endif
 					// #if LOOKAHEADCACHE
 					if (lookAheadCache.isFull()) {
-						processLN(fileNum, location, aLsn, aLninfo,
-						// #if LOOKAHEADCACHE
-								lookAheadCache,
-								// #endif
-								dbCache);
+						processLN(fileNum, location, aLsn, aLninfo,lookAheadCache,dbCache);
 					}
 					// #endif
 					nProcessedLNs += 1;
@@ -496,11 +492,7 @@ class FileProcessor extends DaemonThread {
 	 * @param offset
 	 */
 	private void processLN(Long fileNum, TreeLocation location, Long offset,
-			LNInfo info
-			// #if LOOKAHEADCACHE
-			, LookAheadCache lookAheadCache
-			// #endif
-			, Map dbCache) throws DatabaseException {
+			LNInfo info, LookAheadCache lookAheadCache, Map dbCache) throws DatabaseException {
 		// #if STATISTICS
 		nLNsCleanedThisRun++;
 		// #endif

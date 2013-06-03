@@ -93,29 +93,17 @@ public class LNFileReader extends FileReader {
   public byte[] getDupTreeKey(){
     return ((LNLogEntry)targetLogEntry).getDupKey();
   }
-//#if TRANSACTIONS
+  
   /** 
  * @return the transaction id of the current entry.
  */
   
 //#if TRANSACTIONS
-public
-//#endif
- 
-//#if TRANSACTIONS
-Long
-//#endif
- 
-//#if TRANSACTIONS
-getTxnId
-//#endif
-()
-//#if TRANSACTIONS
-{
+public Long getTxnId(){
     return ((LNLogEntry)targetLogEntry).getTxnId();
   }
 //#endif
-//#endif
+
 //#if TRANSACTIONS
   public boolean isPrepare(){
     return (targetLogEntry.getMainItem() instanceof TxnPrepare);

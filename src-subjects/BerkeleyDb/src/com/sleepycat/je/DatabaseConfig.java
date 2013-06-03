@@ -229,19 +229,11 @@ txnMatch &&
       return;
     }
  else {
-      String message=genDatabaseConfigMismatchMessage(config 
-//#if TRANSACTIONS
-, txnMatch
-//#endif
-,roMatch,sdMatch,btCmpMatch,dtCmpMatch);
+      String message=genDatabaseConfigMismatchMessage(config , txnMatch,roMatch,sdMatch,btCmpMatch,dtCmpMatch);
       throw new DatabaseException(message);
     }
   }
-  String genDatabaseConfigMismatchMessage(  DatabaseConfig config
-//#if TRANSACTIONS
-  , boolean txnMatch
-//#endif
-,  boolean roMatch,  boolean sdMatch,  boolean btCmpMatch,  boolean dtCmpMatch){
+  String genDatabaseConfigMismatchMessage(  DatabaseConfig config, boolean txnMatch,  boolean roMatch,  boolean sdMatch,  boolean btCmpMatch,  boolean dtCmpMatch){
     StringBuffer ret=new StringBuffer("The following DatabaseConfig parameters for the\n" + "cached Database do not match the parameters for the\n" + "requested Database:\n");
 //#if TRANSACTIONS
     if (!txnMatch) {
