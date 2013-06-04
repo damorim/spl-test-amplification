@@ -33,7 +33,7 @@ public class Tracer
 	private String msg;
 
 	// #endif
-
+	
 	// #if LOGGINGBASE
 	/**
 	 * Create a new debug record.
@@ -44,7 +44,7 @@ public class Tracer
 	}
 
 	// #endif
-
+	
 	// #if LOGGINGBASE
 	/**
 	 * Create trace record that will be filled in from the log.

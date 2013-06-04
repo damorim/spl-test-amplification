@@ -37,12 +37,14 @@ public class Sequence {
 //#if LOGGINGBASE
   private Logger logger;
 //#endif
-  
-//#if TRANSACTIONS
   /** 
  * Opens a sequence handle, adding the sequence record if appropriate.
  */
-  Sequence(  Database db,Transaction txn,DatabaseEntry key,  SequenceConfig config) throws DatabaseException {
+  Sequence(  Database db,
+//#if TRANSACTIONS
+  Transaction txn,
+//#endif
+  DatabaseEntry key,  SequenceConfig config) throws DatabaseException {
     if (db.getDatabaseImpl().getSortedDuplicates()) {
       throw new IllegalArgumentException("Sequences not supported in databases configured for " + "duplicates");
     }
@@ -78,9 +80,15 @@ public class Sequence {
     Cursor cursor=null;
     OperationStatus status=OperationStatus.NOTFOUND;
     try {
-    	//#if TRANSACTIONS
-      locker=LockerFactory.getWritableLocker(db.getEnvironment(),txn, db.isTransactional(),false, autoCommitConfig);
+      locker=LockerFactory.getWritableLocker(db.getEnvironment(),
+//#if TRANSACTIONS
+txn, db.isTransactional(),
 //#endif
+false
+//#if TRANSACTIONS
+, autoCommitConfig
+//#endif
+);
       cursor=new Cursor(db,locker,null);
       if (useConfig.getAllowCreate()) {
         rangeMin=useConfig.getRangeMin();
@@ -118,8 +126,6 @@ public class Sequence {
     cacheValue=storedValue;
     cacheLast=increment ? (storedValue - 1) : (storedValue + 1);
   }
-//#endif  
-  
   /** 
  * Javadoc for this public method is generated via
  * the doc templates in the doc_src directory.
@@ -133,7 +139,11 @@ public class Sequence {
  * since multiple threads may share a single handle.  Multiple handles
  * for the same database/key may be used to increase concurrency.</p>
  */
-  public synchronized long get(Transaction txn,int delta) throws DatabaseException {
+  public synchronized long get(
+//#if TRANSACTIONS
+  Transaction txn,
+//#endif
+  int delta) throws DatabaseException {
     if (delta <= 0) {
       throw new IllegalArgumentException("Sequence delta must be greater than zero");
     }
@@ -149,9 +159,15 @@ public class Sequence {
       Cursor cursor=null;
       OperationStatus status=OperationStatus.NOTFOUND;
       try {
-    	//#if TRANSACTIONS
-        locker=LockerFactory.getWritableLocker(db.getEnvironment(),txn, db.isTransactional(), false, autoCommitConfig);
-        //#endif
+        locker=LockerFactory.getWritableLocker(db.getEnvironment()
+//#if TRANSACTIONS
+,txn, db.isTransactional()
+//#endif
+, false
+//#if TRANSACTIONS
+, autoCommitConfig
+//#endif
+);
         cursor=new Cursor(db,locker,null);
         readDataRequired(cursor,LockMode.RMW);
         if (overflow) {

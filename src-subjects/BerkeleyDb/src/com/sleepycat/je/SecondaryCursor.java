@@ -12,18 +12,23 @@ import com.sleepycat.je.txn.Locker;
 public class SecondaryCursor extends Cursor {
   private SecondaryDatabase secondaryDb;
   private Database primaryDb;
- 
-//#if TRANSACTIONS 
   /** 
  * Cursor constructor. Not public. To get a cursor, the user should
  * call SecondaryDatabase.cursor();
  */
-  SecondaryCursor(  SecondaryDatabase dbHandle,Transaction txn,CursorConfig cursorConfig) throws DatabaseException {
-    super(dbHandle,txn,cursorConfig);
+  SecondaryCursor(  SecondaryDatabase dbHandle,
+//#if TRANSACTIONS
+  Transaction txn,
+//#endif
+  CursorConfig cursorConfig) throws DatabaseException {
+    super(dbHandle,
+//#if TRANSACTIONS
+txn,
+//#endif
+cursorConfig);
     secondaryDb=dbHandle;
     primaryDb=dbHandle.getPrimaryDatabase();
   }
-//#endif  
   /** 
  * Copy constructor.
  */

@@ -359,9 +359,17 @@ public class INCompressor extends DaemonThread {
 					}
 					if (binRef.deletedKeysExist()) {
 						boolean requeued = compressBin(binSearch.db,
-								binSearch.bin, binRef, tracker);
+								binSearch.bin, binRef
+								// #if CLEANER
+								, tracker
+						// #endif
+						);
 						if (!requeued) {
-							checkForRelocatedSlots(binSearch.db, binRef, tracker);
+							checkForRelocatedSlots(binSearch.db, binRef
+							// #if CLEANER
+									, tracker
+							// #endif
+							);
 						}
 					} else {
 						BIN foundBin = binSearch.bin;
@@ -374,7 +382,11 @@ public class INCompressor extends DaemonThread {
 						// #if LATCHES
 						foundBin.releaseLatch();
 						// #endif
-						pruneBIN(binSearch.db, binRef, idKey, isDBIN, dupKey, tracker);
+						pruneBIN(binSearch.db, binRef, idKey, isDBIN, dupKey
+						// #if CLEANER
+								, tracker
+						// #endif
+						);
 					}
 				}
 				// #if CLEANER
@@ -407,7 +419,11 @@ public class INCompressor extends DaemonThread {
 	 *            returns.
 	 * @return true if the BINReference was requeued by this method.
 	 */
-	private boolean compressBin(DatabaseImpl db, BIN bin, BINReference binRef, UtilizationTracker tracker) throws DatabaseException {
+	private boolean compressBin(DatabaseImpl db, BIN bin, BINReference binRef
+	// #if CLEANER
+			, UtilizationTracker tracker
+	// #endif
+	) throws DatabaseException {
 		boolean empty = false;
 		boolean requeued = false;
 		byte[] idKey = bin.getIdentifierKey();
@@ -440,7 +456,11 @@ public class INCompressor extends DaemonThread {
 		}
 		// #endif
 		if (empty) {
-			requeued = pruneBIN(db, binRef, idKey, isDBIN, dupKey, tracker);
+			requeued = pruneBIN(db, binRef, idKey, isDBIN, dupKey
+			// #if CLEANER
+					, tracker
+			// #endif
+			);
 		}
 		return requeued;
 	}
@@ -453,14 +473,26 @@ public class INCompressor extends DaemonThread {
 	 *         was requeued.
 	 */
 	private boolean pruneBIN(DatabaseImpl dbImpl, BINReference binRef,
-			byte[] idKey, boolean containsDups, byte[] dupKey, UtilizationTracker tracker) throws DatabaseException {
+			byte[] idKey, boolean containsDups, byte[] dupKey
+			// #if CLEANER
+			, UtilizationTracker tracker
+	// #endif
+	) throws DatabaseException {
 		boolean requeued = false;
 		try {
 			Tree tree = dbImpl.getTree();
 			if (containsDups) {
-				tree.deleteDup(idKey, dupKey, tracker);
+				tree.deleteDup(idKey, dupKey
+				// #if CLEANER
+						, tracker
+				// #endif
+				);
 			} else {
-				tree.delete(idKey, tracker);
+				tree.delete(idKey
+				// #if CLEANER
+						, tracker
+				// #endif
+				);
 			}
 			// #if STATISTICS
 			processedBinsThisRun++;

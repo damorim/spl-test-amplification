@@ -418,7 +418,11 @@ public class RecoveryManager {
 			DatabaseException {
 		INFileReader reader = new INFileReader(env, readBufferSize,
 				rollForwardLsn, info.nextAvailableLsn, true, false,
-				info.partialCheckpointStartLsn, fileSummaryLsns);
+				info.partialCheckpointStartLsn
+				// #if CLEANER
+				, fileSummaryLsns
+		// #endif
+		);
 		reader.addTargetType(LogEntryType.LOG_IN);
 		reader.addTargetType(LogEntryType.LOG_BIN);
 		reader.addTargetType(LogEntryType.LOG_IN_DELETE_INFO);
@@ -449,9 +453,12 @@ public class RecoveryManager {
 					info.useMaxDbId = info.checkpointEnd.getLastDbId();
 				}
 				// #if TRANSACTIONS
-				if (info.useMaxTxnId < info.checkpointEnd.getLastTxnId()){
+				if (info.useMaxTxnId < info.checkpointEnd.getLastTxnId())
+				// #if TRANSACTIONS
+				{
 					info.useMaxTxnId = info.checkpointEnd.getLastTxnId();
 				}
+				// #endif
 				// #endif
 			}
 			Node.setLastNodeId(info.useMaxNodeId);
@@ -473,7 +480,11 @@ public class RecoveryManager {
 			boolean requireExactMatch) throws IOException, DatabaseException {
 		INFileReader reader = new INFileReader(env, readBufferSize,
 				rollForwardLsn, info.nextAvailableLsn, false, mapDbOnly,
-				info.partialCheckpointStartLsn, fileSummaryLsns);
+				info.partialCheckpointStartLsn
+				// #if CLEANER
+				, fileSummaryLsns
+		// #endif
+		);
 		if (inType1 != null) {
 			reader.addTargetType(inType1);
 		}
@@ -583,11 +594,15 @@ public class RecoveryManager {
 							ln.postFetchInit(db, logLsn);
 							// #if LATCHES
 							try {
+								undo(
 								// #if LOGGINGRECOVERY
-								undo(detailedTraceLevel,db, location, ln, reader.getKey(),
+								// #if LOGGINGBASE
+								detailedTraceLevel,
+										// #endif
+										// #endif
+										db, location, ln, reader.getKey(),
 										reader.getDupTreeKey(), logLsn,
 										abortLsn, abortKnownDeleted, info, true);
-								//#endif
 							} finally {
 								if (location.bin != null) {
 									location.bin.releaseLatchIfOwner();
@@ -601,8 +616,13 @@ public class RecoveryManager {
 							// #endif
 							// #endif
 							// #if CLEANER
-							undoUtilizationInfo(ln, logLsn,abortLsn,
-									abortKnownDeleted,txnNodeId, countedFileSummaries,
+							undoUtilizationInfo(ln, logLsn,
+									abortLsn,
+									abortKnownDeleted,
+									// #if TRANSACTIONS
+									txnNodeId
+									// #endif
+									, countedFileSummaries,
 									countedAbortLsnNodes);
 							// #endif
 							inListRebuildDbIds.add(dbId);
@@ -757,8 +777,15 @@ public class RecoveryManager {
 						// #if CLEANER
 						redoUtilizationInfo(logLsn, treeLsn,
 								reader.getAbortLsn(),
-								reader.getAbortKnownDeleted(), 
-								ln,txnNodeId, countedAbortLsnNodes);
+								reader.getAbortKnownDeleted(), ln,
+								// #if TRANSACTIONS
+								txnNodeId
+								// #endif
+								,
+								// #if TRANSACTIONS
+								countedAbortLsnNodes
+						// #endif
+						);
 						// #endif
 					}
 					// #endif
@@ -954,7 +981,11 @@ public class RecoveryManager {
 		 * @return true if the in-memory root was replaced.
 		 */
 		public IN doWork(ChildReference root) throws DatabaseException {
-			tree.setRoot(null, false);
+			tree.setRoot(null
+			// #if LATCHES
+					, false
+			// #endif
+			);
 			return null;
 		}
 	}
@@ -1012,12 +1043,20 @@ public class RecoveryManager {
 			inFromLog.releaseLatch();
 			// #endif
 			if (root == null) {
-				tree.setRoot(newRoot, false);
+				tree.setRoot(newRoot
+				// #if LATCHES
+						, false
+				// #endif
+				);
 				inserted = true;
 			} else {
 				originalLsn = root.getLsn();
 				if (DbLsn.compareTo(originalLsn, lsn) < 0) {
-					tree.setRoot(newRoot, false);
+					tree.setRoot(newRoot
+					// #if LATCHES
+							, false
+					// #endif
+					);
 					replaced = true;
 				}
 			}
@@ -1285,7 +1324,13 @@ public class RecoveryManager {
 	 * @param infois
 	 *            a recovery stats object.
 	 */
-	public static void undo(Level traceLevel,DatabaseImpl db, TreeLocation location, LN lnFromLog,
+	public static void undo(
+			// #if LOGGINGRECOVERY
+			// #if LOGGINGBASE
+			Level traceLevel,
+			// #endif
+			// #endif
+			DatabaseImpl db, TreeLocation location, LN lnFromLog,
 			byte[] mainKey, byte[] dupKey, long logLsn, long abortLsn,
 			boolean abortKnownDeleted, RecoveryInfo info, boolean splitsAllowed)
 			throws DatabaseException {
@@ -1421,7 +1466,15 @@ public class RecoveryManager {
 	 * Update file utilization info during redo.
 	 */
 	private void redoUtilizationInfo(long logLsn, long treeLsn, long abortLsn,
-			boolean abortKnownDeleted, LN ln, TxnNodeId txnNodeId,Set countedAbortLsnNodes) {
+			boolean abortKnownDeleted, LN ln,
+			// #if TRANSACTIONS
+			TxnNodeId txnNodeId
+			// #endif
+			,
+			// #if TRANSACTIONS
+			Set countedAbortLsnNodes
+	// #endif
+	) {
 		// #if CLEANER
 		UtilizationTracker tracker = env.getUtilizationTracker();
 		// #endif
@@ -1496,7 +1549,15 @@ public class RecoveryManager {
 	 * Update file utilization info during recovery undo (not abort undo).
 	 */
 	private void undoUtilizationInfo(LN ln, long logLsn, long abortLsn,
-			boolean abortKnownDeleted,TxnNodeId txnNodeId,Map countedFileSummaries, Set countedAbortLsnNodes) {
+			boolean abortKnownDeleted,
+			// #if TRANSACTIONS
+			TxnNodeId txnNodeId
+			// #endif
+			,
+			// #if TRANSACTIONS
+			Map countedFileSummaries
+			// #endif
+			, Set countedAbortLsnNodes) {
 		UtilizationTracker tracker = env.getUtilizationTracker();
 		Long logFileNum = new Long(DbLsn.getFileNumber(logLsn));
 		long fileSummaryLsn = DbLsn.longToLsn((Long) fileSummaryLsns
@@ -1507,9 +1568,9 @@ public class RecoveryManager {
 			tracker.countObsoleteNode(logLsn, null);
 		}
 		if (cmpFsLsnToLogLsn > 0) {
-			Long countedFile 
+			Long countedFile =
 			// #if TRANSACTIONS
-			=(Long) countedFileSummaries.get(txnNodeId)
+			(Long) countedFileSummaries.get(txnNodeId)
 			// #endif
 			;
 			if (countedFile == null

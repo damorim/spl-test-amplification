@@ -56,23 +56,27 @@ public class Cursor {
 //#if LOGGINGBASE
   private Logger logger;
 //#endif
-
-  //#if TRANSACTIONS
   /** 
  * Creates a cursor for a given user transaction.
  * <p>If txn is null, a non-transactional cursor will be created that
  * releases locks for the prior operation when the next operation
  * suceeds.</p>
  */
-  Cursor(  Database dbHandle,Transaction txn,
+  Cursor(  Database dbHandle,
+//#if TRANSACTIONS
+  Transaction txn, 
+//#endif
   CursorConfig cursorConfig) throws DatabaseException {
     if (cursorConfig == null) {
       cursorConfig=CursorConfig.DEFAULT;
     }
-    Locker locker=LockerFactory.getReadableLocker(dbHandle.getEnvironment(),txn, dbHandle.isTransactional(),false,cursorConfig.getReadCommitted());
+    Locker locker=LockerFactory.getReadableLocker(dbHandle.getEnvironment()
+//#if TRANSACTIONS
+,txn, dbHandle.isTransactional()
+//#endif
+,false,cursorConfig.getReadCommitted());
     init(dbHandle,dbHandle.getDatabaseImpl(),locker,dbHandle.isWritable(),cursorConfig);
   }
-//#endif
   /** 
  * Creates a cursor for a given locker.
  * <p>If locker is null or is non-transactional, a non-transactional cursor

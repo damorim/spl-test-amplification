@@ -276,29 +276,31 @@ static {
   /** 
  * Read configurations for daemons, instantiate.
  */
-	private void createDaemons() throws DatabaseException {
-		long checkpointerWakeupTime = 0;
-		// #if EVICTOR
-		evictor = new Evictor(this, "Evictor");
-		// #endif
-		// #if CPTIME
-		checkpointerWakeupTime = Checkpointer
-				.getWakeupPeriod(configManager);
-		// #endif
-		checkpointer = new Checkpointer(this, checkpointerWakeupTime, "Checkpointer");
-		// #if INCOMPRESSOR
-		long compressorWakeupInterval = PropUtil.microsToMillis(configManager
-				.getLong(EnvironmentParams.COMPRESSOR_WAKEUP_INTERVAL));
-		// #endif
-		// #if INCOMPRESSOR
-		inCompressor = new INCompressor(this, compressorWakeupInterval,
-				"INCompressor");
-		// #endif
-		// #if CLEANER
-		cleaner = new Cleaner(this, "Cleaner");
-		// #endif
-	}
-
+  private void createDaemons() throws DatabaseException {
+//#if EVICTOR
+    evictor=new Evictor(this,"Evictor");
+//#endif
+//#if CPTIME
+    long checkpointerWakeupTime=Checkpointer.getWakeupPeriod(configManager);
+//#endif
+    checkpointer=new Checkpointer(this
+//#if CPTIME
+, checkpointerWakeupTime
+//#endif
+//#if CHECKPOINTERDAEMON
+, "Checkpointer"
+//#endif
+);
+//#if INCOMPRESSOR
+    long compressorWakeupInterval=PropUtil.microsToMillis(configManager.getLong(EnvironmentParams.COMPRESSOR_WAKEUP_INTERVAL));
+//#endif
+//#if INCOMPRESSOR
+    inCompressor=new INCompressor(this,compressorWakeupInterval,"INCompressor");
+//#endif
+//#if CLEANER
+    cleaner=new Cleaner(this,"Cleaner");
+//#endif
+  }
   /** 
  * Run or pause daemons, depending on config properties.
  */
@@ -1207,7 +1209,6 @@ DatabaseException
 //#endif
 //#endif
 //#endif
-
 //#if INCOMPRESSOR
   public int getINCompressorQueueSize() throws DatabaseException {
     return inCompressor.getBinRefQueueSize();

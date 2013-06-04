@@ -43,7 +43,7 @@ import com.sleepycat.je.utilint.Tracer;
 public class Evictor
 // #if EVICTORDAEMON
 		extends DaemonThread
-//#endif		
+// #endif
 {
 	public static final String SOURCE_DAEMON = "daemon";
 	public static final String SOURCE_MANUAL = "manual";

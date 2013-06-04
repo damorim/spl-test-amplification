@@ -414,7 +414,11 @@ class FileProcessor extends DaemonThread {
 					// #endif
 					// #if LOOKAHEADCACHE
 					if (lookAheadCache.isFull()) {
-						processLN(fileNum, location, aLsn, aLninfo,lookAheadCache,dbCache);
+						processLN(fileNum, location, aLsn, aLninfo,
+						// #if LOOKAHEADCACHE
+								lookAheadCache,
+								// #endif
+								dbCache);
 					}
 					// #endif
 					nProcessedLNs += 1;
@@ -482,7 +486,7 @@ class FileProcessor extends DaemonThread {
 		}
 		return true;
 	}
-	// #if LOOKAHEADCACHE
+
 	/**
 	 * Processes the first LN in the look ahead cache and removes it from the
 	 * cache. While the BIN is latched, look through the BIN for other LNs in
@@ -492,7 +496,11 @@ class FileProcessor extends DaemonThread {
 	 * @param offset
 	 */
 	private void processLN(Long fileNum, TreeLocation location, Long offset,
-			LNInfo info, LookAheadCache lookAheadCache, Map dbCache) throws DatabaseException {
+			LNInfo info
+			// #if LOOKAHEADCACHE
+			, LookAheadCache lookAheadCache
+			// #endif
+			, Map dbCache) throws DatabaseException {
 		// #if STATISTICS
 		nLNsCleanedThisRun++;
 		// #endif
@@ -618,7 +626,6 @@ class FileProcessor extends DaemonThread {
 			// #endif
 		}
 	}
-	//#endif
 
 	/**
 	 * Processes an LN that was found in the tree. Lock the LN's node ID and

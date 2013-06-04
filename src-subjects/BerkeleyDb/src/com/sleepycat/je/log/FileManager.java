@@ -486,9 +486,7 @@ public class FileManager {
 				} finally {
 					fileCacheLatch.release();
 				}
-				// #endif
 			}
-			// #if LATCHES
 			fileHandle.latch();
 			// #endif
 			if (fileHandle.getFile() == null) {
