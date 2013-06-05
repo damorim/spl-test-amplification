@@ -13,7 +13,11 @@ import java.io.InputStream;
  * @author Tom Tromey
  * @since JDK 1.1
  */
-public class GZIPInputStream extends InflaterInputStream {
+public class GZIPInputStream  
+//#if BASE
+extends InflaterInputStream 
+//#endif 
+{
 	/**
 	 * The magic number found at the start of a GZIP stream.
 	 */
@@ -76,7 +80,9 @@ public class GZIPInputStream extends InflaterInputStream {
 	 *             if <code>size</code> is less than or equal to 0.
 	 */
 	public GZIPInputStream(InputStream in, int size) throws IOException {
+		//#if BASE
 		super(in, new Inflater(true), size);
+		//#endif
 		//#if GZIP
 			hook();
 			readHeader();
@@ -93,7 +99,9 @@ public class GZIPInputStream extends InflaterInputStream {
 	 *             if an error occurs during an I/O operation.
 	 */
 	public void close() throws IOException {
+		//#if BASE
 		super.close();
+		//#endif
 	}
 
 //#if GZIP
@@ -115,7 +123,13 @@ public class GZIPInputStream extends InflaterInputStream {
 				readHeader();
 			if (eos)
 				return -1;
-			int numRead = super.read(buf, offset, len);
+			int numRead = 
+					//#if BASE
+					super.read(buf, offset, len)
+					//#else
+					0
+					//#endif
+					;
 			this.hook30(buf, offset, numRead);
 			if (inf.finished())
 				readFooter();

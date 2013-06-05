@@ -159,6 +159,8 @@ public class ZipArchive implements ZipConstants {
 		} catch (IOException ioe) {
 			return (new Hashtable()).elements();
 		}
+		//#else
+		return null;
 		// #endif
 	}
 
@@ -173,6 +175,8 @@ public class ZipArchive implements ZipConstants {
 		if (entries == null)
 			readEntries();
 		return entries;
+		//#else
+		return null;
 		// #endif
 	}
 
@@ -195,6 +199,8 @@ public class ZipArchive implements ZipConstants {
 		} catch (IOException ioe) {
 			return null;
 		}
+		//#else
+		return null;
 		// #endif
 	}
 
@@ -208,6 +214,8 @@ public class ZipArchive implements ZipConstants {
 		} catch (IOException ioe) {
 			return 0;
 		}
+		//#else
+		return 0;
 		// #endif
 	}
 

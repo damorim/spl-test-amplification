@@ -1,4 +1,4 @@
-//
+//#if BASE
 
 package net.sf.zipme;
 
@@ -9,7 +9,6 @@ import java.io.UnsupportedEncodingException;
 public final class ZipArchive_PartialInputStream extends ByteArrayInputStream {
 	private int dummyByteCount;
 
-//#if BASE
 	public ZipArchive_PartialInputStream(byte[] buffer, int offset, int length) {
 		super(buffer, offset, length);
 	}
@@ -93,6 +92,6 @@ public final class ZipArchive_PartialInputStream extends ByteArrayInputStream {
 	public void addDummyByte() {
 		dummyByteCount = 1;
 	}
-// #endif
 
 }
+//#endif

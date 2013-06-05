@@ -151,14 +151,13 @@ public class Inflater {
 		// #endif
 	}
 
+// #if BASE	
 	/**
 	 * Returns true, if the inflater has finished. This means, that no input is
 	 * needed and no output can be produced.
 	 */
 	public boolean finished() {
-		// #if BASE
 		return mode == FINISHED && outputWindow.getAvailable() == 0;
-		// #endif
 	}
 
 	/**
@@ -169,9 +168,7 @@ public class Inflater {
 	 * @return the number of bytes of the input which were not processed.
 	 */
 	public int getRemaining() {
-		// #if BASE
 		return input.getAvailableBytes();
-		// #endif
 	}
 
 	/**
@@ -180,9 +177,7 @@ public class Inflater {
 	 * @return the total number of bytes of processed input bytes.
 	 */
 	public int getTotalIn() {
-		// #if BASE
 		return (int) (totalIn - getRemaining());
-		// #endif
 	}
 
 	/**
@@ -192,9 +187,7 @@ public class Inflater {
 	 * @since 1.5
 	 */
 	public long getBytesRead() {
-		// #if BASE
 		return totalIn - getRemaining();
-		// #endif
 	}
 
 	/**
@@ -203,9 +196,7 @@ public class Inflater {
 	 * @return the total number of output bytes.
 	 */
 	public int getTotalOut() {
-		// #if BASE
 		return (int) totalOut;
-		// #endif
 	}
 
 	/**
@@ -215,9 +206,7 @@ public class Inflater {
 	 * @since 1.5
 	 */
 	public long getBytesWritten() {
-		// #if BASE
 		return totalOut;
-		// #endif
 	}
 
 	/**
@@ -235,9 +224,7 @@ public class Inflater {
 	 *                if buf has length 0.
 	 */
 	public int inflate(byte[] buf) throws DataFormatException {
-		// #if BASE
 		return inflate(buf, 0, buf.length);
-		// #endif
 	}
 
 	/**
@@ -259,7 +246,6 @@ public class Inflater {
 	 *                if the off and/or len are wrong.
 	 */
 	public int inflate(byte[] buf, int off, int len) throws DataFormatException {
-		// #if BASE
 		if (len == 0)
 			return 0;
 		if (0 > off || off > off + len || off + len > buf.length)
@@ -280,16 +266,13 @@ public class Inflater {
 		} while (decode()
 				|| (outputWindow.getAvailable() > 0 && mode != DECODE_CHKSUM));
 		return count;
-		// #endif
 	}
 
 	/**
 	 * Returns true, if a preset dictionary is needed to inflate the input.
 	 */
 	public boolean needsDictionary() {
-		// #if BASE
 		return mode == DECODE_DICT && neededBits == 0;
-		// #endif
 	}
 
 	/**
@@ -298,9 +281,7 @@ public class Inflater {
 	 * <em>NOTE</em>: This method also returns true when the stream is finished.
 	 */
 	public boolean needsInput() {
-		// #if BASE
 		return input.needsInput();
-		// #endif
 	}
 
 	/**
@@ -308,7 +289,6 @@ public class Inflater {
 	 * input and output will be discarded.
 	 */
 	public void reset() {
-		// #if BASE
 		mode = nowrap ? DECODE_BLOCKS : DECODE_HEADER;
 		totalIn = totalOut = 0;
 		input.reset();
@@ -317,7 +297,6 @@ public class Inflater {
 		litlenTree = null;
 		distTree = null;
 		isLastBlock = false;
-		// #endif
 		// #if ADLER32CHECKSUM
 		adler.reset();
 		// #endif
@@ -337,9 +316,7 @@ public class Inflater {
 	 *                if the dictionary checksum is wrong.
 	 */
 	public void setDictionary(byte[] buffer) {
-		// #if BASE
 		setDictionary(buffer, 0, buffer.length);
-		// #endif
 	}
 
 	/**
@@ -362,13 +339,11 @@ public class Inflater {
 	 *                if the off and/or len are wrong.
 	 */
 	public void setDictionary(byte[] buffer, int off, int len) {
-		// #if BASE
 		if (!needsDictionary())
 			throw new IllegalStateException();
 		this.hook34(buffer, off, len);
 		outputWindow.copyDict(buffer, off, len);
 		mode = DECODE_BLOCKS;
-		// #endif
 	}
 
 	/**
@@ -380,9 +355,7 @@ public class Inflater {
 	 *                if no input is needed.
 	 */
 	public void setInput(byte[] buf) {
-		// #if BASE
 		setInput(buf, 0, buf.length);
-		// #endif
 	}
 
 	/**
@@ -400,13 +373,10 @@ public class Inflater {
 	 *                if the off and/or len are wrong.
 	 */
 	public void setInput(byte[] buf, int off, int len) {
-		// #if BASE
 		input.setInput(buf, off, len);
 		totalIn += len;
-		// #endif
 	}
 
-// #if BASE
 	/**
 	 * Decodes the deflate header.
 	 * 
@@ -639,7 +609,7 @@ public class Inflater {
 		}
 	}
 
-	// #endif
+// #endif
 
 	protected void hook32() {
 		// #if ADLER32CHECKSUM

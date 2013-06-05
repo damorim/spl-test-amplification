@@ -7,7 +7,11 @@ package net.sf.zipme;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ZipArchive_InflaterInputStream extends InflaterInputStream {
+public class ZipArchive_InflaterInputStream 
+//#if BASE
+ extends InflaterInputStream 
+ //#endif
+ {
 
 //#if BASE
 	private final int sz;

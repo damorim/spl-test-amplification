@@ -15,7 +15,11 @@ import java.io.UnsupportedEncodingException;
  * 
  * @author Jochen Hoenicke
  */
-public class ZipInputStream extends InflaterInputStream implements ZipConstants {
+public class ZipInputStream  
+//#if BASE
+extends InflaterInputStream
+//#endif
+implements ZipConstants {
 
 	private CRC32 crc = new CRC32();
 
@@ -176,7 +180,9 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
 	 * Creates a new Zip input stream, reading a zip archive.
 	 */
 	public ZipInputStream(InputStream in) {
+		//#if BASE
 		super(in, new Inflater(true));
+		//#endif
 	}
 
 	private void fillBuf() throws IOException {
@@ -388,7 +394,9 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
 	 *                if a i/o error occured.
 	 */
 	public void close() throws IOException {
+		//#if BASE
 		super.close();
+		//#endif
 		// #if EXTRACT
 		this.hook40();
 		entry = null;

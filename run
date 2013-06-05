@@ -7,7 +7,7 @@ then
 fi
 
 ####### bound for test generation
-NUM_VALID_CONFIGURATIONS_FOR_TG=10
+NUM_VALID_CONFIGURATIONS_FOR_TG=5
 ####### bound for test execution
 NUM_RANDOM_CONFIGURATIONS_FOR_TE=0
 

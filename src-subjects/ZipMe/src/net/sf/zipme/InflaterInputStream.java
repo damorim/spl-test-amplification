@@ -1,5 +1,4 @@
-//
-
+//#if BASE
 package net.sf.zipme;
 
 import java.io.IOException;
@@ -16,7 +15,7 @@ import java.io.InputStream;
  * @since 1.1
  */
 public class InflaterInputStream extends InputStream {
-//#if BASE
+
 	/**
 	 * This is the subordinate <code>InputStream</code> to which method calls
 	 * are redirected
@@ -111,7 +110,9 @@ public class InflaterInputStream extends InputStream {
 		len = in.read(buf, 0, buf.length);
 		if (len < 0)
 			throw new ZipException("Deflated stream ends early.");
+		//#if BASE
 		inf.setInput(buf, 0, len);
+		//#endif
 	}
 
 	/**
@@ -211,5 +212,6 @@ public class InflaterInputStream extends InputStream {
 	public void reset() throws IOException {
 		throw new IOException("reset not supported");
 	}
-//#endif
+
 }
+//#endif

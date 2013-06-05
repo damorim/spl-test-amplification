@@ -10,6 +10,7 @@ TIMEOUT=120
 java \
     -jar $EVOSUITE \
     -generateSuite \
+    -cp ${JUNIT}:${LOG4J}:${SKARINGA}:${XSTREAM}:${JUNIT3} \
     -target $INPUTDIR \
     -Dsearch_budget=$TIMEOUT \
     -Doutput_granularity=TESTCASE \
