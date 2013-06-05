@@ -136,8 +136,11 @@ final class DataCursor implements Cloneable {
         this.view = view;
         this.writeAllowed = writeAllowed && view.writeAllowed;
         this.range = (range != null) ? range : view.range;
-        readUncommitted = view.cursorConfig.getReadUncommitted() ||
-            view.currentTxn.isReadUncommitted();
+        readUncommitted = view.cursorConfig.getReadUncommitted()
+        		//#if TRANSACTIONS
+        		|| view.currentTxn.isReadUncommitted()
+        		//#endif
+        		;
         initThangs();
 
         if (joinCursor == null) {

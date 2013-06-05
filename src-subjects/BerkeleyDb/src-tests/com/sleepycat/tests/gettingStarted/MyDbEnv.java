@@ -53,27 +53,39 @@ public class MyDbEnv {
         mySecConfig.setAllowCreate(!readOnly);
 
         // Allow transactions if we are writing to the database
+        
+        //#if TRANSACTIONS
         myEnvConfig.setTransactional(!readOnly);
         myDbConfig.setTransactional(!readOnly);
         mySecConfig.setTransactional(!readOnly);
-
+        //#endif
+        
         // Open the environment
         myEnv = new Environment(envHome, myEnvConfig);
 
         // Now open, or create and open, our databases
         // Open the vendors and inventory databases
-        vendorDb = myEnv.openDatabase(null, 
+        vendorDb = myEnv.openDatabase(
+        		//#if TRANSACTIONS
+        		null, 
+        		//#endif
                                       "VendorDB",
                                        myDbConfig);
 
-        inventoryDb = myEnv.openDatabase(null, 
+        inventoryDb = myEnv.openDatabase(
+        		//#if TRANSACTIONS
+        		null, 
+        		//#endif
                                         "InventoryDB",
                                          myDbConfig);
         
         // Open the class catalog db. This is used to 
         // optimize class serialization.
         classCatalogDb = 
-            myEnv.openDatabase(null, 
+            myEnv.openDatabase(
+            		//#if TRANSACTIONS
+            		null, 
+            		//#endif
                                "ClassCatalogDB",
                                myDbConfig);
 
@@ -104,7 +116,9 @@ public class MyDbEnv {
         // Now open it
         itemNameIndexDb = 
             myEnv.openSecondaryDatabase(
-                    null,     
+            		//#if TRANSACTIONS
+            		null,     
+            		//#endif
                     "itemNameIndex", // index name
                     inventoryDb,     // the primary db that we're indexing
                     mySecConfig);    // the secondary config 

@@ -21,22 +21,19 @@ public class TestAll {
 
 		switch (test) {
 		case 1:
-			//#if TRANSACTIONS && IO && CLEANER
+			// TRANSACTIONS && IO && CLEANER
 			test1();// Works on both reduced and extended suite (for every valid
 					// feature set), including JPF for both.
-			//#endif
 			break;
 		case 2:
-			//#if LATCHES && FILEHANDLECACHE && CLEANER && EVICTOR && DELETEOP && MEMORY_BUDGET
+			// LATCHES && FILEHANDLECACHE && CLEANER && EVICTOR && DELETEOP && MEMORY_BUDGET
 			test2();// Works on reduced suite and extended suite(for a certain
 					// feature set).
-			//#endif
 			break;
 		case 3:
-			//#if LATCHES && FILEHANDLECACHE && CLEANER && EVICTOR && DELETEOP && MEMORY_BUDGET
+			// LATCHES && FILEHANDLECACHE && CLEANER && EVICTOR && DELETEOP && MEMORY_BUDGET
 			test3();// Works on reduced suite and extended suite(for a certain
 					// feature set).
-			//#endif
 			break;
 		case 4:
 			//#if LATCHES && FILEHANDLECACHE && CLEANER && EVICTOR && DELETEOP && MEMORY_BUDGET
@@ -66,8 +63,9 @@ public class TestAll {
 		try {
 			EnvironmentConfig envConfig = new EnvironmentConfig();
 			envConfig.setAllowCreate(true);
-			envConfig.setTransactional(true);// so abilitar se transiction
-												// estiver no produto.
+			//#if TRANSACTIONS
+			envConfig.setTransactional(true);
+			//#endif
 			myDatabaseEnvironment = new Environment(dbEnv, envConfig);
 		} catch (DatabaseException dbe) {
 			dbe.printStackTrace();

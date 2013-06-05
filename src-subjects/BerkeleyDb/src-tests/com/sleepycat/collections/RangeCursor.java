@@ -97,8 +97,11 @@ class RangeCursor implements Cloneable {
         writeCursor = DbCompat.getWriteCursor(view.cursorConfig) ||
             (view.cursorConfig == CursorConfig.DEFAULT && writeAllowed);
 
-        cursor = currentTxn.openCursor(view.db, view.cursorConfig, writeCursor,
-                                       view.useTransaction());
+        cursor = currentTxn.openCursor(view.db, view.cursorConfig, writeCursor
+                //#if TRANSACTIONS                       
+        		,view.useTransaction()
+        		//#endif
+        		);
         init();
     }
 

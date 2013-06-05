@@ -406,6 +406,7 @@ public abstract class StoredContainer implements Cloneable {
 
         if (view.transactional) {
             CurrentTransaction currentTxn = view.getCurrentTxn();
+          //#if TRANSACTIONS
             try {
                 if (currentTxn.isAutoCommitAllowed()) {
                     currentTxn.beginTransaction(null);
@@ -414,24 +415,28 @@ public abstract class StoredContainer implements Cloneable {
             } catch (DatabaseException e) {
                 throw new RuntimeExceptionWrapper(e);
             }
+          //#endif
         }
         return false;
     }
 
     final void commitAutoCommit(boolean doAutoCommit)
         throws DatabaseException {
-
+    	//#if TRANSACTIONS
         if (doAutoCommit) view.getCurrentTxn().commitTransaction();
+        //#endif
     }
 
     final RuntimeException handleException(Exception e, boolean doAutoCommit) {
 
         if (doAutoCommit) {
+        	//#if TRANSACTIONS
             try {
                 view.getCurrentTxn().abortTransaction();
             } catch (DatabaseException ignored) {
 		/* Klockwork - ok */
             }
+          //#endif
         }
         return StoredContainer.convertException(e);
     }

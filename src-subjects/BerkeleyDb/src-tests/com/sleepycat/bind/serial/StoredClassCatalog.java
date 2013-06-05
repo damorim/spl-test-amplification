@@ -29,7 +29,9 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
+//#if TRANSACTIONS
 import com.sleepycat.je.Transaction;
+//#endif
 import com.sleepycat.util.RuntimeExceptionWrapper;
 import com.sleepycat.util.UtfOps;
 
@@ -82,11 +84,16 @@ public class StoredClassCatalog implements ClassCatalog {
         DatabaseConfig dbConfig = db.getConfig();
         EnvironmentConfig envConfig = db.getEnvironment().getConfig();
 
-        writeLockMode = (DbCompat.getInitializeLocking(envConfig) ||
-                         envConfig.getTransactional()) ? LockMode.RMW
-                                                       : LockMode.DEFAULT;
+        writeLockMode = (DbCompat.getInitializeLocking(envConfig)
+        				//#if TRANSACTIONS
+                         || envConfig.getTransactional()
+                         //#endif
+                         ) 
+                         ? LockMode.RMW : LockMode.DEFAULT;
         cdbMode = DbCompat.getInitializeCDB(envConfig);
+      //#if TRANSACTIONS
         txnMode = dbConfig.getTransactional();
+        //#endif
 
         if (!DbCompat.isTypeBtree(dbConfig)) {
             throw new IllegalArgumentException(
@@ -110,7 +117,11 @@ public class StoredClassCatalog implements ClassCatalog {
         DatabaseEntry data = new DatabaseEntry();
         if (dbConfig.getReadOnly()) {
             /* Check that the class ID record exists. */
-            OperationStatus status = db.get(null, key, data, null);
+            OperationStatus status = db.get(
+            		//#if TRANSACTIONS
+            		null, 
+            		//#endif
+            		key, data, null);
             if (status != OperationStatus.SUCCESS) {
                 throw new IllegalStateException
                     ("A read-only catalog database may not be empty");
@@ -119,7 +130,11 @@ public class StoredClassCatalog implements ClassCatalog {
             /* Add the initial class ID record if it doesn't exist.  */
             data.setData(new byte[1]); // zero ID
             /* Use putNoOverwrite to avoid phantoms. */
-            db.putNoOverwrite(null, key, data);
+            db.putNoOverwrite(
+            		//#if TRANSACTIONS
+            		null, 
+            		//#endif
+            		key, data);
         }
     }
 
@@ -175,7 +190,11 @@ public class StoredClassCatalog implements ClassCatalog {
 
             /* Read the class format. */
 
-            OperationStatus status = db.get(null, key, data, LockMode.DEFAULT);
+            OperationStatus status = db.get(
+            		//#if TRANSACTIONS
+            		null, 
+            		//#endif
+            		key, data, LockMode.DEFAULT);
             if (status != OperationStatus.SUCCESS) {
                 throw new ClassNotFoundException("Catalog class ID not found");
             }
@@ -227,7 +246,11 @@ public class StoredClassCatalog implements ClassCatalog {
 
             /* Read class info.  */
             DatabaseEntry data = new DatabaseEntry();
-            OperationStatus status = db.get(null, key, data, LockMode.DEFAULT);
+            OperationStatus status = db.get(
+            		//#if TRANSACTIONS
+            		null, 
+            		//#endif
+            		key, data, LockMode.DEFAULT);
             if (status != OperationStatus.SUCCESS) {
                 /*
                  * Not found in the database, write class info and class
@@ -283,12 +306,20 @@ public class StoredClassCatalog implements ClassCatalog {
             DbCompat.setWriteCursor(cursorConfig, true);
         }
         Cursor cursor = null;
+      //#if TRANSACTIONS
         Transaction txn = null;
+        //#endif
         try {
+        	//#if TRANSACTIONS
             if (txnMode) {
                 txn = db.getEnvironment().beginTransaction(null, null);
             }
-            cursor = db.openCursor(txn, cursorConfig);
+            //#endif
+            cursor = db.openCursor(
+            		//#if TRANSACTIONS
+            		txn, 
+            		//#endif
+            		cursorConfig);
 
             /* Get the current class ID. */
             DatabaseEntry key = new DatabaseEntry(LAST_CLASS_ID_KEY);
@@ -348,9 +379,11 @@ public class StoredClassCatalog implements ClassCatalog {
             if (cursor != null) {
                 cursor.close();
             }
+          //#if TRANSACTIONS
             if (txn != null) {
                 txn.commit();
             }
+            //#endif
         }
     }
 

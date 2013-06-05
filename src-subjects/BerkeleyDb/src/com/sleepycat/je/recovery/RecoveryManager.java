@@ -1466,14 +1466,10 @@ public class RecoveryManager {
 	 * Update file utilization info during redo.
 	 */
 	private void redoUtilizationInfo(long logLsn, long treeLsn, long abortLsn,
-			boolean abortKnownDeleted, LN ln,
+			boolean abortKnownDeleted, LN ln
 			// #if TRANSACTIONS
-			TxnNodeId txnNodeId
+			, TxnNodeId txnNodeId, Set countedAbortLsnNodes
 			// #endif
-			,
-			// #if TRANSACTIONS
-			Set countedAbortLsnNodes
-	// #endif
 	) {
 		// #if CLEANER
 		UtilizationTracker tracker = env.getUtilizationTracker();
@@ -1523,9 +1519,9 @@ public class RecoveryManager {
 			// #endif
 			// #endif
 			if (cmpLogLsnToTreeLsn <= 0 && abortLsn != DbLsn.NULL_LSN
-					&& !abortKnownDeleted &&
+					&& !abortKnownDeleted 
 					// #if TRANSACTIONS
-					!countedAbortLsnNodes.contains(txnNodeId)
+					&& !countedAbortLsnNodes.contains(txnNodeId)
 			// #endif
 			) {
 				Long abortFileNum = new Long(DbLsn.getFileNumber(abortLsn));
@@ -1548,14 +1544,9 @@ public class RecoveryManager {
 	/**
 	 * Update file utilization info during recovery undo (not abort undo).
 	 */
-	private void undoUtilizationInfo(LN ln, long logLsn, long abortLsn,
-			boolean abortKnownDeleted,
+	private void undoUtilizationInfo(LN ln, long logLsn, long abortLsn, boolean abortKnownDeleted
 			// #if TRANSACTIONS
-			TxnNodeId txnNodeId
-			// #endif
-			,
-			// #if TRANSACTIONS
-			Map countedFileSummaries
+			, TxnNodeId txnNodeId, Map countedFileSummaries
 			// #endif
 			, Set countedAbortLsnNodes) {
 		UtilizationTracker tracker = env.getUtilizationTracker();
@@ -1568,9 +1559,11 @@ public class RecoveryManager {
 			tracker.countObsoleteNode(logLsn, null);
 		}
 		if (cmpFsLsnToLogLsn > 0) {
-			Long countedFile =
+			Long countedFile
 			// #if TRANSACTIONS
-			(Long) countedFileSummaries.get(txnNodeId)
+			= (Long) countedFileSummaries.get(txnNodeId)
+			//#else
+			= (long) 0
 			// #endif
 			;
 			if (countedFile == null

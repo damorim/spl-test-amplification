@@ -21,8 +21,10 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
+//#if TRANSACTIONS
 import com.sleepycat.je.Transaction;
 import com.sleepycat.je.TransactionConfig;
+//#endif
 import com.sleepycat.util.RuntimeExceptionWrapper;
 
 /**
@@ -84,8 +86,14 @@ public class CurrentTransaction {
         this.env = env;
         try {
             EnvironmentConfig config = env.getConfig();
+          //#if TRANSACTIONS
             txnMode = config.getTransactional();
-            if (txnMode || DbCompat.getInitializeLocking(config)) {
+            //#endif
+            if (
+            		//#if TRANSACTIONS
+            		txnMode || 
+            		//#endif
+            		DbCompat.getInitializeLocking(config)) {
                 writeLockMode = LockMode.RMW;
             } else {
                 writeLockMode = LockMode.DEFAULT;
@@ -133,7 +141,7 @@ public class CurrentTransaction {
 
         return env;
     }
-
+  //#if TRANSACTIONS
     /**
      * Returns the transaction associated with the current thread for this
      * environment, or null if no transaction is active.
@@ -143,14 +151,13 @@ public class CurrentTransaction {
         Trans trans = (Trans) localTrans.get();
         return (trans != null) ? trans.txn : null;
     }
-
+    
     /**
      * Returns whether auto-commit may be performed by the collections API.
      * True is returned no collections API transaction is currently active, and
      * no XA transaction is currently active.
      */
-    boolean isAutoCommitAllowed()
-	throws DatabaseException {
+    boolean isAutoCommitAllowed() throws DatabaseException {
 
         return getTransaction() == null &&
                DbCompat.getThreadTransaction(env) == null;
@@ -254,7 +261,7 @@ public class CurrentTransaction {
             throw new IllegalStateException("No transaction is active");
         }
     }
-
+    
     /**
      * Returns whether the current transaction is a readUncommitted
      * transaction.
@@ -287,13 +294,18 @@ public class CurrentTransaction {
             this.config = config;
         }
     }
+//#endif
 
     /**
      * Opens a cursor for a given database, dup'ing an existing CDB cursor if
      * one is open for the current thread.
      */
     Cursor openCursor(Database db, CursorConfig cursorConfig,
-                      boolean writeCursor, Transaction txn)
+                      boolean writeCursor
+                    //#if TRANSACTIONS
+                      , Transaction txn
+            //#endif          
+    		)
         throws DatabaseException {
 
         if (cdbMode) {
@@ -342,12 +354,20 @@ public class CurrentTransaction {
                 Cursor other = ((Cursor) cursors.get(0));
                 cursor = other.dup(false);
             } else {
-                cursor = db.openCursor(null, cdbConfig);
+                cursor = db.openCursor(
+                		//#if TRANSACTIONS
+                		null, 
+                		//#endif
+                		cdbConfig);
             }
             cursors.add(cursor);
             return cursor;
         } else {
-            return db.openCursor(txn, cursorConfig);
+            return db.openCursor(
+            		//#if TRANSACTIONS
+            		txn, 
+            		//#endif
+            		cursorConfig);
         }
     }
 

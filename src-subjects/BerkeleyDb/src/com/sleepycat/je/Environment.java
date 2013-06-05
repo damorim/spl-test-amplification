@@ -437,7 +437,11 @@ public class Environment {
 					// #if TRANSACTIONS
 					environmentImpl.isTransactional(),
 					// #endif
-					true, null);
+					true
+					// #if TRANSACTIONS
+					, null
+					//#endif
+					);
 			environmentImpl.dbRename(locker, databaseName, newName);
 			operationOk = true;
 		} finally {

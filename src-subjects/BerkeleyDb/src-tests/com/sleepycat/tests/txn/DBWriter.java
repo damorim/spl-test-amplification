@@ -15,7 +15,9 @@ import com.sleepycat.je.DeadlockException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
+//#if TRANSACTIONS
 import com.sleepycat.je.Transaction;
+//#endif
 
 public class DBWriter extends Thread 
 {
@@ -45,8 +47,10 @@ public class DBWriter extends Thread
     // to the database using transaction protection.
     // Deadlock handling is demonstrated here.
     public void run () {
+    	//#if TRANSACTIONS
         Transaction txn = null;
-
+        //#endif
+        
         // Perform 50 transactions
         for (int i=0; i<50; i++) {
 
@@ -59,7 +63,10 @@ public class DBWriter extends Thread
                 try {
 
                     // Get a transaction
+                	
+                	//#if TRANSACTIONS
                     txn = myEnv.beginTransaction(null, null);
+                    //#endif
 
                     // Write 10 records to the db
                     // for each transaction
@@ -75,14 +82,23 @@ public class DBWriter extends Thread
                         dataBinding.objectToEntry(pd, data);
 
                         // Do the put
-                        myDb.put(txn, key, data);
+                        myDb.put(
+                        		//#if TRANSACTIONS
+                        		txn, 
+                        		//#endif
+                        		key, data);
                     }
 
                     // commit
                     System.out.println(getName() + " : committing txn : " + i);
 
                     System.out.println(getName() + " : Found " +
-                        countRecords(null) + " records in the database.");
+                        countRecords(
+                        		//#if TRANSACTIONS
+                        		null
+                        		//#endif
+                        		) + " records in the database.");
+                  //#if TRANSACTIONS
                     try {
                         txn.commit();
                         txn = null;
@@ -90,6 +106,7 @@ public class DBWriter extends Thread
                         System.err.println("Error on txn commit: " + 
                             e.toString());
                     } 
+                    //#endif
                     retry = false;
 
                 } catch (DeadlockException de) {
@@ -113,6 +130,7 @@ public class DBWriter extends Thread
                         " : caught exception: " + e.toString());
                     e.printStackTrace();
                 } finally {
+                	//#if TRANSACTIONS
                     if (txn != null) {
                         try {
                             txn.abort();
@@ -122,6 +140,7 @@ public class DBWriter extends Thread
                             e.printStackTrace();
                         }
                     }
+                    //#endif
                 }
             }
         }
@@ -142,7 +161,11 @@ public class DBWriter extends Thread
     // Note that this method exists only for illustrative purposes.
     // A more straight-forward way to count the number of records in
     // a database is to use the Database.getStats() method.
-    private int countRecords(Transaction txn)  throws DatabaseException {
+    private int countRecords(
+    		//#if TRANSACTIONS
+    		Transaction txn
+    		//#endif
+    		)  throws DatabaseException {
         DatabaseEntry key = new DatabaseEntry();
         DatabaseEntry data = new DatabaseEntry();
         int count = 0;
@@ -152,7 +175,11 @@ public class DBWriter extends Thread
             // Get the cursor
             CursorConfig cc = new CursorConfig();
             cc.setReadUncommitted(true);
-            cursor = myDb.openCursor(txn, cc);
+            cursor = myDb.openCursor(
+            		//#if TRANSACTIONS
+            		txn, 
+            		//#endif
+            		cc);
             while (cursor.getNext(key, data, LockMode.DEFAULT) ==
                     OperationStatus.SUCCESS) {
 

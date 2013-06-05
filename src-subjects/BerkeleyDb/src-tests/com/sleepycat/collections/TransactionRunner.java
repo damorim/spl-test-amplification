@@ -13,8 +13,10 @@ import com.sleepycat.compat.DbCompat;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.DeadlockException;
 import com.sleepycat.je.Environment;
+//#if TRANSACTIONS
 import com.sleepycat.je.Transaction;
 import com.sleepycat.je.TransactionConfig;
+//#endif
 import com.sleepycat.util.ExceptionUnwrapper;
 
 /**
@@ -80,7 +82,9 @@ public class TransactionRunner {
     private Environment env;
     private CurrentTransaction currentTxn;
     private int maxRetries;
+    //#if TRANSACTIONS
     private TransactionConfig config;
+    //#endif
     private boolean allowNestedTxn;
 
     /**
@@ -92,7 +96,11 @@ public class TransactionRunner {
      */
     public TransactionRunner(Environment env) {
 
-        this(env, DEFAULT_MAX_RETRIES, null);
+        this(env, DEFAULT_MAX_RETRIES
+        		//#if TRANSACTIONS
+        		, null
+        		//#endif
+        		);
     }
 
     /**
@@ -109,13 +117,18 @@ public class TransactionRunner {
      * configuration.  The configuration object is not cloned, and
      * any modifications to it will impact subsequent transactions.
      */
-    public TransactionRunner(Environment env, int maxRetries,
-                             TransactionConfig config) {
+    public TransactionRunner(Environment env, int maxRetries
+    		//#if TRANSACTIONS                 
+    		,TransactionConfig config
+    		//#endif
+    		) {
 
         this.env = env;
         this.currentTxn = CurrentTransaction.getInstance(env);
         this.maxRetries = maxRetries;
+      //#if TRANSACTIONS
         this.config = config;
+      //#endif
     }
 
     /**
@@ -168,7 +181,7 @@ public class TransactionRunner {
         }
         this.allowNestedTxn = allowNestedTxn;
     }
-
+  //#if TRANSACTIONS
     /**
      * Returns the transaction configuration used for calling
      * {@link Environment#beginTransaction}.
@@ -198,7 +211,7 @@ public class TransactionRunner {
 
         this.config = config;
     }
-
+//#endif
     /**
      * Calls the {@link TransactionWorker#doWork} method and, for transactional
      * environments, may begin and end a transaction.  If the environment given
@@ -219,22 +232,33 @@ public class TransactionRunner {
         throws DatabaseException, Exception {
 
         if (currentTxn != null &&
-            (allowNestedTxn || currentTxn.getTransaction() == null)) {
+            (allowNestedTxn 
+            		//#if TRANSACTIONS
+            		|| currentTxn.getTransaction() == null
+            		//#endif
+            		)) {
 
             /*
              * Transactional and (not nested or nested txns allowed).
              */
             for (int i = 0;; i += 1) {
+            	//#if TRANSACTIONS
                 Transaction txn = null;
+                //#endif
                 try {
+                	//#if TRANSACTIONS
                     txn = currentTxn.beginTransaction(config);
+                    //#endif
                     worker.doWork();
+                  //#if TRANSACTIONS
                     if (txn != null && txn == currentTxn.getTransaction()) {
                         currentTxn.commitTransaction();
                     }
+                    //#endif
                     return;
                 } catch (Throwable e) {
                     e = ExceptionUnwrapper.unwrapAny(e);
+                  //#if TRANSACTIONS
                     if (txn != null && txn == currentTxn.getTransaction()) {
                         try {
                             currentTxn.abortTransaction();
@@ -250,6 +274,7 @@ public class TransactionRunner {
                             i = maxRetries + 1;
                         }
                     }
+                    //#endif
                     if (i >= maxRetries || !(e instanceof DeadlockException)) {
                         if (e instanceof Exception) {
                             throw (Exception) e;

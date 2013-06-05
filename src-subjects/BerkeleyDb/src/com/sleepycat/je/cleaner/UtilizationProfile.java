@@ -792,6 +792,8 @@ synchronized (this) {
       }
 //#endif
     }
+//#else
+    return false; //Sabrina.
 //#endif
   }
   /** 

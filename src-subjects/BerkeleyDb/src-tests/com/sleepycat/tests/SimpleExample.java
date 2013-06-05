@@ -22,7 +22,9 @@ import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
+//#if TRANSACTIONS
 import com.sleepycat.je.Transaction;
+//#endif
 
 /**
  * SimpleExample creates a database environment, a database, and a database
@@ -114,7 +116,9 @@ public class SimpleExample {
     public void run() throws DatabaseException {
         /* Create a new, transactional database environment */
         EnvironmentConfig envConfig = new EnvironmentConfig();
-        envConfig.setTransactional(true); 
+      //#if TRANSACTIONS
+        envConfig.setTransactional(true);
+        //#endif
         envConfig.setAllowCreate(true);    
         Environment exampleEnv = new Environment(envDir, envConfig);
         
@@ -130,15 +134,24 @@ public class SimpleExample {
          * perform the same thing by simply passing a 
          * null txn handle to openDatabase().
          */
+      //#if TRANSACTIONS
         Transaction txn = exampleEnv.beginTransaction(null, null);
+        //#endif
         DatabaseConfig dbConfig = new DatabaseConfig();
-        dbConfig.setTransactional(true); 
+      //#if TRANSACTIONS
+        dbConfig.setTransactional(true);
+        //#endif
         dbConfig.setAllowCreate(true);
         dbConfig.setSortedDuplicates(true);
-        Database exampleDb = exampleEnv.openDatabase(txn, 
+        Database exampleDb = exampleEnv.openDatabase(
+        		//#if TRANSACTIONS
+        		txn, 
+        		//#endif
                                                      "simpleDb",
                                                      dbConfig);
+      //#if TRANSACTIONS
         txn.commit();
+        //#endif
 
         /* 
          * Insert or retrieve data. In our example, database records are
@@ -158,14 +171,20 @@ public class SimpleExample {
                  * Started Guide, is an alternative to explicitly
                  * creating the transaction object.
                  */
+            	//#if TRANSACTIONS
                 txn = exampleEnv.beginTransaction(null, null);
+                //#endif
 
                 /* Use a binding to convert the int into a DatabaseEntry. */
 
                 IntegerBinding.intToEntry(i, keyEntry);
                 IntegerBinding.intToEntry(i+1, dataEntry);
                 OperationStatus status =
-                    exampleDb.put(txn, keyEntry, dataEntry);
+                    exampleDb.put(
+                    		//#if TRANSACTIONS
+                    		txn, 
+                    		//#endif
+                    		keyEntry, dataEntry);
 
                 /*
                  * Note that put will throw a DatabaseException when 
@@ -180,11 +199,17 @@ public class SimpleExample {
                     throw new DatabaseException("Data insertion got status " +
                                                 status);
                 }
+              //#if TRANSACTIONS
                 txn.commit();
+                //#endif
             }
         } else {
             /* retrieve the data */
-            Cursor cursor = exampleDb.openCursor(null, null);
+            Cursor cursor = exampleDb.openCursor(
+            		//#if TRANSACTIONS
+            		null, 
+            		//#endif
+            		null);
 
             while (cursor.getNext(keyEntry, dataEntry, LockMode.DEFAULT) ==
                    OperationStatus.SUCCESS) {

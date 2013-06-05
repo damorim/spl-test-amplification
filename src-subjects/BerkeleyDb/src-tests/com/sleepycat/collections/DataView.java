@@ -23,7 +23,9 @@ import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.SecondaryConfig;
 import com.sleepycat.je.SecondaryDatabase;
 import com.sleepycat.je.SecondaryKeyCreator;
+//#if TRANSACTIONS
 import com.sleepycat.je.Transaction;
+//#endif
 import com.sleepycat.util.RuntimeExceptionWrapper;
 
 /**
@@ -93,8 +95,11 @@ final class DataView implements Cloneable {
             dupsAllowed = DbCompat.getSortedDuplicates(dbConfig) ||
                           DbCompat.getUnsortedDuplicates(dbConfig);
             dupsOrdered = DbCompat.getSortedDuplicates(dbConfig);
-            transactional = currentTxn.isTxnMode() &&
-                            dbConfig.getTransactional();
+            transactional = currentTxn.isTxnMode() 
+            		//#if TRANSACTIONS
+            		&& dbConfig.getTransactional()
+            		//#endif
+            		;
             readUncommittedAllowed = DbCompat.getReadUncommitted(dbConfig);
             btreeRecNumDb = recNumAllowed && DbCompat.isTypeBtree(dbConfig);
             range = new KeyRange(dbConfig.getBtreeComparator());
@@ -320,10 +325,17 @@ final class DataView implements Cloneable {
                 throw new IllegalStateException(
                   "cannot open CDB write cursor when read cursor is open");
             }
-            status = DbCompat.append(db, useTransaction(),
-                                     keyThang, valueThang);
+            status = DbCompat.append(db,
+            		//#if TRANSACTIONS
+            		useTransaction(),
+            		//#endif
+                    keyThang, valueThang);
             if (status == OperationStatus.SUCCESS && !range.check(keyThang)) {
-                db.delete(useTransaction(), keyThang);
+                db.delete(
+                		//#if TRANSACTIONS
+                		useTransaction(), 
+                		//#endif
+                		keyThang);
                 throw new IllegalArgumentException(
                     "appended record number out of range");
             }
@@ -334,7 +346,8 @@ final class DataView implements Cloneable {
         }
         return status;
     }
-
+    
+  //#if TRANSACTIONS
     /**
      * Returns the current transaction if the database is transaction, or null
      * if the database is not transactional or there is no current transaction.
@@ -342,7 +355,8 @@ final class DataView implements Cloneable {
     Transaction useTransaction() {
         return transactional ?  currentTxn.getTransaction() : null;
     }
-
+//#endif
+    
     /**
      * Deletes all records in the current range.
      */

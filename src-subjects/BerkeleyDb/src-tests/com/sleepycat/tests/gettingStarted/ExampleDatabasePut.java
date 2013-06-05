@@ -13,7 +13,9 @@ import com.sleepycat.bind.serial.SerialBinding;
 import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
+//#if TRANSACTIONS
 import com.sleepycat.je.Transaction;
+//#endif
 
 public class ExampleDatabasePut {
 
@@ -85,7 +87,11 @@ public class ExampleDatabasePut {
 
 			// Put it in the database. These puts are transactionally protected
 			// (we're using autocommit).
-			myDbEnv.getVendorDB().put(null, theKey, theData);
+			myDbEnv.getVendorDB().put(
+					//#if TRANSACTIONS
+					null, 
+					//#endif
+					theKey, theData);
 		}
 	}
 
@@ -106,7 +112,10 @@ public class ExampleDatabasePut {
 
 		// Start a transaction. All inventory items get loaded using a
 		// single transaction.
+		
+		//#if TRANSACTIONS
 		Transaction txn = myDbEnv.getEnv().beginTransaction(null, null);
+		//#endif
 
 		for (int i = 0; i < inventoryArray.size(); i++) {
 			String[] sArray = (String[])inventoryArray.get(i);
@@ -130,16 +139,25 @@ public class ExampleDatabasePut {
 			// Put it in the database. Note that this causes our secondary database
 			// to be automatically updated for us.
 			try {
-				myDbEnv.getInventoryDB().put(txn, theKey, theData);
+				myDbEnv.getInventoryDB().put(
+						//#if TRANSACTIONS
+						txn, 
+						//#endif
+						theKey, theData);
 			} catch (DatabaseException dbe) {
 				System.out.println("Error putting entry " + sku.getBytes());
+				//#if TRANSACTIONS
 				txn.abort();
+				//#endif
 				throw dbe;            
 			}
 		}
 		// Commit the transaction. The data is now safely written to the
 		// inventory database.
+		
+		//#if TRANSACTIONS
 		txn.commit();
+		//#endif
 	}
 
 	

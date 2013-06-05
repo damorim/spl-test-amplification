@@ -64,7 +64,11 @@ public class TxnGuide {
         // Set up the environment.
         EnvironmentConfig myEnvConfig = new EnvironmentConfig();
         myEnvConfig.setAllowCreate(true);
+        
+        //#if TRANSACTIONS
         myEnvConfig.setTransactional(true);
+        //#endif
+        
         // Environment handles are free-threaded in JE,
         // so we do not have to do anything to cause the
         // environment handle to be free-threaded.
@@ -72,7 +76,11 @@ public class TxnGuide {
         // Set up the database
         DatabaseConfig myDbConfig = new DatabaseConfig();
         myDbConfig.setAllowCreate(true);
+        
+      //#if TRANSACTIONS
         myDbConfig.setTransactional(true);
+        //#endif
+        
         myDbConfig.setSortedDuplicates(true);
         // no DatabaseConfig.setThreaded() method available.
         // db handles in java are free-threaded so long as the
@@ -85,14 +93,20 @@ public class TxnGuide {
         // Open the database. Do not provide a txn handle. This open
         // is autocommitted because DatabaseConfig.setTransactional()
         // is true.
-        myDb = myEnv.openDatabase(null,     // txn handle
+        myDb = myEnv.openDatabase(
+        		//#if TRANSACTIONS
+        		null,     // txn handle
+        		//#endif
                                   dbName,   // Database file name
                                   myDbConfig);
 
         // Used by the bind API for serializing objects 
         // Class database must not support duplicates
         myDbConfig.setSortedDuplicates(false);
-        myClassDb = myEnv.openDatabase(null,     // txn handle
+        myClassDb = myEnv.openDatabase(
+        		//#if TRANSACTIONS
+        		null,     // txn handle
+        		//#endif
                                        cdbName,  // Database file name
                                        myDbConfig);
     }

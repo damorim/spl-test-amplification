@@ -62,7 +62,11 @@ public class ExampleInventoryRead {
 
             // open a secondary cursor
             secCursor = 
-                myDbEnv.getNameIndexDB().openSecondaryCursor(null, null);
+                myDbEnv.getNameIndexDB().openSecondaryCursor(
+                		//#if TRANSACTIONS
+                		null, 
+                		//#endif
+                		null);
 
             // Search for the secondary database entry.
             OperationStatus retVal = 
@@ -92,7 +96,11 @@ public class ExampleInventoryRead {
     private static void showAllInventory() 
         throws DatabaseException {
         // Get a cursor
-        Cursor cursor = myDbEnv.getInventoryDB().openCursor(null, null);
+        Cursor cursor = myDbEnv.getInventoryDB().openCursor(
+        		//#if TRANSACTIONS
+        		null, 
+        		//#endif
+        		null);
 
         // DatabaseEntry objects used for reading records
         DatabaseEntry foundKey = new DatabaseEntry();
@@ -136,7 +144,11 @@ public class ExampleInventoryRead {
         } catch (IOException willNeverOccur) {}
         DatabaseEntry foundVendor = new DatabaseEntry();
 
-        if (myDbEnv.getVendorDB().get(null, searchKey, foundVendor, 
+        if (myDbEnv.getVendorDB().get(
+        		//#if TRANSACTIONS
+        		null, 
+        		//#endif
+        		searchKey, foundVendor, 
                 LockMode.DEFAULT) != OperationStatus.SUCCESS) {
             System.out.println("Could not find vendor: " + 
                 theInventory.getVendor() + ".");
