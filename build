@@ -32,8 +32,8 @@ OUTPUT="$CURDIR/bin"
 $BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
 
 # ## running pre-processor for tests
-# INPUT="$CURDIR/src-tests"
-# $BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
+ INPUT="$CURDIR/src-tests"
+ $BASEDIR/prepro $INPUT $OUTPUT "$FEATURES"
 
 ## setting classpath
 CP=".:${JUNIT}:${LOG4J}:${SKARINGA}:${XSTREAM}:${JUNIT3}"
