@@ -16,5 +16,5 @@ java \
     -Doutput_granularity=TESTCASE \
     -Dcriterion=weakMutation \
     -Dstopping_condition=MaxTime \
-    -Dclasspath=/Users/sabrinasouto/git/spl-test-amplification/src-subjects/BerkeleyDb/src-tests \
-    -Dsourcepath=/Users/sabrinasouto/git/spl-test-amplification/src-subjects/BerkeleyDb/src-tests/com/sleepycat/tests/TestAll.java
+    -Dclasspath="${CURDIR}/seed-classpath" \
+    -Dsourcepath="${CURDIR}/seed-sourcepath"
